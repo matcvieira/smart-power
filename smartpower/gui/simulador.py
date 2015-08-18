@@ -7,15 +7,14 @@
 
 from PySide import QtCore, QtGui
 from smartpower.core.graphics import SceneWidget, ViewWidget
-from models import DiagramToXML
 import sys
 import os
-import models
+import smartpower.core.models as models
 
 
 class JanelaPrincipal(object):
     '''
-        Esta classe implementa a inteface grafica do simulador
+        Esta classe implementa a interface grafica do simulador
     '''
 
     def __init__(self):

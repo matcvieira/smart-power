@@ -6,14 +6,15 @@ import sys
 # Importa os módulos necessários para implementação do diagrama gráfico
 from elementos import Religador, BusBarSection, Substation, Condutor
 from elementos import EnergyConsumer
-# from DialogRecloser import RecloserDialog
-# from DialogBarra import BarraDialog
-# from DialogConductor import ConductorDialog
-# from DialogSubstation import SubstationDialog
-# from DialogEnergyConsumer import EnergyConsumerDialog
-# from aviso_conexao import AvisoConexaoDialog
-# from avisoReligador import AvisoReligador
-import smartpower.gui.dialogs
+#import smartpower.gui.dialogs as diag
+from smartpower.gui.dialogs.DialogRecloser import RecloserDialog
+from smartpower.gui.dialogs.DialogBarra import BarraDialog
+from smartpower.gui.dialogs.DialogConductor import ConductorDialog
+from smartpower.gui.dialogs.DialogSubstation import SubstationDialog
+from smartpower.gui.dialogs.DialogEnergyConsumer import EnergyConsumerDialog
+from smartpower.gui.dialogs.aviso_conexao import AvisoConexaoDialog
+from smartpower.gui.dialogs.avisoReligador import AvisoReligador
+
 
 class Edge(QtGui.QGraphicsLineItem):
     '''

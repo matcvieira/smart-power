@@ -1,8 +1,10 @@
 from smartpower.gui import simulador
+from PySide import QtCore, QtGui
+import sys
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    mySW = ControlMainWindow()
+    mySW = simulador.ControlMainWindow()
     mySW.show()
     sys.exit(app.exec_())
 
