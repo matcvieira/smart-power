@@ -6,7 +6,6 @@ import sys
 # Importa os módulos necessários para implementação do diagrama gráfico
 from elementos import Religador, BusBarSection, Substation, Condutor
 from elementos import EnergyConsumer
-#import smartpower.gui.dialogs as diag
 from smartpower.gui.dialogs.DialogRecloser import RecloserDialog
 from smartpower.gui.dialogs.DialogBarra import BarraDialog
 from smartpower.gui.dialogs.DialogConductor import ConductorDialog
@@ -14,6 +13,39 @@ from smartpower.gui.dialogs.DialogSubstation import SubstationDialog
 from smartpower.gui.dialogs.DialogEnergyConsumer import EnergyConsumerDialog
 from smartpower.gui.dialogs.aviso_conexao import AvisoConexaoDialog
 from smartpower.gui.dialogs.avisoReligador import AvisoReligador
+
+
+lista_no_conectivo = []
+
+class DashedLine(QtGui.QGraphicsLineItem):
+    '''
+        Classe que implementa o objeto DashedLine, utilizado para indicar que um
+        elemento do diagrama foi selecionado. Sua representaçao e uma borda
+        tracejada laranja.
+    '''
+
+    def __init__(self):
+        '''
+            Metodo construtor (inicial) da classe DashedLine. Chama o construtor
+            da classe parent sem passar parametros(QtGui.QGraphicsLineItem).
+        '''
+        super(DashedLine, self).__init__()
+
+    def paint(self, painter, option, widget):
+        '''
+            Metodo que desenha o objeto dashedLine, chamado sempre que um objeto
+            novo e selecionado.
+        '''
+        painter.setPen(QtGui.QPen(QtCore.Qt.red,  # QPen Brush
+                                                    2,  # QPen width
+                                                    QtCore.Qt.DashLine,
+                                                    # QPen style
+                                                    QtCore.Qt.SquareCap,
+                                                    # QPen cap style
+                                                    QtCore.Qt.RoundJoin)
+                       # QPen join style
+                       )
+        painter.drawLine(self.line())  
 
 
 class Edge(QtGui.QGraphicsLineItem):
@@ -165,10 +197,11 @@ class Edge(QtGui.QGraphicsLineItem):
 
     def set_color(self, color):
         '''
-            Esta classe simplesmente seta a cor da Edge
+            Metodo que seta a cor do objeto Edge como a definida pelo parametro
+            color.
         '''
-        # Com a cor passada na chamada da função, seta a cor desejada.
         self.setPen(QtGui.QPen(color))
+
 
     def paint(self, painter, option, widget):
         '''
@@ -207,10 +240,11 @@ class Edge(QtGui.QGraphicsLineItem):
                     QtCore.QPointF(self.w2.scenePos().x(), line.y1()))
                 self.w2.setPos(pos)
 
-                # Ajusta a linha finalde acordo com o local de distribuição
+                # Ajusta a linha final de acordo com o local de distribuição
                 # com a correção do ajuste na grade.
                 line.setLine(line.x1(), self.w2.y() + 10, line.x2(), line.y2())
                 # Fixa o item w2.
+
                 self.w2.fix_item()
             # Se esta é a primeira ligação da linha, realiza-se uma ligação
             # normal.
@@ -274,20 +308,17 @@ class Edge(QtGui.QGraphicsLineItem):
 
     def mousePressEvent(self, mouse_event):
         '''
-            Metodo que reimplementa a função de press do Mouse (ver biblioteca
-            PySide, mouse events)
+            Metodo do evento de pressionar o mouse (mousePressEvent)
+            implementado pela classe Edge
         '''
-        # Se a linha for pressionada, seta a mesma como selecionada, para que
-        # a linha tracejada seja desenhada.
+
         self.setSelected(True)
         super(Edge, self).mousePressEvent(mouse_event)
         return
 
     def contextMenuEvent(self, event):
         '''
-            Reimplementação da função virtual contextMenuEvent, que define menu
-            que aparece com o clique direito do mouse (ver biblioteca Pyside,
-            contextMenuEvent)
+            Callback chamada... ***continuar***
         '''
         self.scene().clearSelection()
         self.setSelected(True)
