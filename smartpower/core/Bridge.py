@@ -31,8 +31,8 @@ class Bridge(object):
 
         for breaker in self.xml_cim.findAll('breaker'):
             breaker.nos = []
-            mrid = breaker.find('mrid').text
-            nome = str(mrid)[10:18]
+            mrid = str(breaker.find('mrid').text).strip()
+            nome = mrid
             estado = str(breaker.find('normalopen').text)[3]
             if estado == '1':
                 estado = "aberto"
@@ -57,12 +57,12 @@ class Bridge(object):
         # de setores e alimentadores
         for no_carga in self.xml_cim.findAll('energyconsumer'):
             no = xml_rnp.new_tag("no")
-            nome = no_carga.find('mrid').text
+            nome = str(no_carga.find('mrid').text).strip()
             potencia_ativa = no_carga.find('pfixed').text
             potencia_reativa = no_carga.find('qfixed').text
 
             
-            no["nome"] = str(no_carga.find('label').text)[3:5]
+            no["nome"] = str(no_carga.find('mrid').text).strip()
 
             potencia_ativa_tag = xml_rnp.new_tag("potencia")
             potencia_ativa_tag["tipo"] = "ativa"
@@ -89,9 +89,9 @@ class Bridge(object):
         for trecho in self.xml_cim.findAll("conductor"):
             trecho.nos = []
             trecho_tag = xml_rnp.new_tag("trecho")
-            nome = trecho.find('mrid').text
+            nome = str(trecho.find('mrid').text).strip()
 
-            trecho_tag["nome"] = nome[10:18]
+            trecho_tag["nome"] = nome
 
             comprimento = xml_rnp.new_tag('comprimento')
             comprimento["multip"] = "k"
@@ -120,11 +120,11 @@ class Bridge(object):
         for substation in self.xml_cim.findAll('substation'):
             substation.alimentadores = []
             substation_tag = xml_rnp.new_tag('subestacao')
-            substation_tag["nome"] = str(substation.find('mrid').text)[10:18]
+            substation_tag["nome"] = str(substation.find('mrid').text).strip()
             transformador_tag = xml_rnp.new_tag('transformador')
 
             # FALTA AJEITAR A JANELA PARA INSERÇÃO DOS VALORES CORRETOS
-            transformador_tag["nome"] = str(substation.find('mrid').text)[10:18] + "T"
+            transformador_tag["nome"] = str(substation.find('mrid').text).strip()[10:18] + "T"
             transformador_tag_potencia_aparente = xml_rnp.new_tag('potencia')
             transformador_tag_potencia_aparente["tipo"] = "aparente"
             transformador_tag_potencia_aparente["multip"] = "M"
@@ -197,7 +197,7 @@ class Bridge(object):
 
         for no in self.lista_barras:
             tag_elemento_no = xml_rnp.new_tag("elemento")
-            tag_elemento_no["nome"] = str(no.find('label').text)[3:5]
+            tag_elemento_no["nome"] = str(no.find('mrid').text).strip()
             tag_elemento_no["tipo"] = "no"            
             tag_vizinhos = xml_rnp.new_tag("vizinhos")
             tag_chaves = xml_rnp.new_tag("chaves")
@@ -205,24 +205,24 @@ class Bridge(object):
             tag_elemento_no.append(tag_chaves)
             for vizinho in no.vizinhos:
                 tag_vizinho_no = xml_rnp.new_tag("no")
-                tag_vizinho_no["nome"] = str(vizinho.find('label').text)[3:5]
+                tag_vizinho_no["nome"] = str(vizinho.find('mrid').text).strip()
                 tag_vizinhos.append(tag_vizinho_no)
             for chave in no.chaves:
                 tag_chave = xml_rnp.new_tag("chave")
-                tag_chave["nome"] = str(chave.find('mrid').text)[10:18]
+                tag_chave["nome"] = str(chave.find('mrid').text).strip()
                 tag_chaves.append(tag_chave)
             tag_topologia.append(tag_elemento_no)
 
         # for no in self.lista_nos_de_carga:
-        #     # print "VIZINHOS DE " + str(no.find('label').text)
+        #     # print "VIZINHOS DE " + str(no.find('mrid'))
         #     for vizinho in no.vizinhos:
-        #         print str(vizinho.find('label').text)
+        #         print str(vizinho.find('mrid'))
         #     print "CHAVES: "
         #     for chave in no.chaves:
-        #         print str(chave.find('mrid').text)
+        #         print str(chave.find('mrid').text).strip()
         for no in self.lista_nos_de_carga:
             tag_elemento_no = xml_rnp.new_tag("elemento")
-            tag_elemento_no["nome"] = str(no.find('label').text)[3:5]
+            tag_elemento_no["nome"] = str(no.find('mrid').text).strip()
             tag_elemento_no["tipo"] = "no"            
             tag_vizinhos = xml_rnp.new_tag("vizinhos")
             tag_chaves = xml_rnp.new_tag("chaves")
@@ -230,11 +230,11 @@ class Bridge(object):
             tag_elemento_no.append(tag_chaves)
             for vizinho in no.vizinhos:
                 tag_vizinho_no = xml_rnp.new_tag("no")
-                tag_vizinho_no["nome"] = str(vizinho.find('label').text)[3:5]
+                tag_vizinho_no["nome"] = str(vizinho.find('mrid').text).strip()
                 tag_vizinhos.append(tag_vizinho_no)
             for chave in no.chaves:
                 tag_chave = xml_rnp.new_tag("chave")
-                tag_chave["nome"] = str(chave.find('mrid').text)[10:18]
+                tag_chave["nome"] = str(chave.find('mrid').text).strip()
                 tag_chaves.append(tag_chave)
             tag_topologia.append(tag_elemento_no)
 
@@ -244,7 +244,7 @@ class Bridge(object):
             setor = Setor()
             setor.nos.append(barra)
             barra.setor = setor
-            barra.setor.nome = str(barra.find('label').text)[3:5]
+            barra.setor.nome = str(barra.find('mrid').text).strip()
             setores.append(setor)
 
 
@@ -253,7 +253,7 @@ class Bridge(object):
 
             setor_tag = xml_rnp.new_tag("setor")
             if setor.nos[0].name == "busbarsection":
-                setor_tag["nome"] = str(setor.nos[0].find('label').text)[3:5]
+                setor_tag["nome"] = str(setor.nos[0].find('mrid').text).strip()
             else:
                 setor_tag["nome"] = setor.nome
             tag_elementos.append(setor_tag)
@@ -289,7 +289,7 @@ class Bridge(object):
                 tag_vizinhos.append(tag_setor)
             for no in setor.nos:
                 tag_no = xml_rnp.new_tag("no")
-                tag_no["nome"] = str(no.find('label').text)[3:5]
+                tag_no["nome"] = str(no.find('mrid').text).strip()
                 tag_nos.append(tag_no)
             tag_topologia.append(tag_elemento_setor)
 
@@ -297,7 +297,7 @@ class Bridge(object):
         for chave in lista_chaves:
             tag_elemento_chave = xml_rnp.new_tag("elemento")
             tag_elemento_chave["tipo"] = "chave"
-            tag_elemento_chave["nome"] = str(chave.find('mrid').text)[10:18]
+            tag_elemento_chave["nome"] = str(chave.find('mrid').text).strip()
             tag_n1 = xml_rnp.new_tag("n1")
             tag_n2 = xml_rnp.new_tag("n2")
             tag_elemento_chave.append(tag_n1)
@@ -317,7 +317,7 @@ class Bridge(object):
             
             if len(trecho.nos) != 0:
                 tag_elemento_trecho = xml_rnp.new_tag("elemento")
-                tag_elemento_trecho["nome"] = str(trecho.find('mrid').text)[10:18]
+                tag_elemento_trecho["nome"] = str(trecho.find('mrid').text).strip()
                 tag_elemento_trecho["tipo"] = "trecho"
                 tag_n1 = xml_rnp.new_tag("n1")
                 tag_n2 = xml_rnp.new_tag("n2")
@@ -331,20 +331,20 @@ class Bridge(object):
 
                 if trecho.nos[0].name == "breaker":
                     tag_chave = xml_rnp.new_tag("chave")
-                    tag_chave["nome"] = str(trecho.nos[0].find("mrid").text)[10:18]
+                    tag_chave["nome"] = str(trecho.nos[0].find('mrid').text).strip()
                     tag_n1.append(tag_chave)
                 if trecho.nos[0].name == "energyconsumer":
                     tag_no = xml_rnp.new_tag("no")
-                    tag_no["nome"] = str(trecho.nos[0].find("label").text)[3:5]
+                    tag_no["nome"] = str(trecho.nos[0].find('mrid').text).strip()
                     tag_n1.append(tag_no)
 
                 if trecho.nos[1].name == "breaker":
                     tag_chave = xml_rnp.new_tag("chave")
-                    tag_chave["nome"] = str(trecho.nos[1].find("mrid").text)[10:18]
+                    tag_chave["nome"] = str(trecho.nos[1].find('mrid').text).strip()
                     tag_n2.append(tag_chave)
                 if trecho.nos[1].name == "energyconsumer":
                     tag_no = xml_rnp.new_tag("no")
-                    tag_no["nome"] = str(trecho.nos[1].find("label").text)[3:5]
+                    tag_no["nome"] = str(trecho.nos[1].find('mrid').text).strip()
                     tag_n2.append(tag_no)
 
                 tag_topologia.append(tag_elemento_trecho)
@@ -425,7 +425,7 @@ class Bridge(object):
                 trecho.nos.append(barra)
                 
                 tag_elemento_trecho = xml_rnp.new_tag("elemento")
-                tag_elemento_trecho["nome"] = str(trecho.find('mrid').text)[10:18]
+                tag_elemento_trecho["nome"] = str(trecho.find('mrid').text).strip()
                 tag_elemento_trecho["tipo"] = "trecho"
                 tag_n1 = xml_rnp.new_tag("n1")
                 tag_n2 = xml_rnp.new_tag("n2")
@@ -443,7 +443,7 @@ class Bridge(object):
                 tag_no["nome"] = no.nome
                 tag_n1.append(tag_no)
                 tag_chave = xml_rnp.new_tag("chave")
-                tag_chave["nome"] = str(breaker.find('mrid').text)[10:18]
+                tag_chave["nome"] = str(breaker.find('mrid').text).strip()
                 tag_n2.append(tag_chave)
                 tag_topologia.append(tag_elemento_trecho)
 
@@ -538,13 +538,13 @@ class Bridge(object):
             breakers = set(breakers)
             for breaker in breakers:
                 tag_elemento_chave = xml_rnp.new_tag("chave")
-                tag_elemento_chave["nome"] = str(breaker.find('mrid').text)[10:18]
+                tag_elemento_chave["nome"] = str(breaker.find('mrid').text).strip()
                 tag_elemento_chaves.append(tag_elemento_chave)
                 
             
             for trecho in trechos:
                 tag_elemento_trecho = xml_rnp.new_tag("trecho")
-                tag_elemento_trecho["nome"] = str(trecho.find("mrid").text)[10:18]
+                tag_elemento_trecho["nome"] = str(trecho.find('mrid').text).strip()
                 tag_elemento_trechos.append(tag_elemento_trecho)
 
 
@@ -587,7 +587,7 @@ class Bridge(object):
         for subestacao in subestacoes:
             tag_subestacao = xml_rnp.new_tag("elemento")
             tag_subestacao["tipo"] = "subestacao"
-            tag_subestacao["nome"] = str(subestacao.find('mrid').text)[10:18]
+            tag_subestacao["nome"] = str(subestacao.find('mrid').text).strip()
             tag_alimentadores = xml_rnp.new_tag("alimentadores")
             tag_subestacao.append(tag_alimentadores)
             for alimentador in subestacao.alimentadores:
@@ -596,7 +596,7 @@ class Bridge(object):
                 tag_alimentadores.append(tag_subestacao_alimentador)
             tag_transformadores = xml_rnp.new_tag("transformadores")
             tag_transformador = xml_rnp.new_tag("transformador")
-            tag_transformador["nome"] = str(subestacao.find('mrid').text)[10:18] + "T"
+            tag_transformador["nome"] = str(subestacao.find('mrid').text).strip()[10:18] + "T"
             tag_transformadores.append(tag_transformador)
             tag_subestacao.append(tag_transformadores)
             tag_topologia.append(tag_subestacao)
@@ -700,7 +700,7 @@ class Bridge(object):
             noconectivo = self.achar_terminal_noc(terminal)
             
             for terminal2 in noconectivo.findAll('terminal'):
-                if terminal2.find('mrid') != terminal.find('mrid'):
+                if terminal2.find('mrid').text != terminal.find('mrid').text:
                     parent = self.achar_parent(terminal2)
                 else:
                     continue
@@ -1165,7 +1165,7 @@ class Bridge(object):
 
         for setor in setores:
             for item in setor.nos:
-                setor.nome = str(item.find('label').text)[3]
+                setor.nome = str(item.find('mrid').text).strip()
 
         return setores
 

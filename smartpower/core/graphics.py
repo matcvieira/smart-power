@@ -917,15 +917,16 @@ class SceneWidget(QtGui.QGraphicsScene):
         # Cria a pilha de comandos UNDO para implementação dos comandos
         # desfazer e refazer (CTRL+Z e CTRL+Y). PENDÊNCIA.
         self.undoStack = QtGui.QUndoStack()
-        # Cria os dicionários de padrões dos relés (ver create_dict em
+        # Cria os dicionários de padrões dos relés (ver create_dict_recloser em
         # SceneWidget
         self.custom_dict = {'Corrente Nominal': 0,
                             'Capacidade de Interrupcao': 0, 'Sequencia': 0}
-        self.create_dict(100, 4, 4, 'ABB')
-        self.create_dict(150, 5, 3, 'SEL')
-        self.create_dict(200, 6, 3, 'BOSCH')
+        self.create_dict_recloser(100, 4, 4, 'ABB')
+        self.create_dict_recloser(150, 5, 3, 'SEL')
+        self.create_dict_recloser(200, 6, 3, 'BOSCH')
+        print "CENA CRIADA"
 
-    def create_dict(self, corrente, capacidade, num_rel, padrao):
+    def create_dict_recloser(self, corrente, capacidade, num_rel, padrao):
         '''
             Este método cria um dicionário de um padrão de religador comercial,
             de acordo com os parâmetros passados.

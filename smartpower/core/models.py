@@ -216,6 +216,7 @@ class XMLToDiagram():
                     seq_rel = child.find('seqrel').text
                     identificador = child.find('identificador').text
                     item.chave = Religador(identificador,int(corrente),int(in_tt),int(cap_int),int(seq_rel),int(state))
+                    self.scene.create_dict_recloser(corrente,cap_int,seq_rel,item.text_config)
                     item.id = int(child.find('id').text)
                     item.setPos(float(child.find('x').text), float(
                         child.find('y').text))
@@ -304,7 +305,7 @@ class CimXML():
                     self.cim_xml.append(tag_breaker)
 
                     tag_id = self.cim_xml.new_tag("mRID")
-                    tag_id.append(str(item.id))
+                    tag_id.append(item.text.toPlainText())
                     tag_breaker.append(tag_id)
 
                     tag_rc = self.cim_xml.new_tag("ratedCurrent")
@@ -355,16 +356,12 @@ class CimXML():
                     self.cim_xml.append(tag_barra)
 
                     tag_id = self.cim_xml.new_tag("mRID")
-                    tag_id.append(str(item.id))
+                    tag_id.append(item.text.toPlainText())
                     tag_barra.append(tag_id)
 
                     tag_phases = self.cim_xml.new_tag("phases")
                     tag_phases.append(str(item.barra.phases))
                     tag_barra.append(tag_phases)
-
-                    tag_label = self.cim_xml.new_tag("label")
-                    tag_label.append(str(item.text.toPlainText()))
-                    tag_barra.append(tag_label) 
 
                     for Terminal in (item.terminals):
                         tag_terminal = self.cim_xml.new_tag("terminal")
@@ -415,7 +412,7 @@ class CimXML():
                     self.cim_xml.append(tag_energyConsumer)
                     
                     tag_id = self.cim_xml.new_tag("mRID")
-                    tag_id.append(str(item.id))
+                    tag_id.append(item.text.toPlainText())
                     tag_energyConsumer.append(tag_id)
 
                     tag_pFixed = self.cim_xml.new_tag("pFixed")
@@ -425,11 +422,7 @@ class CimXML():
 
                     tag_qFixed = self.cim_xml.new_tag("qFixed")
                     tag_qFixed.append(str(item.no_de_carga.potencia_reativa))
-                    tag_energyConsumer.append(tag_qFixed) 
-
-                    tag_label = self.cim_xml.new_tag("label")
-                    tag_label.append(str(item.text.toPlainText()))
-                    tag_energyConsumer.append(tag_label)                 
+                    tag_energyConsumer.append(tag_qFixed)               
 
 
                     for Terminal in (item.terminals):
@@ -449,7 +442,7 @@ class CimXML():
                 self.cim_xml.append(tag_conductor)
                 
                 tag_id = self.cim_xml.new_tag("mRID")
-                tag_id.append(str(item.linha.id))
+                tag_id.append(item.w1.text.toPlainText() + item.w2.text.toPlainText())
                 tag_conductor.append(tag_id)
 
                 tag_length = self.cim_xml.new_tag("length")
