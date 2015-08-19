@@ -82,6 +82,8 @@ class DiagramToXML(ElementTree.Element):
                     CE.append(padrao)
                     CE.append(identificador)
 
+                # Salva as informações referente ao item gráfico nó de carga
+                # e seus parâmetros associados
                 if item.myItemType == Node.NoDeCarga:
                     identificador = ElementTree.Element('identificador')
                     identificador.text = str(item.text.toPlainText())
@@ -96,6 +98,8 @@ class DiagramToXML(ElementTree.Element):
                     CE.append(p_ativa)
                     CE.append(p_reativa)
 
+                # Salva as informações referente ao item gráfico subestação
+                # e seus parâmetros associados
                 if item.myItemType == Node.Subestacao:
                     identificador = ElementTree.Element('identificador')
                     identificador.text = str(item.text.toPlainText())
@@ -118,6 +122,8 @@ class DiagramToXML(ElementTree.Element):
                     CE.append(potencia)
                     CE.append(impedancia)
 
+                # Salva as informações referente ao item gráfico barra
+                # e seus parâmetros associados
                 if item.myItemType == Node.Barra:
                     identificador = ElementTree.Element('identificador')
                     identificador.text = str(item.text.toPlainText())
@@ -128,20 +134,9 @@ class DiagramToXML(ElementTree.Element):
                     CE.append(identificador)
                     CE.append(fases)
 
-
-
-
-
-
-
-
-
-
-
-
                 self.append(CE)
         for item in lista:
-
+            # Verifica se o item é um condutor e salva seus parâmetros
             if isinstance(item, Edge):
                 edge = ElementTree.Element('edge')
                 w1 = ElementTree.Element('w1')
@@ -170,7 +165,6 @@ class DiagramToXML(ElementTree.Element):
         f.close()
 
 
-
 class XMLToDiagram():
     '''
         Classe que realiza a conversão do arquivo XML com as informações do 
@@ -187,7 +181,8 @@ class XMLToDiagram():
         for child in xml_element:
 
             if child.tag == 'CE':
-
+                # Verifica qual tipo de elemento e converte as informações
+                # Subestação
                 if child.attrib['type'] == '0':
                     item = Node(
                         int(child.attrib['type']), self.scene.mySubstationMenu)
@@ -204,7 +199,7 @@ class XMLToDiagram():
                     item.id = int(child.find('id').text)
                     item.text.setPlainText(identificador)
 
-                #RELIGADOR
+                # Religador
                 elif child.attrib['type'] == '1':
                     item = Node(
                         int(child.attrib['type']), self.scene.myRecloserMenu)
@@ -222,15 +217,13 @@ class XMLToDiagram():
                         child.find('y').text))
                     self.scene.addItem(item)
                     item.text.setPlainText(identificador)
-                    #item.text = Text(identificador, item, item.scene())
 
-                #BARRA
+                # Barra
                 elif child.attrib['type'] == '2':
                     item = Node(int(
                         child.attrib['type']), self.scene.myBusMenu)
                     identificador = child.find('identificador').text
                     fases = child.find('fases').text
-                    #item.barra = BusBarSection(identificador, int(fases))
                     item.setPos(float(child.find('x').text), float(
                         child.find('y').text))
                     item.id = int(child.find('id').text)
@@ -248,6 +241,7 @@ class XMLToDiagram():
                     item.id = int(child.find('id').text)
                     self.scene.addItem(item)
 
+                # Nó de carga
                 elif child.attrib['type'] == '4':
                     item = Node(int(child.attrib['type']), self.scene.mySubstationMenu)
                     p_ativa = child.find('pativa').text
@@ -270,6 +264,7 @@ class XMLToDiagram():
                     item.id = int(child.find('id').text)
                     self.scene.addItem(item)
 
+            # Condutor
             elif child.tag == 'edge':
                 for item in self.scene.items():
                     if isinstance(item, Node) and item.id == int(child.find('w1').text):
@@ -296,6 +291,7 @@ class CimXML():
 
         self.cim_xml = BeautifulSoup()
 
+        # Percorre toda a lista buscando elementos do tipo Religador
         for item in scene.items():
             if isinstance(item, Node):
 
@@ -346,7 +342,7 @@ class CimXML():
                     tag_terminal2.append(tag_mRID)
                     tag_breaker.append(tag_terminal2)
                     
-
+        # Percorre toda a lista buscando elementos do tipo Barra
         for item in scene.items():
             if isinstance(item, Node):
 
@@ -370,8 +366,7 @@ class CimXML():
                         tag_terminal.append(tag_mRID)
                         tag_barra.append(tag_terminal)
                     
-
-        
+        # Percorre toda a lista buscando elementos do tipo Subestação        
         for item in scene.items():
             if isinstance(item, Node):
 
@@ -402,7 +397,7 @@ class CimXML():
                     tag_terminal2.append(tag_mRID)
                     tag_substation.append(tag_terminal2)
 
-
+        # Percorre toda a lista buscando elementos do tipo Nó de carga
         for item in scene.items():
             if isinstance(item, Node):
 
@@ -432,6 +427,7 @@ class CimXML():
                         tag_terminal.append(tag_mRID)
                         tag_energyConsumer.append(tag_terminal)
 
+        # Percorre toda a lista buscando elementos do tipo Condutor
         for item in scene.items():
             if isinstance(item, Edge):
 
