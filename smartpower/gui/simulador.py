@@ -24,7 +24,7 @@ class JanelaPrincipal(object):
 
     def inicializar_componentes(self, main_window):
         '''
-            Este metodo implementa os componentes da inteface grafica
+            Este metodo implementa os componentes da interface grafica
         '''
 
         # define a janela pricipal do aplicativo
@@ -41,7 +41,7 @@ class JanelaPrincipal(object):
         self.gridLayout.setObjectName('gridLayout')
 
         # define a classe SceneWidget e ViewWidget como containers dos widgets
-        self.sceneWidget = SceneWidget()
+        self.sceneWidget = SceneWidget(self)
         self.graphicsView = ViewWidget(self.sceneWidget)
         self.graphicsView.setMinimumSize(QtCore.QSize(256, 0))
         self.graphicsView.setObjectName('graphicsView')
@@ -269,6 +269,16 @@ class JanelaPrincipal(object):
         self.actionSelect.setObjectName("actionSelect")
         self.toolBar.addAction(self.actionSelect)
 
+        # cria e configura ação de abrir a interface de simulação
+        self.action_simulate = QtGui.QAction(
+            main_window, triggered=self.sceneWidget.simulate)
+
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionGrid.setIcon(icon)
+        self.actionGrid.setObjectName("actionSimulate")
+        self.toolBar.addAction(self.action_simulate)
+
         # configurações adicionais
         self.retranslateUi(main_window)
         self.toolBox.setCurrentIndex(0)
@@ -276,7 +286,7 @@ class JanelaPrincipal(object):
 
     def itemInserted(self, item_type):
         '''
-            Callback chamada no momento em que um item e iserido
+            Callback chamada no momento em que um item e inserido
             no diagrama grafico
         '''
         # self.buttonGroup.button(item_type).setChecked(False)
@@ -286,12 +296,14 @@ class JanelaPrincipal(object):
     def save(self):
         filename = QtGui.QFileDialog.getSaveFileName(
             None, 'Salvar Diagrama', os.getenv('HOME'))
-        print filename
         file = models.DiagramToXML(self.sceneWidget)
         file.write_xml(filename[0])
+        filename_CIM = filename[0] + '_CIM'
 
         file2 = models.CimXML(self.sceneWidget)
-        file2.write_xml(filename[0] + '_CIM')
+        file2.write_xml(filename_CIM)
+
+        return filename_CIM
 
     def open(self):
         filename = QtGui.QFileDialog.getOpenFileName(
@@ -498,6 +510,21 @@ class JanelaPrincipal(object):
         self.actionSelect.setShortcut(
             QtGui.QApplication.translate(
                 "main_window", "Ctrl, e", None,
+                QtGui.QApplication.UnicodeUTF8))
+
+        self.action_simulate.setText(
+            QtGui.QApplication.translate(
+                "main_window", "Simular", None,
+                QtGui.QApplication.UnicodeUTF8))
+
+        self.action_simulate.setToolTip(
+            QtGui.QApplication.translate(
+                "main_window", "Simular", None,
+                QtGui.QApplication.UnicodeUTF8))
+
+        self.action_simulate.setShortcut(
+            QtGui.QApplication.translate(
+                "main_window", "Ctrl, m", None,
                 QtGui.QApplication.UnicodeUTF8))
 
 

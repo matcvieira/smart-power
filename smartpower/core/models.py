@@ -376,8 +376,8 @@ class CimXML():
                     self.cim_xml.append(tag_substation)
 
                     tag_id = self.cim_xml.new_tag("mRID")
-                    tag_id.append(str(item.id))
-                    self.cim_xml.find("Substation").append(tag_id)
+                    tag_id.append(str(item.text.toPlainText()).strip())
+                    tag_substation.append(tag_id)
 
                     tag_terminal1= self.cim_xml.new_tag("terminal")
                     tag_seqNumber = self.cim_xml.new_tag("SequenceNumber")

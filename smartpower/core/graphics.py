@@ -14,6 +14,8 @@ from smartpower.gui.dialogs.DialogEnergyConsumer import EnergyConsumerDialog
 from smartpower.gui.dialogs.aviso_conexao import AvisoConexaoDialog
 from smartpower.gui.dialogs.avisoReligador import AvisoReligador
 
+from smartpower.core import Bridge
+
 
 lista_no_conectivo = []
 
@@ -888,10 +890,11 @@ class SceneWidget(QtGui.QGraphicsScene):
     # inserido no diagrama grafico
     itemInserted = QtCore.Signal(int)
 
-    def __init__(self):
+    def __init__(self, window):
 
         super(SceneWidget, self).__init__()
         # Definição de flags
+        self.main_window = window
         self.start_item_is_ghost = False
         self.end_item_is_ghost = False
         self.keyControlIsPressed = False
@@ -1607,6 +1610,9 @@ class SceneWidget(QtGui.QGraphicsScene):
         self.alignVLineAction = QtGui.QAction(
             'Alinhar Linha V', self, shortcut='Ctrl + v',
             triggered=self.align_line_v)
+        self.simulate_action = QtGui.QAction(
+            'Simular', self, shortcut='Ctrl + m',
+            triggered=self.simulate)
 
     def create_menus(self):
         '''
@@ -2002,6 +2008,17 @@ class SceneWidget(QtGui.QGraphicsScene):
             self.setBackgroundBrush(QtGui.QBrush(
                 QtCore.Qt.lightGray, QtCore.Qt.CrossPattern))
             self.my_background_style = self.GridStyle
+
+    def simulate(self):
+
+        '''
+        Inicia a simulação: cálculos de fluxo de carga e curto circuito
+        '''
+        # Força o usuário a salvar o diagrama antes da simulação
+        path = self.main_window.save()
+        # Roda o algoritmo conversor CIM >> XML padrão RNP
+        bridge = Bridge.Convert(path)
+        
 
 
 class ViewWidget(QtGui.QGraphicsView):

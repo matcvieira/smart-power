@@ -14,10 +14,11 @@ class Substation(object):
 
 
 
-class Bridge(object):
-    def __init__(self, cim_path):
+class Convert(object):
+    def __init__(self, cim_path = None):
 
-        cim_path = cim_path
+        if cim_path == None:
+            return
         self.xml_cim = BeautifulSoup(open(cim_path))
         xml_rnp = BeautifulSoup()
         tag_rede = xml_rnp.new_tag("rede")
@@ -124,7 +125,7 @@ class Bridge(object):
             transformador_tag = xml_rnp.new_tag('transformador')
 
             # FALTA AJEITAR A JANELA PARA INSERÇÃO DOS VALORES CORRETOS
-            transformador_tag["nome"] = str(substation.find('mrid').text).strip()[10:18] + "T"
+            transformador_tag["nome"] = str(substation.find('mrid').text).strip() + "T"
             transformador_tag_potencia_aparente = xml_rnp.new_tag('potencia')
             transformador_tag_potencia_aparente["tipo"] = "aparente"
             transformador_tag_potencia_aparente["multip"] = "M"
@@ -418,9 +419,7 @@ class Bridge(object):
         for breaker in self.xml_cim.findAll("breaker"):
             barra = self.detectar_barra(breaker)
             if barra.name == "busbarsection":
-                raw_input("antes")
                 trecho = self.trechos_min.pop()
-                print trecho.nos
                 trecho.nos.append(breaker)
                 trecho.nos.append(barra)
                 
@@ -596,7 +595,7 @@ class Bridge(object):
                 tag_alimentadores.append(tag_subestacao_alimentador)
             tag_transformadores = xml_rnp.new_tag("transformadores")
             tag_transformador = xml_rnp.new_tag("transformador")
-            tag_transformador["nome"] = str(subestacao.find('mrid').text).strip()[10:18] + "T"
+            tag_transformador["nome"] = str(subestacao.find('mrid').text).strip() + "T"
             tag_transformadores.append(tag_transformador)
             tag_subestacao.append(tag_transformadores)
             tag_topologia.append(tag_subestacao)
@@ -647,13 +646,14 @@ class Bridge(object):
         
 
         self.xml_final = xml_rnp
-        self.save_file('home/mateus/Desktop/rede2CIM')
+        print cim_path
+        path = cim_path[0:len(cim_path)-3] + 'RNP'
+        print path
+        self.save_file(path)
 
 
 
     def definir_alimentadores(self):
-
-        print "Definindo alimentadores.."
 
         lista_duplas = []
         duplas_raiz = []
@@ -1185,13 +1185,13 @@ class Bridge(object):
 
 
     def save_file(self, path):
-        f = open('/home/mateusvieira/Workspace/Valid_conversor/xml_rnp', 'w')
+        f = open(path, 'w')
         f.write(self.xml_final.prettify(formatter = "xml"))
 
         
 
-bridge = Bridge("/home/mateusvieira/Workspace/Valid_conversor/rede_teste_CIM")
-#print bridge.xml_final.prettify()
+# bridge = Convert("/home/mateusvieira/Workspace/Valid_conversor/rede_teste_CIM")
+# #print bridge.xml_final.prettify()
             
 
         
