@@ -24,7 +24,7 @@ O código em xml deve ter a seguinte estrutura:
 """
 
 # importaçoes necessárias
-from redemateus2 import Chave, Setor, Condutor, Trecho, Alimentador, NoDeCarga, Subestacao, Transformador
+from rede import Chave, Setor, Condutor, Trecho, Alimentador, NoDeCarga, Subestacao, Transformador
 from bs4 import BeautifulSoup
 from util import Fasor
 
