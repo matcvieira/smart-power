@@ -33,7 +33,7 @@ class JanelaPrincipal(object):
         main_window.resize(900, 700)
 
         # define o widget central do aplicativo
-        self.centralwidget = QtGui.QWidget(main_window)
+        self.centralwidget = QtGui.QTabWidget(main_window)
         self.centralwidget.setObjectName('centralwidget')
 
         # define o tipo de layout do widget central como gridLayout
@@ -45,6 +45,7 @@ class JanelaPrincipal(object):
         self.graphicsView = ViewWidget(self.sceneWidget)
         self.graphicsView.setMinimumSize(QtCore.QSize(256, 0))
         self.graphicsView.setObjectName('graphicsView')
+        self.centralwidget.addTab(self.graphicsView,'Diagrama')
 
         # adiciona os sinais ao objeto sceneWidget
         self.sceneWidget.itemInserted.connect(self.itemInserted)
@@ -52,7 +53,7 @@ class JanelaPrincipal(object):
         # self.sceneWidget.InsertItem.connect(self.itemInserted)
 
         # seta o objeto QGraphicsView no gridLayout
-        self.gridLayout.addWidget(self.graphicsView, 0, 0)
+        #self.gridLayout.addWidget(self.graphicsView, 0, 0)
         main_window.setCentralWidget(self.centralwidget)
 
         # define a barra de menus

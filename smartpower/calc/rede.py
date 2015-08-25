@@ -145,16 +145,17 @@ class Subestacao(object):
             print table.table
 
         elif tipo == 'monofasico':
-            self.curto_monofasico = [['Trecho 1fasico', 'Curto pu', 'Curto A']]
+            self.curto_monofasico = [['Trecho', 'Curto (pu)', 'Curto (A)']]
             for alimentador_atual, r in self.alimentadores.iteritems():
                 for i in self.alimentadores[alimentador_atual].trechos.values():
                     curto = i.calcula_curto_monofasico()
                     self.curto_monofasico.append([i.nome,str(curto.pu),str(curto.mod)])
             table = AsciiTable(self.curto_monofasico)
             print table.table
+            return self.curto_monofasico
 
         elif tipo == 'bifasico':
-            self.curto_bifasico = [['Trecho 2fasico', 'Curto pu', 'Curto A']]
+            self.curto_bifasico = [['Trecho', 'Curto (pu)', 'Curto (A)']]
             for alimentador_atual, r in self.alimentadores.iteritems():
                 for i in self.alimentadores[alimentador_atual].trechos.values():
                     curto = i.calcula_curto_bifasico()
@@ -163,13 +164,14 @@ class Subestacao(object):
             print table.table
 
         elif tipo == 'monofasico_minimo':
-            self.curto_monofasico_minimo = [['Trecho 1fasico min', 'Curto pu', 'Curto A']]
+            self.curto_monofasico_minimo = [['Trecho', 'Curto (pu)', 'Curto (A)']]
             for alimentador_atual, r in self.alimentadores.iteritems():
                 for i in self.alimentadores[alimentador_atual].trechos.values():
                     curto = i.calcula_curto_monofasico_minimo()
                     self.curto_monofasico_minimo.append([i.nome,str(curto.pu),str(curto.mod)])
             table = AsciiTable(self.curto_monofasico_minimo)
             print table.table
+
 
     def calculaimpedanciaeq(self):
 
@@ -188,7 +190,7 @@ class Subestacao(object):
 
     def _calculaimpedanciaeq(self, trecho_anterior, no_atual, alimentador_atual, trechosvisitados):
         for i in self.alimentadores[alimentador_atual].trechos.values():
-            if i not in trechosvisitados and (i.n1 or i.n2) == no_atual:  # procura trechos conectados ao no_atual (prox_no da execução anterior)
+            if i not in trechosvisitados and (i.n1 == no_atual or i.n2 == no_atual):  # procura trechos conectados ao no_atual (prox_no da execução anterior)
                 if type(no_atual) == Chave:  # verifica se a ligação é feita por meio de chave, verificando-se o estado da chave
                     if no_atual.estado == 0:
                         continue
@@ -208,7 +210,6 @@ class Subestacao(object):
                     prox_no = i.n2
                 else:
                     prox_no = i.n1
-
                 self._calculaimpedanciaeq(trecho_atual, prox_no, alimentador_atual,trechosvisitados)
             else:
                 pass
@@ -1080,39 +1081,40 @@ if __name__ == '__main__':
     cond_1 = Condutor(nome='CAA 266R', rp=0.2391, xp=0.37895, rz=0.41693, xz=1.55591, ampacidade=301)
 
     # Trechos do alimentador S1_AL1
-    s1_ch1 = Trecho(nome='S1CH1', n1=s1, n2=ch1, condutor=cond_1, comprimento=0.01)
+    s1_ch1 = Trecho(nome='S1CH1', n1=s1, n2=ch1, condutor=cond_1, comprimento=1)
 
     ch1_a2 = Trecho(nome='CH1A2', n1=ch1, n2=a2, condutor=cond_1, comprimento=1.0)
     a2_a1 = Trecho(nome='A2A1', n1=a2, n2=a1, condutor=cond_1, comprimento=1.0)
     a2_a3 = Trecho(nome='A2A3', n1=a2, n2=a3, condutor=cond_1, comprimento=1.0)
-    a2_ch3 = Trecho(nome='A2CH3', n1=a2, n2=ch3, condutor=cond_1, comprimento=0.5)
-    a3_ch2 = Trecho(nome='A3CH2', n1=a3, n2=ch2, condutor=cond_1, comprimento=0.5)
+    a2_ch3 = Trecho(nome='A2CH3', n1=a2, n2=ch3, condutor=cond_1, comprimento=1)
+    a3_ch2 = Trecho(nome='A3CH2', n1=a3, n2=ch2, condutor=cond_1, comprimento=1)
 
-    ch3_c1 = Trecho(nome='CH3C1', n1=ch3, n2=c1, condutor=cond_1, comprimento=0.5)
+    ch3_c1 = Trecho(nome='CH3C1', n1=ch3, n2=c1, condutor=cond_1, comprimento=1)
     c1_c2 = Trecho(nome='C1C2', n1=c1, n2=c2, condutor=cond_1, comprimento=1.0)
     c1_c3 = Trecho(nome='C1C3', n1=c1, n2=c3, condutor=cond_1, comprimento=1.0)
-    c3_ch8 = Trecho(nome='C3CH8', n1=c3, n2=ch8, condutor=cond_1, comprimento=0.5)
-    c3_ch5 = Trecho(nome='C3CH5', n1=c3, n2=ch5, condutor=cond_1, comprimento=0.5)
+    c3_ch8 = Trecho(nome='C3CH8', n1=c3, n2=ch8, condutor=cond_1, comprimento=1)
+    c3_ch5 = Trecho(nome='C3CH5', n1=c3, n2=ch5, condutor=cond_1, comprimento=1)
 
-    ch2_b1 = Trecho(nome='CH2B1', n1=ch2, n2=b1, condutor=cond_1, comprimento=0.5)
+    ch2_b1 = Trecho(nome='CH2B1', n1=ch2, n2=b1, condutor=cond_1, comprimento=1)
     b1_b2 = Trecho(nome='B1B2', n1=b1, n2=b2, condutor=cond_1, comprimento=1.0)
-    b2_ch4 = Trecho(nome='B2CH4', n1=b2, n2=ch4, condutor=cond_1, comprimento=0.5)
+    b2_ch4 = Trecho(nome='B2CH4', n1=b2, n2=ch4, condutor=cond_1, comprimento=1)
     b2_b3 = Trecho(nome='B2B3', n1=b2, n2=b3, condutor=cond_1, comprimento=1.0)
-    b3_ch5 = Trecho(nome='B3CH5', n1=b3, n2=ch5, condutor=cond_1, comprimento=0.5)
+    b3_ch5 = Trecho(nome='B3CH5', n1=b3, n2=ch5, condutor=cond_1, comprimento=1)
 
     # Trechos do alimentador S2_AL1
-    s2_ch6 = Trecho(nome='S2CH6', n1=s2, n2=ch6, condutor=cond_1, comprimento=0.01)
+    s2_ch6 = Trecho(nome='S2CH6', n1=s2, n2=ch6, condutor=cond_1, comprimento=1)
 
     ch6_d1 = Trecho(nome='CH6D1', n1=ch6, n2=d1, condutor=cond_1, comprimento=1.0)
     d1_d2 = Trecho(nome='D1D2', n1=d1, n2=d2, condutor=cond_1, comprimento=1.0)
     d1_d3 = Trecho(nome='D1D3', n1=d1, n2=d3, condutor=cond_1, comprimento=1.0)
-    d1_ch7 = Trecho(nome='D1CH7', n1=d1, n2=ch7, condutor=cond_1, comprimento=0.5)
+    d1_ch7 = Trecho(nome='D1CH7', n1=d1, n2=ch7, condutor=cond_1, comprimento=1)
 
-    ch7_e1 = Trecho(nome='CH7E1', n1=ch7, n2=e1, condutor=cond_1, comprimento=0.5)
+    ch7_e1 = Trecho(nome='CH7E1', n1=ch7, n2=e1, condutor=cond_1, comprimento=1)
     e1_e2 = Trecho(nome='E1E2', n1=e1, n2=e2, condutor=cond_1, comprimento=1.0)
-    e2_ch4 = Trecho(nome='E2CH4', n1=e2, n2=ch4, condutor=cond_1, comprimento=0.5)
+    e2_ch4 = Trecho(nome='E2CH4', n1=e2, n2=ch4, condutor=cond_1, comprimento=1)
     e1_e3 = Trecho(nome='E1E3', n1=e1, n2=e3, condutor=cond_1, comprimento=1.0)
-    e3_ch8 = Trecho(nome='E3CH8', n1=e3, n2=ch8, condutor=cond_1, comprimento=0.5)
+    e3_ch8 = Trecho(nome='E3CH8', n1=e3, n2=ch8, condutor=cond_1, comprimento=1)
+
 
     # Setor S1
     st1 = Setor(nome='S1',
@@ -1206,9 +1208,9 @@ if __name__ == '__main__':
                        potencia=Fasor(mod=10e6, ang=0.0, tipo=Fasor.Potencia),
                        impedancia=Fasor(real=0.5, imag=0.2, tipo=Fasor.Impedancia))
 
-    sub_1 = Subestacao(nome='S1', alimentadores=[sub_1_al_1], transformadores=[t1])
+    sub_1 = Subestacao(nome='S1', alimentadores=[sub_1_al_1], transformadores=[t1],impedancia_positiva=0.1033+0.8087j,impedancia_zero=0+0.6365j)
 
-    sub_2 = Subestacao(nome='S2', alimentadores=[sub_2_al_1], transformadores=[t2])
+    sub_2 = Subestacao(nome='S2', alimentadores=[sub_2_al_1], transformadores=[t2],impedancia_positiva=0.1033+0.8087j,impedancia_zero=0+0.6365j)
 
     _subestacoes = {sub_1_al_1.nome: sub_1_al_1, sub_2_al_1.nome: sub_2_al_1}
 

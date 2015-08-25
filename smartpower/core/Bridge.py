@@ -19,6 +19,7 @@ class Convert(object):
 
         if cim_path == None:
             return
+        self.path = cim_path
         self.xml_cim = BeautifulSoup(open(cim_path))
         xml_rnp = BeautifulSoup()
         tag_rede = xml_rnp.new_tag("rede")
@@ -84,10 +85,11 @@ class Convert(object):
 
 
         # Representação de todos os trechos
-        self.trechos_min = []
-        self.trechos_min2 = []
 
-        for trecho in self.xml_cim.findAll("conductor"):
+        # Define lista com todos os trechos
+        self.lista_trechos = self.xml_cim.findAll("conductor")
+
+        for trecho in self.lista_trechos:
             trecho.nos = []
             trecho_tag = xml_rnp.new_tag("trecho")
             nome = str(trecho.find('mrid').text).strip()
@@ -100,9 +102,6 @@ class Convert(object):
             comprimento.append(trecho.find('length').text)
 
             trecho_tag.append(comprimento)
-            if float(trecho.find('length').text) == 0.01:
-                self.trechos_min.append(trecho)
-                self.trechos_min2.append(trecho)
             tag_elementos.append(trecho_tag)
 
             
@@ -116,9 +115,12 @@ class Convert(object):
         # Definir a lista de barras
         # lista_barras = self.xml_cim.findAll("busbarsection")
         
-        
-
+        # Cria contador para certificar que o sistema não está sem fornecimento de energia (i.e Subestação)
+        i = 0
         for substation in self.xml_cim.findAll('substation'):
+            # Percorre as substações presentes no arquivo CIM.XML
+            i += 1
+            # Cria variável para armazenar os alimentadores da subestação
             substation.alimentadores = []
             substation_tag = xml_rnp.new_tag('subestacao')
             substation_tag["nome"] = str(substation.find('mrid').text).strip()
@@ -130,7 +132,7 @@ class Convert(object):
             transformador_tag_potencia_aparente["tipo"] = "aparente"
             transformador_tag_potencia_aparente["multip"] = "M"
             transformador_tag_potencia_aparente["unid"] = "VA"
-            transformador_tag_potencia_aparente.append(str(5))
+            transformador_tag_potencia_aparente.append(str(10))
             transformador_tag.append(transformador_tag_potencia_aparente)
 
             transformador_tag_impedancia_pos = xml_rnp.new_tag('impedancia')
@@ -139,12 +141,12 @@ class Convert(object):
             transformador_tag_impedancia_pos_resistencia = xml_rnp.new_tag('resistencia')
             transformador_tag_impedancia_pos_resistencia["multip"] = ""
             transformador_tag_impedancia_pos_resistencia["unid"] = "ohms"
-            transformador_tag_impedancia_pos_resistencia.append(str(10))
+            transformador_tag_impedancia_pos_resistencia.append(str(0.5))
             transformador_tag_impedancia_pos.append(transformador_tag_impedancia_pos_resistencia)
             transformador_tag_impedancia_pos_reatancia = xml_rnp.new_tag('reatancia')
             transformador_tag_impedancia_pos_reatancia["multip"] = ""
             transformador_tag_impedancia_pos_reatancia["unid"] = "ohms"
-            transformador_tag_impedancia_pos_reatancia.append(str(3))
+            transformador_tag_impedancia_pos_reatancia.append(str(0.2))
             transformador_tag_impedancia_pos.append(transformador_tag_impedancia_pos_reatancia)
 
             transformador_tag_impedancia_zero = xml_rnp.new_tag('impedancia')
@@ -153,12 +155,12 @@ class Convert(object):
             transformador_tag_impedancia_zero_resistencia = xml_rnp.new_tag('resistencia')
             transformador_tag_impedancia_zero_resistencia["multip"] = ""
             transformador_tag_impedancia_zero_resistencia["unid"] = "ohms"
-            transformador_tag_impedancia_zero_resistencia.append(str(10))
+            transformador_tag_impedancia_zero_resistencia.append(str(0.5))
             transformador_tag_impedancia_zero.append(transformador_tag_impedancia_zero_resistencia)
             transformador_tag_impedancia_zero_reatancia = xml_rnp.new_tag('reatancia')
             transformador_tag_impedancia_zero_reatancia["unid"] = "ohms"
             transformador_tag_impedancia_zero_reatancia["multip"] = ""
-            transformador_tag_impedancia_zero_reatancia.append(str(10))
+            transformador_tag_impedancia_zero_reatancia.append(str(0.2))
             transformador_tag_impedancia_zero.append(transformador_tag_impedancia_zero_reatancia)
 
             transformador_tag_enrolamento_p = xml_rnp.new_tag('enrolamento')
@@ -167,7 +169,7 @@ class Convert(object):
             transformador_tag_enrolamento_p_tensao = xml_rnp.new_tag('tensao')
             transformador_tag_enrolamento_p_tensao["multip"] = "k"
             transformador_tag_enrolamento_p_tensao["unid"] = "V"
-            transformador_tag_enrolamento_p_tensao.append(str(13.8))
+            transformador_tag_enrolamento_p_tensao.append(str(69))
             transformador_tag_enrolamento_p.append(transformador_tag_enrolamento_p_tensao)
 
             transformador_tag_enrolamento_s = xml_rnp.new_tag('enrolamento')
@@ -176,11 +178,14 @@ class Convert(object):
             transformador_tag_enrolamento_s_tensao = xml_rnp.new_tag('tensao')
             transformador_tag_enrolamento_s_tensao["multip"] = "k"
             transformador_tag_enrolamento_s_tensao["unid"] = "V"
-            transformador_tag_enrolamento_s_tensao.append(str(69))
+            transformador_tag_enrolamento_s_tensao.append(str(13.8))
             transformador_tag_enrolamento_s.append(transformador_tag_enrolamento_s_tensao)
         
             tag_elementos.append(transformador_tag)
             tag_elementos.append(substation_tag)
+        if i == 0:
+            print "Erro: Não há fornecimento de energia!"
+            return
 
         self.lista_barras = []
         self.lista_nos_de_carga = self.xml_cim.findAll('energyconsumer')
@@ -313,10 +318,14 @@ class Convert(object):
             tag_n2.append(tag_n2_setor)
             tag_topologia.append(tag_elemento_chave)
 
+        self.definir_nos_dos_trechos()
+        self.definir_nos_dos_trechos_barra()
 
         for trecho in self.xml_cim.findAll("conductor"):
+            #raw_input('Toque')
+            #print trecho
+            if len(trecho.nos)!= 0:
             
-            if len(trecho.nos) != 0:
                 tag_elemento_trecho = xml_rnp.new_tag("elemento")
                 tag_elemento_trecho["nome"] = str(trecho.find('mrid').text).strip()
                 tag_elemento_trecho["tipo"] = "trecho"
@@ -334,7 +343,7 @@ class Convert(object):
                     tag_chave = xml_rnp.new_tag("chave")
                     tag_chave["nome"] = str(trecho.nos[0].find('mrid').text).strip()
                     tag_n1.append(tag_chave)
-                if trecho.nos[0].name == "energyconsumer":
+                if trecho.nos[0].name == "energyconsumer" or trecho.nos[0].name == "busbarsection":
                     tag_no = xml_rnp.new_tag("no")
                     tag_no["nome"] = str(trecho.nos[0].find('mrid').text).strip()
                     tag_n1.append(tag_no)
@@ -351,7 +360,6 @@ class Convert(object):
                 tag_topologia.append(tag_elemento_trecho)
                       
         
-
         for setor in setores:
             setor.breakers = []
             for breaker in setor.breakers:
@@ -412,42 +420,6 @@ class Convert(object):
                 tag_no.append(potencia_reativa_tag)
 
                 tag_elementos.append(tag_no)
-
-
-        # Adiciona os trechos que conectam barras e religadores. Por serem uma exceção,
-        # eles necessitavam da definição dos alimentadores antes.
-        for breaker in self.xml_cim.findAll("breaker"):
-            barra = self.detectar_barra(breaker)
-            if barra.name == "busbarsection":
-                trecho = self.trechos_min.pop()
-                trecho.nos.append(breaker)
-                trecho.nos.append(barra)
-                
-                tag_elemento_trecho = xml_rnp.new_tag("elemento")
-                tag_elemento_trecho["nome"] = str(trecho.find('mrid').text).strip()
-                tag_elemento_trecho["tipo"] = "trecho"
-                tag_n1 = xml_rnp.new_tag("n1")
-                tag_n2 = xml_rnp.new_tag("n2")
-                tag_condutores = xml_rnp.new_tag("condutores")
-                tag_condutor = xml_rnp.new_tag("condutor")
-                tag_condutor["nome"] = "CAA 266R"
-                tag_condutores.append(tag_condutor)
-                tag_elemento_trecho.append(tag_n1)
-                tag_elemento_trecho.append(tag_n2)
-                tag_elemento_trecho.append(tag_condutores)
-                for alimentador in alimentadores:
-                    if alimentador[0].nome == breaker.setores[0].nome or alimentador[0].nome == breaker.setores[1].nome:
-                        no = alimentador[0]
-                tag_no = xml_rnp.new_tag("no")
-                tag_no["nome"] = no.nome
-                tag_n1.append(tag_no)
-                tag_chave = xml_rnp.new_tag("chave")
-                tag_chave["nome"] = str(breaker.find('mrid').text).strip()
-                tag_n2.append(tag_chave)
-                tag_topologia.append(tag_elemento_trecho)
-
-
-
 
 
         for alimentador in alimentadores:
@@ -646,10 +618,9 @@ class Convert(object):
         
 
         self.xml_final = xml_rnp
-        print cim_path
         path = cim_path[0:len(cim_path)-3] + 'RNP'
-        print path
         self.save_file(path)
+        self.path = path
 
 
 
@@ -810,6 +781,58 @@ class Convert(object):
             if elemento == no:
                 return True
         return False
+
+    def definir_nos_dos_trechos(self):
+        # Varre todos os 'Conductors', ou trechos, no arquivo CIM.
+        for trecho in self.lista_trechos:
+            # raw_input()
+            # print "-----" + str(trecho.find('mrid').text).strip() + "-----"
+            # Para cada trecho, varre seus terminais existentes.
+            for terminal in trecho.findAll('terminal'):
+                
+                # print str(terminal.findAll('mrid')).strip()
+                # Acha o nó conectivo a que este terminal pertence
+                noconec = self.achar_terminal_noc(terminal)
+                # O algoritmo não achará nós conectivos correspondentes
+                # aos trechos que ligam barra e religador. Eles precisam
+                # ser tratados diferentemente:
+                if noconec is None:
+                    pass
+                else:
+                    # Analise os outros terminais deste nó conectivo.
+                    for terminalnoc in noconec.findAll('terminal'):
+                        if terminalnoc == terminal:
+                            pass
+                        else:
+                            # Procura o elemento a que este outro terminal pertence
+                            parent = self.achar_parent(terminalnoc)
+                            if parent.name != "conductor":
+                                trecho.nos.append(parent)
+                                # print str(parent.find('mrid').text).strip()
+
+    def definir_nos_dos_trechos_barra(self):
+        ''' Esta função associa os trechos que ligam barras a religadores de forma
+            independente, já que pelo padrão CIM não devem ser criados nós conectivos
+            para ligações entre condutores que conectam barra e religador.
+        '''
+        # Varre todas as barras do sistema.
+        for barra in self.xml_cim.findAll('busbarsection'):
+            mrid_barra = str(barra.find('mrid').text).strip()
+            # Varre os trechos do sistema e verifica se a id da barra está presente no nome do trecho.
+            for trecho in self.lista_trechos:
+                mrid_trecho = str(trecho.find('mrid').text).strip()
+                # Caso positivo, adiciona a barra e o respectivo religador a lista de nos do trecho
+                if mrid_barra == mrid_trecho[0:2]:
+                    trecho.nos.append(barra)
+                    for breaker in self.xml_cim.findAll('breaker'):
+                        if str(breaker.find('mrid').text).strip() == mrid_trecho[2:len(mrid_trecho)]:
+                            trecho.nos.append(breaker)
+
+
+
+
+        #PAREI
+
 
     def definir_vizinhos(self, no, mode = 0):
          # Começar um caminho a partir de uma barra
@@ -1077,11 +1100,11 @@ class Convert(object):
                                             parent_conexao2 = self.achar_parent(conexao2)
                 else:
                     
-                    if parent_conexao.name == 'conductor':
-                        if self.trecho_pertence(parent_conexao, no_raiz_rot) == False:
-                            parent_conexao.nos.append(no_raiz_rot)
-                        if self.trecho_pertence(parent_conexao, parent_conexao2) == False:
-                            parent_conexao.nos.append(parent_conexao2)
+                    # if parent_conexao.name == 'conductor':
+                    #     if self.trecho_pertence(parent_conexao, no_raiz_rot) == False:
+                    #         #parent_conexao.nos.append(no_raiz_rot)
+                    #     if self.trecho_pertence(parent_conexao, parent_conexao2) == False:
+                    #         #parent_conexao.nos.append(parent_conexao2)
                     if parent_conexao2 == no_raiz_antigo:
                         if no_raiz_rot.counter ==  no_raiz_rot.number:
                             no_raiz_antigo = no_raiz
@@ -1165,7 +1188,7 @@ class Convert(object):
 
         for setor in setores:
             for item in setor.nos:
-                setor.nome = str(item.find('mrid').text).strip()
+                setor.nome = str(item.find('mrid').text).strip()[0]
 
         return setores
 

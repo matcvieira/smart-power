@@ -16,6 +16,8 @@ from smartpower.gui.dialogs.avisoReligador import AvisoReligador
 
 from smartpower.core import Bridge
 
+from smartpower.calc import xml2objects
+
 
 lista_no_conectivo = []
 
@@ -2017,8 +2019,62 @@ class SceneWidget(QtGui.QGraphicsScene):
         # Força o usuário a salvar o diagrama antes da simulação
         path = self.main_window.save()
         # Roda o algoritmo conversor CIM >> XML padrão RNP
-        bridge = Bridge.Convert(path)
+        bridge = Bridge.Convert(path)        
+        #Monta a RNP, carregando o caminho do XML em padrão RNP
+        load = xml2objects.Carregador(bridge.path)
+        # Carrega a topologia
+        top = load.carregar_topologia()
+        sub1 = top["subestacoes"]["SE1"]
+        sub1.calculaimpedanciaeq()
+        data1 = sub1.calculacurto('monofasico')
+        #print data1[0]
+        # sub1.calculacurto('trifasico')
+        # sub1.calculacurto('bifasico')
+        # sub1.calculacurto('monofasico_minimo')
+        # sub1.calcular_fluxo_de_carga()
+        # Abre a aba de simulação
+        self.main_window.sim_view = QtGui.QTabWidget()  
+        self.main_window.centralwidget.addTab(self.main_window.sim_view,QtGui.QApplication.translate(
+                    "main_window", "Simulação", None,
+                    QtGui.QApplication.UnicodeUTF8))
+        # Cria uma tabela para apresentar os dados de curto-circuito e a adiciona como uma tab da tab
+        # simulação.
+        self.main_window.sim_sc_table = QtGui.QTableWidget()
+        self.main_window.sim_sc_grid_layout = QtGui.QGridLayout()
+        self.main_window.sim_sc_grid_layout.addWidget(self.main_window.sim_sc_table,0,0)
+        self.main_window.sim_view.addTab(self.main_window.sim_sc_table,QtGui.QApplication.translate(
+                    "main_window", "Curto-Circuito", None))
+        # Seta o número de colunas da tabela
+        self.main_window.sim_sc_table.setColumnCount(3)
+        # Seta o número de linhas de dados
+        self.main_window.sim_sc_table.setRowCount(len(sub1.alimentadores.values()[0].trechos))
+        # Adiciona os cabeçalhos horizontal e vertical a partir dos dados obtidos
+        self.main_window.sim_sc_table.setHorizontalHeaderLabels(data1[0])
+        data1.pop(0)
+        for row in data1:
+            for col in range(self.main_window.sim_sc_table.columnCount()):
+                self.main_window.sim_sc_table.setItem(data1.index(row),col, QtGui.QTableWidgetItem(row[col]))
+
+
+        # Cria uma tabela para apresentar os dados de fluxo de carga e a adiciona como uma tab da tab
+        # simulação.
+        self.main_window.sim_pf_table = QtGui.QTableWidget()
+        self.main_window.sim_pf_grid_layout = QtGui.QGridLayout()
+        self.main_window.sim_pf_grid_layout.addWidget(self.main_window.sim_pf_table,0,0)
+        self.main_window.sim_view.addTab(self.main_window.sim_pf_table,QtGui.QApplication.translate(
+                    "main_window", "Fluxo de Carga", None))
+        # Adiciona uma tabela à aba de simulação
+        # for sub in top["subestacoes"].values():
+            
+        #     self.main_window.sim_table.setRowCount()
+        #     self.main_window.sim_table.setColumnCount(len(top["trechos"]))
+        #     self.main_window.sim_table.adjustSize()
+            
+
+
         
+
+
 
 
 class ViewWidget(QtGui.QGraphicsView):
