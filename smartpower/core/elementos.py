@@ -49,6 +49,7 @@ class Condutor(object):
         self.ampacidade = currentLimit
 
 class NoConect(object):
+    
     def __init__(self, terminal_list):
         super(NoConect, self).__init__()
         self.terminal_list = terminal_list

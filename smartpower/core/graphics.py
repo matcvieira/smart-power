@@ -339,13 +339,16 @@ class Text(QtGui.QGraphicsTextItem):
     # (ver PySide, QtCore.Signal)
     selectedChange = QtCore.Signal(QtGui.QGraphicsItem)
     lostFocus = QtCore.Signal(QtGui.QGraphicsTextItem)
+    textIsVisible = 1
 
     def __init__(self, text, parent=None, scene=None):
         '''
             Configurações do texto (ver PySide, QtGui.QGraphicsTextItem)
         '''
         super(Text, self).__init__(parent, scene)
-        self.setPlainText(text)
+        self.elementName = text
+        if self.textIsVisible == 1:
+           self.setPlainText(text)
         self.setZValue(100)
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
         self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, False)
@@ -358,6 +361,13 @@ class Text(QtGui.QGraphicsTextItem):
         if change == QtGui.QGraphicsItem.ItemSelectedChange:
             self.selectedChange.emit(self)
         return value
+
+    def setElementName(self, text):
+        self.elementName = text
+        if self.textIsVisible == 1:
+            self.setPlainText(text)
+        else:
+            self.setPlainText("") 
 
     def focusOutEvent(self, event):
         '''
@@ -1726,7 +1736,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                             pass
                         else:
                             item.chave.nome = dialog.identificaOLineEdit.text()
-                            item.text.setPlainText(
+                            item.text.setElementName(
                                 dialog.identificaOLineEdit.text())
                         if dialog.correnteNominalLineEdit.text() == "":
                             pass
@@ -1754,7 +1764,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                         if dialog.nomeLineEdit.text() == "":
                             pass
                         else:
-                            item.text.setPlainText(dialog.nomeLineEdit.text())
+                            item.text.setElementName(dialog.nomeLineEdit.text())
                             item.barra.nome = dialog.nomeLineEdit.text()
                         if dialog.fasesLineEdit.text() == "":
                             pass
@@ -1770,7 +1780,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                         if dialog.nomeLineEdit.text() == "":
                             pass
                         else:
-                            item.text.setPlainText(dialog.nomeLineEdit.text())
+                            item.text.setElementName(dialog.nomeLineEdit.text())
                             item.substation.nome = dialog.nomeLineEdit.text()
                         if dialog.tpLineEdit.text() == "":
                             pass
@@ -1787,7 +1797,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                         if dialog.identificaOLineEdit.text() == "":
                             pass
                         else:
-                            item.text.setPlainText(
+                            item.text.setElementName(
                                 dialog.identificaOLineEdit.text())
                             item.no_de_carga.nome = \
                                 dialog.identificaOLineEdit.text()
