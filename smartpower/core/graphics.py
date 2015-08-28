@@ -20,6 +20,7 @@ from smartpower.calc import xml2objects
 
 
 lista_no_conectivo = []
+allNode = []
 
 class DashedLine(QtGui.QGraphicsLineItem):
     '''
@@ -328,7 +329,7 @@ class Edge(QtGui.QGraphicsLineItem):
         self.setSelected(True)
         self.myEdgeMenu.exec_(event.screenPos() + QtCore.QPointF(20, 20))
 
-
+####cw3
 class Text(QtGui.QGraphicsTextItem):
     '''
         Classe que implementa o objeto Text Genérico
@@ -339,19 +340,17 @@ class Text(QtGui.QGraphicsTextItem):
     # (ver PySide, QtCore.Signal)
     selectedChange = QtCore.Signal(QtGui.QGraphicsItem)
     lostFocus = QtCore.Signal(QtGui.QGraphicsTextItem)
-    textIsVisible = 1
 
     def __init__(self, text, parent=None, scene=None):
         '''
             Configurações do texto (ver PySide, QtGui.QGraphicsTextItem)
         '''
         super(Text, self).__init__(parent, scene)
-        self.elementName = text
-        if self.textIsVisible == 1:
-           self.setPlainText(text)
+        self.setPlainText(text)
         self.setZValue(100)
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
         self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, False)
+        self.visibility = True
 
     def itemChange(self, change, value):
         '''
@@ -361,13 +360,6 @@ class Text(QtGui.QGraphicsTextItem):
         if change == QtGui.QGraphicsItem.ItemSelectedChange:
             self.selectedChange.emit(self)
         return value
-
-    def setElementName(self, text):
-        self.elementName = text
-        if self.textIsVisible == 1:
-            self.setPlainText(text)
-        else:
-            self.setPlainText("") 
 
     def focusOutEvent(self, event):
         '''
@@ -385,6 +377,9 @@ class Node(QtGui.QGraphicsRectItem):
     '''
     # tipos de itens possiveis
     Subestacao, Religador, Barra, Agent, NoDeCarga, NoConectivo = range(6)
+    # visibilidade dos itens por tipo cw5
+    textVisibility = [True, True, True, True, True, True]
+
 
     def __init__(self, item_type, node_menu, parent=None, scene=None):
         '''
@@ -481,6 +476,7 @@ class Node(QtGui.QGraphicsRectItem):
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable, True)
         self.setFlag(QtGui.QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setZValue(0)
+        allNode.append(self)
 
     def fix_item(self):
         '''
@@ -605,6 +601,9 @@ class Node(QtGui.QGraphicsRectItem):
             suas formas baseadas em seus retângulos.
             Ver método paint em PySide.
         '''
+        #cw4
+        #####
+        self.text.setVisible(self.textVisibility[self.myItemType])
         # Caso o item a ser inserido seja do tipo subestacão:
         if self.myItemType == self.Subestacao:
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
@@ -1225,6 +1224,11 @@ class SceneWidget(QtGui.QGraphicsScene):
 
         return
 
+        ### redesenha todos os objetos da classe Node CW8
+    def scene_refresh(self):
+        for node in allNode:
+            node.paint(node.) ######AQUI!!!
+
     def mouseMoveEvent(self, mouse_event):
         '''
             Este método define as ações realizadas quando um evento do tipo
@@ -1518,6 +1522,31 @@ class SceneWidget(QtGui.QGraphicsScene):
             super(SceneWidget, self).keyPressEvent(event)
         return
 
+    ### Configura a visibilidade do texto de cada elemento CW6 
+    ### Subestação
+    def setTextSubstation(self):
+        '''
+            Altera o parâmetro da classe Node que seta a visibilidade dos
+            textos dos objetos Node do tipo Subestacao.
+        '''
+        if Node.textVisibility[Node.Subestacao] == True:
+            Node.textVisibility[Node.Subestacao] = False
+        else :
+            Node.textVisibility[Node.Subestacao] = True
+        self.scene_refresh()
+
+    ### Religador
+    def setTextRecloser(self):
+        '''
+            Altera o parâmetro da classe Node que seta a visibilidade dos
+            textos dos objetos Node do tipo Subestacao.
+        '''
+        if Node.textVisibility[Node.Religador] == True:
+            Node.textVisibility[Node.Religador] = False
+        else :
+            Node.textVisibility[Node.Religador] = True
+        self.scene_refresh()
+
     def keyReleaseEvent(self, event):
         key = event.key()
         if key == QtCore.Qt.Key_Control:
@@ -1679,6 +1708,8 @@ class SceneWidget(QtGui.QGraphicsScene):
                                     item.Noc, edge.w1, self.myLineMenu)
                             self.addItem(new_edge)
                     item.remove_edges()
+                ### remove o objeto da lista allNode CW8
+                    allNode.pop(allNode.index(item))
                 # Caso o item possua mais de duas linhas ligadas, o comporta
                 # mento se torna imprevisível, então é emitida uma mensagem ao
                 # usuário restringindo esta ação.
@@ -1736,7 +1767,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                             pass
                         else:
                             item.chave.nome = dialog.identificaOLineEdit.text()
-                            item.text.setElementName(
+                            item.text.setPlainText(
                                 dialog.identificaOLineEdit.text())
                         if dialog.correnteNominalLineEdit.text() == "":
                             pass
@@ -1764,7 +1795,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                         if dialog.nomeLineEdit.text() == "":
                             pass
                         else:
-                            item.text.setElementName(dialog.nomeLineEdit.text())
+                            item.text.setPlainText(dialog.nomeLineEdit.text())
                             item.barra.nome = dialog.nomeLineEdit.text()
                         if dialog.fasesLineEdit.text() == "":
                             pass
@@ -1780,7 +1811,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                         if dialog.nomeLineEdit.text() == "":
                             pass
                         else:
-                            item.text.setElementName(dialog.nomeLineEdit.text())
+                            item.text.setPlainText(dialog.nomeLineEdit.text())
                             item.substation.nome = dialog.nomeLineEdit.text()
                         if dialog.tpLineEdit.text() == "":
                             pass
@@ -1797,7 +1828,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                         if dialog.identificaOLineEdit.text() == "":
                             pass
                         else:
-                            item.text.setElementName(
+                            item.text.setPlainText(
                                 dialog.identificaOLineEdit.text())
                             item.no_de_carga.nome = \
                                 dialog.identificaOLineEdit.text()
