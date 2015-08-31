@@ -22,6 +22,13 @@ from smartpower.calc import xml2objects
 lista_no_conectivo = []
 allNode = []
 
+class communicate(QtCore.QObject):
+
+    signalText = QtCore.Signal()
+
+    def __init__(self):
+        super(communicate, self).__init__()
+
 class DashedLine(QtGui.QGraphicsLineItem):
     '''
         Classe que implementa o objeto DashedLine, utilizado para indicar que um
@@ -379,7 +386,6 @@ class Node(QtGui.QGraphicsRectItem):
     Subestacao, Religador, Barra, Agent, NoDeCarga, NoConectivo = range(6)
     # visibilidade dos itens por tipo cw5
     textVisibility = [True, True, True, True, True, True]
-
 
     def __init__(self, item_type, node_menu, parent=None, scene=None):
         '''
@@ -900,6 +906,9 @@ class SceneWidget(QtGui.QGraphicsScene):
     # Signal definido para a classe SceneWidget enviado quando um item é
     # inserido no diagrama grafico
     itemInserted = QtCore.Signal(int)
+    # Objeto que controla os signals enviados quando um QToolButton do tipo
+    # Exibir Texto e pressionado. CW
+    textos = communicate()
 
     def __init__(self, window):
 
@@ -1226,8 +1235,12 @@ class SceneWidget(QtGui.QGraphicsScene):
 
         ### redesenha todos os objetos da classe Node CW8
     def scene_refresh(self):
-        for node in allNode:
-            node.paint(node.) ######AQUI!!!
+        '''    
+            for node in allNode:
+                print node.id
+                node.paint()
+                #node.paint(node.) ######AQUI!!!
+        '''
 
     def mouseMoveEvent(self, mouse_event):
         '''
@@ -1533,8 +1546,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.Subestacao] = False
         else :
             Node.textVisibility[Node.Subestacao] = True
-        self.scene_refresh()
-
+        self.textos.signalText.emit()
     ### Religador
     def setTextRecloser(self):
         '''
@@ -1545,7 +1557,29 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.Religador] = False
         else :
             Node.textVisibility[Node.Religador] = True
-        self.scene_refresh()
+        self.textos.signalText.emit()    
+    ### NoDecarga
+    def setTextNodeC(self):
+        '''
+            Altera o parâmetro da classe Node que seta a visibilidade dos
+            textos dos objetos Node do tipo Subestacao.
+        '''
+        if Node.textVisibility[Node.NoDeCarga] == True:
+            Node.textVisibility[Node.NoDeCarga] = False
+        else :
+            Node.textVisibility[Node.NoDeCarga] = True
+        self.textos.signalText.emit()
+    ### Barra
+    def setTextBus(self):
+        '''
+            Altera o parâmetro da classe Node que seta a visibilidade dos
+            textos dos objetos Node do tipo Subestacao.
+        '''
+        if Node.textVisibility[Node.Barra] == True:
+            Node.textVisibility[Node.Barra] = False
+        else :
+            Node.textVisibility[Node.Barra] = True
+        self.textos.signalText.emit()
 
     def keyReleaseEvent(self, event):
         key = event.key()
@@ -2110,13 +2144,6 @@ class SceneWidget(QtGui.QGraphicsScene):
         #     self.main_window.sim_table.setRowCount()
         #     self.main_window.sim_table.setColumnCount(len(top["trechos"]))
         #     self.main_window.sim_table.adjustSize()
-            
-
-
-        
-
-
-
 
 class ViewWidget(QtGui.QGraphicsView):
     '''

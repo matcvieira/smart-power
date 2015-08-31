@@ -339,6 +339,18 @@ class JanelaPrincipal(object):
         self.actionTextVisibleRecloser.setIcon(icon)
         self.actionTextVisibleRecloser.setObjectName("actionTextVisibleRecloser")
         self.textSubmenu.addAction(self.actionTextVisibleRecloser)
+        ### barra
+        self.actionTextVisibleBus =QtGui.QAction(
+            main_window, triggered=self.sceneWidget.setTextRecloser)
+        self.actionTextVisibleBus.setIcon(icon)
+        self.actionTextVisibleBus.setObjectName("actionTextVisibleBus")
+        self.textSubmenu.addAction(self.actionTextVisibleBus)
+        ### no de carga
+        self.actionTextVisibleNodeC =QtGui.QAction(
+            main_window, triggered=self.sceneWidget.setTextRecloser)
+        self.actionTextVisibleNodeC.setIcon(icon)
+        self.actionTextVisibleNodeC.setObjectName("actionTextVisibleNodeC")
+        self.textSubmenu.addAction(self.actionTextVisibleNodeC)
 
         # configurações adicionais
         self.retranslateUi(main_window)
@@ -606,14 +618,36 @@ class JanelaPrincipal(object):
             QtGui.QApplication.translate(
                 "main_window", "Texto Religador", None, QtGui.QApplication.UnicodeUTF8))
 
+        self.actionTextVisibleBus.setText(
+            QtGui.QApplication.translate(
+                "main_window", "Texto Barra", None, QtGui.QApplication.UnicodeUTF8))
+
+        self.actionTextVisibleBus.setToolTip(
+            QtGui.QApplication.translate(
+                "main_window", "Texto Barra", None, QtGui.QApplication.UnicodeUTF8))
+
+        self.actionTextVisibleNodeC.setText(
+            QtGui.QApplication.translate(
+                "main_window", "Texto Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
+
+        self.actionTextVisibleRecloser.setToolTip(
+            QtGui.QApplication.translate(
+                "main_window", "Texto Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
+
 class ControlMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(ControlMainWindow, self).__init__(parent)
         self.ui = JanelaPrincipal()
         self.ui.inicializar_componentes(self)
 
+    def repaint(self):
+        super.repaint()
+        print "ok"
+        pass
+
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mySW = ControlMainWindow()
+    mySW.ui.sceneWidget.textos.signalText.connect(mySW.repaint())
     mySW.show()
     sys.exit(app.exec_())
