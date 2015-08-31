@@ -82,6 +82,8 @@ class DiagramToXML(ElementTree.Element):
                     CE.append(padrao)
                     CE.append(identificador)
 
+                # Salva as informações referente ao item gráfico nó de carga
+                # e seus parâmetros associados
                 if item.myItemType == Node.NoDeCarga:
                     identificador = ElementTree.Element('identificador')
                     identificador.text = str(item.text.toPlainText())
@@ -96,6 +98,8 @@ class DiagramToXML(ElementTree.Element):
                     CE.append(p_ativa)
                     CE.append(p_reativa)
 
+                # Salva as informações referente ao item gráfico subestação
+                # e seus parâmetros associados
                 if item.myItemType == Node.Subestacao:
                     identificador = ElementTree.Element('identificador')
                     identificador.text = str(item.text.toPlainText())
@@ -118,6 +122,8 @@ class DiagramToXML(ElementTree.Element):
                     CE.append(potencia)
                     CE.append(impedancia)
 
+                # Salva as informações referente ao item gráfico barra
+                # e seus parâmetros associados
                 if item.myItemType == Node.Barra:
                     identificador = ElementTree.Element('identificador')
                     identificador.text = str(item.text.toPlainText())
@@ -128,20 +134,9 @@ class DiagramToXML(ElementTree.Element):
                     CE.append(identificador)
                     CE.append(fases)
 
-
-
-
-
-
-
-
-
-
-
-
                 self.append(CE)
         for item in lista:
-
+            # Verifica se o item é um condutor e salva seus parâmetros
             if isinstance(item, Edge):
                 edge = ElementTree.Element('edge')
                 w1 = ElementTree.Element('w1')
@@ -170,7 +165,6 @@ class DiagramToXML(ElementTree.Element):
         f.close()
 
 
-
 class XMLToDiagram():
     '''
         Classe que realiza a conversão do arquivo XML com as informações do 
@@ -187,7 +181,8 @@ class XMLToDiagram():
         for child in xml_element:
 
             if child.tag == 'CE':
-
+                # Verifica qual tipo de elemento e converte as informações
+                # Subestação
                 if child.attrib['type'] == '0':
                     item = Node(
                         int(child.attrib['type']), self.scene.mySubstationMenu)
@@ -204,7 +199,7 @@ class XMLToDiagram():
                     item.id = int(child.find('id').text)
                     item.text.setPlainText(identificador)
 
-                #RELIGADOR
+                # Religador
                 elif child.attrib['type'] == '1':
                     item = Node(
                         int(child.attrib['type']), self.scene.myRecloserMenu)
@@ -216,20 +211,19 @@ class XMLToDiagram():
                     seq_rel = child.find('seqrel').text
                     identificador = child.find('identificador').text
                     item.chave = Religador(identificador,int(corrente),int(in_tt),int(cap_int),int(seq_rel),int(state))
+                    self.scene.create_dict_recloser(corrente,cap_int,seq_rel,item.text_config)
                     item.id = int(child.find('id').text)
                     item.setPos(float(child.find('x').text), float(
                         child.find('y').text))
                     self.scene.addItem(item)
                     item.text.setPlainText(identificador)
-                    #item.text = Text(identificador, item, item.scene())
 
-                #BARRA
+                # Barra
                 elif child.attrib['type'] == '2':
                     item = Node(int(
                         child.attrib['type']), self.scene.myBusMenu)
                     identificador = child.find('identificador').text
                     fases = child.find('fases').text
-                    #item.barra = BusBarSection(identificador, int(fases))
                     item.setPos(float(child.find('x').text), float(
                         child.find('y').text))
                     item.id = int(child.find('id').text)
@@ -247,6 +241,7 @@ class XMLToDiagram():
                     item.id = int(child.find('id').text)
                     self.scene.addItem(item)
 
+                # Nó de carga
                 elif child.attrib['type'] == '4':
                     item = Node(int(child.attrib['type']), self.scene.mySubstationMenu)
                     p_ativa = child.find('pativa').text
@@ -269,6 +264,7 @@ class XMLToDiagram():
                     item.id = int(child.find('id').text)
                     self.scene.addItem(item)
 
+            # Condutor
             elif child.tag == 'edge':
                 for item in self.scene.items():
                     if isinstance(item, Node) and item.id == int(child.find('w1').text):
@@ -295,6 +291,7 @@ class CimXML():
 
         self.cim_xml = BeautifulSoup()
 
+        # Percorre toda a lista buscando elementos do tipo Religador
         for item in scene.items():
             if isinstance(item, Node):
 
@@ -304,7 +301,7 @@ class CimXML():
                     self.cim_xml.append(tag_breaker)
 
                     tag_id = self.cim_xml.new_tag("mRID")
-                    tag_id.append(str(item.id))
+                    tag_id.append(item.text.toPlainText())
                     tag_breaker.append(tag_id)
 
                     tag_rc = self.cim_xml.new_tag("ratedCurrent")
@@ -345,7 +342,7 @@ class CimXML():
                     tag_terminal2.append(tag_mRID)
                     tag_breaker.append(tag_terminal2)
                     
-
+        # Percorre toda a lista buscando elementos do tipo Barra
         for item in scene.items():
             if isinstance(item, Node):
 
@@ -355,16 +352,12 @@ class CimXML():
                     self.cim_xml.append(tag_barra)
 
                     tag_id = self.cim_xml.new_tag("mRID")
-                    tag_id.append(str(item.id))
+                    tag_id.append(item.text.toPlainText())
                     tag_barra.append(tag_id)
 
                     tag_phases = self.cim_xml.new_tag("phases")
                     tag_phases.append(str(item.barra.phases))
                     tag_barra.append(tag_phases)
-
-                    tag_label = self.cim_xml.new_tag("label")
-                    tag_label.append(str(item.text.toPlainText()))
-                    tag_barra.append(tag_label) 
 
                     for Terminal in (item.terminals):
                         tag_terminal = self.cim_xml.new_tag("terminal")
@@ -373,8 +366,7 @@ class CimXML():
                         tag_terminal.append(tag_mRID)
                         tag_barra.append(tag_terminal)
                     
-
-        
+        # Percorre toda a lista buscando elementos do tipo Subestação        
         for item in scene.items():
             if isinstance(item, Node):
 
@@ -384,8 +376,8 @@ class CimXML():
                     self.cim_xml.append(tag_substation)
 
                     tag_id = self.cim_xml.new_tag("mRID")
-                    tag_id.append(str(item.id))
-                    self.cim_xml.find("Substation").append(tag_id)
+                    tag_id.append(str(item.text.toPlainText()).strip())
+                    tag_substation.append(tag_id)
 
                     tag_terminal1= self.cim_xml.new_tag("terminal")
                     tag_seqNumber = self.cim_xml.new_tag("SequenceNumber")
@@ -405,7 +397,7 @@ class CimXML():
                     tag_terminal2.append(tag_mRID)
                     tag_substation.append(tag_terminal2)
 
-
+        # Percorre toda a lista buscando elementos do tipo Nó de carga
         for item in scene.items():
             if isinstance(item, Node):
 
@@ -415,7 +407,7 @@ class CimXML():
                     self.cim_xml.append(tag_energyConsumer)
                     
                     tag_id = self.cim_xml.new_tag("mRID")
-                    tag_id.append(str(item.id))
+                    tag_id.append(item.text.toPlainText())
                     tag_energyConsumer.append(tag_id)
 
                     tag_pFixed = self.cim_xml.new_tag("pFixed")
@@ -425,11 +417,7 @@ class CimXML():
 
                     tag_qFixed = self.cim_xml.new_tag("qFixed")
                     tag_qFixed.append(str(item.no_de_carga.potencia_reativa))
-                    tag_energyConsumer.append(tag_qFixed) 
-
-                    tag_label = self.cim_xml.new_tag("label")
-                    tag_label.append(str(item.text.toPlainText()))
-                    tag_energyConsumer.append(tag_label)                 
+                    tag_energyConsumer.append(tag_qFixed)               
 
 
                     for Terminal in (item.terminals):
@@ -439,6 +427,7 @@ class CimXML():
                         tag_terminal.append(tag_mRID)
                         tag_energyConsumer.append(tag_terminal)
 
+        # Percorre toda a lista buscando elementos do tipo Condutor
         for item in scene.items():
             if isinstance(item, Edge):
 
@@ -449,7 +438,7 @@ class CimXML():
                 self.cim_xml.append(tag_conductor)
                 
                 tag_id = self.cim_xml.new_tag("mRID")
-                tag_id.append(str(item.linha.id))
+                tag_id.append(item.w1.text.toPlainText() + item.w2.text.toPlainText())
                 tag_conductor.append(tag_id)
 
                 tag_length = self.cim_xml.new_tag("length")

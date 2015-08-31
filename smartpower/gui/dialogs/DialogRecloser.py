@@ -50,7 +50,7 @@ class RecloserDialog(QtGui.QWidget):
         self.testeLineEdit = QtGui.QComboBox(self.formLayoutWidget)
         self.testeLineEdit.setObjectName("testeEdit")
         self.testeLineEdit.addItems(self.scene.dict_prop.keys())
-        self.testeLineEdit.insertItem(0,'Custom')
+        self.testeLineEdit.insertItem(0,"Custom")
         index = self.testeLineEdit.findText(self.item.text_config)
         # if index < 0:
         #     index = 0
@@ -151,7 +151,7 @@ class RecloserDialog(QtGui.QWidget):
             if cadastro.dialog.result() == 1:
                 if cadastro.nomeDoCadastroLineEdit.text() == '':
                     return
-                self.scene.create_dict(
+                self.scene.create_dict_recloser(
                     self.correnteNominalLineEdit.text(),
                     self.capacidadeDeInterrupOLineEdit.text(),
                     self.nDeSequNciasDeReligamentoLineEdit.text(),
