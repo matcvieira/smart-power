@@ -62,17 +62,26 @@ class JanelaPrincipal(object):
         self.menubar.setObjectName("menubar")
         main_window.setMenuBar(self.menubar)
 
+        #Cria os Menu e Submenus na barra de menu
+        self.fileMenu = self.menubar.addMenu('Arquivo')
+        self.showMenu = self.menubar.addMenu('Exibir')
+        self.orgMenu = self.menubar.addMenu('Organizar')
+        #Cria o submenu Alinhar e o coloca no menu Organizar
+        self.alignSubmenu = self.orgMenu.addMenu('Alinhar')
+        self.simulationMenu = self.menubar.addMenu(u'Simulação')
+        self.helpMenu = self.menubar.addMenu('Ajuda')
+
         # define a barra de status
         self.statusbar = QtGui.QStatusBar(main_window)
         self.statusbar.setObjectName("statusbar")
         main_window.setStatusBar(self.statusbar)
-
+        '''
         # define a barra de ferramentas
         self.toolBar = QtGui.QToolBar(main_window)
         self.toolBar.setEnabled(True)
         self.toolBar.setObjectName("toolBar")
         main_window.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
-
+        '''
         # define o widget dockWidget dockWidget_Buttons e configura seu
         # conteudo dockWidget_Buttons_Contents
         self.dockWidget_Buttons = QtGui.QDockWidget(main_window)
@@ -115,21 +124,38 @@ class JanelaPrincipal(object):
 
         # define os botoes da primeira pagina do dockWidget e insere no
         # FormLayout
-        self.substationButton = QtGui.QPushButton(self.page_1)
+        self.iconSubstation = QtGui.QIcon("iconSubstation.png")
+        self.iconBus = QtGui.QIcon("iconBus.png")
+        self.iconRecloser = QtGui.QIcon("iconRecloser.png")
+        self.iconLine = QtGui.QIcon("iconLine.png")
+        self.iconNode = QtGui.QIcon("iconNode.png")
+        self.icontam = QtCore.QSize(90,90)
+        self.substationButton = QtGui.QToolButton(self.page_1)
+        self.substationButton.setIcon(self.iconSubstation)
+        self.substationButton.setIconSize(self.icontam)
         self.substationButton.setObjectName("substationButton")
         self.substationButton.setCheckable(True)
-        self.busButton = QtGui.QPushButton(self.page_1)
+        self.busButton = QtGui.QToolButton(self.page_1)
+        self.busButton.setIcon(self.iconBus)
+        self.busButton.setIconSize(self.icontam)
         self.busButton.setObjectName("busButton")
         self.busButton.setCheckable(True)
-        self.recloserButton = QtGui.QPushButton(self.page_1)
+        self.recloserButton = QtGui.QToolButton(self.page_1)
+        self.recloserButton.setIcon(self.iconRecloser)
+        self.recloserButton.setIconSize(self.icontam)
         self.recloserButton.setObjectName("recloserButton")
         self.recloserButton.setCheckable(True)
-        self.lineButton = QtGui.QPushButton(self.page_1)
+        self.lineButton = QtGui.QToolButton(self.page_1)
+        self.lineButton.setIcon(self.iconLine)
+        self.lineButton.setIconSize(self.icontam)
         self.lineButton.setObjectName("lineButton")
         self.lineButton.setCheckable(True)
-        self.noButton = QtGui.QPushButton(self.page_1)
+        self.noButton = QtGui.QToolButton(self.page_1)
+        self.noButton.setIcon(self.iconNode)
+        self.noButton.setIconSize(self.icontam)
         self.noButton.setObjectName("noButton")
         self.noButton.setCheckable(True)
+
 
         # define o grupo de botoes da pagina 1 do notebook
         self.buttonGroup = QtGui.QButtonGroup()
@@ -208,7 +234,9 @@ class JanelaPrincipal(object):
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionExit.setIcon(icon)
         self.actionExit.setObjectName("actionExit")
-        self.toolBar.addAction(self.actionExit)
+        self.actionExit.setShortcut('Ctrl+Q')
+        #self.toolBar.addAction(self.actionExit)
+        self.fileMenu.addAction(self.actionExit)
 
         # cria e configura acao de salvar o estado atual do programa
         self.actionSave = QtGui.QAction(
@@ -218,7 +246,9 @@ class JanelaPrincipal(object):
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionSave.setIcon(icon)
         self.actionSave.setObjectName("actionSave")
-        self.toolBar.addAction(self.actionSave)
+        self.actionSave.setShortcut('Ctrl+S')
+        #self.toolBar.addAction(self.actionSave)
+        self.fileMenu.addAction(self.actionSave)
 
         # cria e configura acao de abrir um arquivo com uma configuração da
         # rede montada anteriormente
@@ -228,7 +258,9 @@ class JanelaPrincipal(object):
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionOpen.setIcon(icon)
         self.actionOpen.setObjectName("actionOpen")
-        self.toolBar.addAction(self.actionOpen)
+        self.actionOpen.setShortcut('Ctrl+A')
+        #self.toolBar.addAction(self.actionOpen)
+        self.fileMenu.addAction(self.actionOpen)
 
         # cria e configura acao de inserir ou retirar grade no diagrama grafico
         self.actionGrid = QtGui.QAction(
@@ -237,7 +269,9 @@ class JanelaPrincipal(object):
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionGrid.setIcon(icon)
         self.actionGrid.setObjectName("actionGrid")
-        self.toolBar.addAction(self.actionGrid)
+        self.actionGrid.setShortcut('Ctrl+G')
+        #self.toolBar.addAction(self.actionGrid)
+        self.showMenu.addAction(self.actionGrid)
 
         # cria e configura ação de alinhar horizontalmente itens no diagrama
         # gráfico
@@ -247,7 +281,9 @@ class JanelaPrincipal(object):
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionGrid.setIcon(icon)
         self.actionGrid.setObjectName("actionHalign")
-        self.toolBar.addAction(self.actionHalign)
+        self.actionHalign.setShortcut('Ctrl+H')
+        #self.toolBar.addAction(self.actionHalign)
+        self.alignSubmenu.addAction(self.actionHalign)
 
         # cria e configura ação de alinhar verticalmente items no diagrama
         # gráfico
@@ -258,7 +294,9 @@ class JanelaPrincipal(object):
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionGrid.setIcon(icon)
         self.actionGrid.setObjectName("actionValign")
-        self.toolBar.addAction(self.actionValign)
+        self.actionValign.setShortcut('Ctrl+V')
+        #self.toolBar.addAction(self.actionValign)
+        self.alignSubmenu.addAction(self.actionValign)
 
         # cria e configura acao de selecionar items no diagrama grafico
         self.actionSelect = QtGui.QAction(
@@ -268,7 +306,9 @@ class JanelaPrincipal(object):
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionSelect.setIcon(icon)
         self.actionSelect.setObjectName("actionSelect")
-        self.toolBar.addAction(self.actionSelect)
+        self.actionSelect.setShortcut('Ctrl+E')
+        #self.toolBar.addAction(self.actionSelect)
+        self.orgMenu.addAction(self.actionSelect)
 
         # cria e configura ação de abrir a interface de simulação
         self.action_simulate = QtGui.QAction(
@@ -278,11 +318,13 @@ class JanelaPrincipal(object):
         icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionGrid.setIcon(icon)
         self.actionGrid.setObjectName("actionSimulate")
-        self.toolBar.addAction(self.action_simulate)
+        self.action_simulate.setShortcut('Ctrl+M')
+        #self.toolBar.addAction(self.action_simulate)
+        self.simulationMenu.addAction(self.action_simulate)
 
         # configurações adicionais
         self.retranslateUi(main_window)
-        self.toolBox.setCurrentIndex(0)
+        #self.toolBox.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(main_window)
 
     def itemInserted(self, item_type):
@@ -357,9 +399,9 @@ class JanelaPrincipal(object):
             "main_window", "Smart Power v0.2 - Simulador de Redes Elétricas de Distribuição",
             None, QtGui.QApplication.UnicodeUTF8))
 
-        self.toolBar.setWindowTitle(
-            QtGui.QApplication.translate("main_window", "toolBar", None,
-                                         QtGui.QApplication.UnicodeUTF8))
+        #self.toolBar.setWindowTitle(
+        #    QtGui.QApplication.translate("main_window", "toolBar", None,
+        #                                 QtGui.QApplication.UnicodeUTF8))
 
         self.substationButton.setText(
             QtGui.QApplication.translate(
@@ -423,25 +465,25 @@ class JanelaPrincipal(object):
         self.actionExit.setToolTip(
             QtGui.QApplication.translate(
                 "main_window", "Sair", None, QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionExit.setShortcut(
             QtGui.QApplication.translate(
                 "main_window", "4, Backspace", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''    
         self.actionSave.setText(
             QtGui.QApplication.translate(
                 "main_window", "Salvar", None, QtGui.QApplication.UnicodeUTF8))
-
+    
         self.actionSave.setToolTip(
             QtGui.QApplication.translate(
                 "main_window", "Salvar", None, QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionSave.setShortcut(
             QtGui.QApplication.translate(
                 "main_window", "4, Ctrl + S", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionOpen.setText(
             QtGui.QApplication.translate(
                 "main_window", "Abrir", None, QtGui.QApplication.UnicodeUTF8))
@@ -449,12 +491,12 @@ class JanelaPrincipal(object):
         self.actionOpen.setToolTip(
             QtGui.QApplication.translate(
                 "main_window", "Abrir", None, QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionOpen.setShortcut(
             QtGui.QApplication.translate(
                 "main_window", "4, Ctrl + A", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionGrid.setText(
             QtGui.QApplication.translate(
                 "main_window", "Grade", None, QtGui.QApplication.UnicodeUTF8))
@@ -462,42 +504,42 @@ class JanelaPrincipal(object):
         self.actionGrid.setToolTip(
             QtGui.QApplication.translate(
                 "main_window", "Grade", None, QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionGrid.setShortcut(
             QtGui.QApplication.translate(
                 "main_window", "Ctrl, g", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionHalign.setText(
             QtGui.QApplication.translate(
-                "main_window", "Alinha Horizontalmente", None,
+                "main_window", "Horizontalmente", None,
                 QtGui.QApplication.UnicodeUTF8))
 
         self.actionHalign.setToolTip(
             QtGui.QApplication.translate(
                 "main_window", "Alinha Horizontalmente", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionHalign.setShortcut(
             QtGui.QApplication.translate(
                 "main_window", "Ctrl, h", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionValign.setText(
             QtGui.QApplication.translate(
-                "main_window", "Alinha Verticalmente", None,
+                "main_window", "Verticalmente", None,
                 QtGui.QApplication.UnicodeUTF8))
 
         self.actionValign.setToolTip(
             QtGui.QApplication.translate(
                 "main_window", "Alinha Verticalmente", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionValign.setShortcut(
             QtGui.QApplication.translate(
                 "main_window", "Ctrl, h", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionSelect.setText(
             QtGui.QApplication.translate(
                 "main_window", "Selecionar Items", None,
@@ -507,12 +549,12 @@ class JanelaPrincipal(object):
             QtGui.QApplication.translate(
                 "main_window", "Selecionar Items", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.actionSelect.setShortcut(
             QtGui.QApplication.translate(
                 "main_window", "Ctrl, e", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.action_simulate.setText(
             QtGui.QApplication.translate(
                 "main_window", "Simular", None,
@@ -522,12 +564,12 @@ class JanelaPrincipal(object):
             QtGui.QApplication.translate(
                 "main_window", "Simular", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
         self.action_simulate.setShortcut(
             QtGui.QApplication.translate(
                 "main_window", "Ctrl, m", None,
                 QtGui.QApplication.UnicodeUTF8))
-
+        '''
 
 class ControlMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
