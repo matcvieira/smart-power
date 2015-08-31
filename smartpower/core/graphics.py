@@ -2024,7 +2024,7 @@ class SceneWidget(QtGui.QGraphicsScene):
         load = xml2objects.Carregador(bridge.path)
         # Carrega a topologia
         top = load.carregar_topologia()
-        sub1 = top["subestacoes"]["SE1"]
+        sub1 = top["subestacoes"]["SE2"]
         sub1.calculaimpedanciaeq()
         data1 = sub1.calculacurto('monofasico')
         #print data1[0]

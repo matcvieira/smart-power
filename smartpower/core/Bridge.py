@@ -822,7 +822,7 @@ class Convert(object):
             for trecho in self.lista_trechos:
                 mrid_trecho = str(trecho.find('mrid').text).strip()
                 # Caso positivo, adiciona a barra e o respectivo religador a lista de nos do trecho
-                if mrid_barra == mrid_trecho[0:2]:
+                if mrid_barra == mrid_trecho[0:2] or mrid_barra == mrid_trecho[len(mrid_trecho)-2:len(mrid_trecho)]:
                     trecho.nos.append(barra)
                     for breaker in self.xml_cim.findAll('breaker'):
                         if str(breaker.find('mrid').text).strip() == mrid_trecho[2:len(mrid_trecho)]:
