@@ -20,14 +20,6 @@ from smartpower.calc import xml2objects
 
 
 lista_no_conectivo = []
-allNode = []
-
-class communicate(QtCore.QObject):
-
-    signalText = QtCore.Signal()
-
-    def __init__(self):
-        super(communicate, self).__init__()
 
 class DashedLine(QtGui.QGraphicsLineItem):
     '''
@@ -336,7 +328,6 @@ class Edge(QtGui.QGraphicsLineItem):
         self.setSelected(True)
         self.myEdgeMenu.exec_(event.screenPos() + QtCore.QPointF(20, 20))
 
-####cw3
 class Text(QtGui.QGraphicsTextItem):
     '''
         Classe que implementa o objeto Text Genérico
@@ -384,7 +375,7 @@ class Node(QtGui.QGraphicsRectItem):
     '''
     # tipos de itens possiveis
     Subestacao, Religador, Barra, Agent, NoDeCarga, NoConectivo = range(6)
-    # visibilidade dos itens por tipo cw5
+    # lista que armazena a visibilidade dos textos de cada tipo elemento CW
     textVisibility = [True, True, True, True, True, True]
 
     def __init__(self, item_type, node_menu, parent=None, scene=None):
@@ -427,7 +418,7 @@ class Node(QtGui.QGraphicsRectItem):
             self.text = Text('', self, self.scene())
             self.text.setPos(self.mapFromItem(self.text, 10, rect.height()))
             # Cria o objeto chave que contém os dados elétricos do elemento
-            # religador.
+            # religador
             self.chave = Religador(self.text.toPlainText(), 0, 0, 0, 0, 1)
         # Se o item a ser inserido for do tipo barra:
         elif self.myItemType == self.Barra:
@@ -455,6 +446,7 @@ class Node(QtGui.QGraphicsRectItem):
         # Se o item a ser inserido for do tipo nó conectivo:
         elif self.myItemType == self.NoConectivo:
             rect = QtCore.QRectF(0, 0, 7, 7)
+            self.text = Text('', self, self.scene())    
 
         # Se o item a ser inserido for do tipo nó de carga:
         elif self.myItemType == self.NoDeCarga:
@@ -482,7 +474,6 @@ class Node(QtGui.QGraphicsRectItem):
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable, True)
         self.setFlag(QtGui.QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setZValue(0)
-        allNode.append(self)
 
     def fix_item(self):
         '''
@@ -607,8 +598,7 @@ class Node(QtGui.QGraphicsRectItem):
             suas formas baseadas em seus retângulos.
             Ver método paint em PySide.
         '''
-        #cw4
-        #####
+        # Seta a visibilidade do texto antes de desenhá-lo. CW
         self.text.setVisible(self.textVisibility[self.myItemType])
         # Caso o item a ser inserido seja do tipo subestacão:
         if self.myItemType == self.Subestacao:
@@ -906,9 +896,6 @@ class SceneWidget(QtGui.QGraphicsScene):
     # Signal definido para a classe SceneWidget enviado quando um item é
     # inserido no diagrama grafico
     itemInserted = QtCore.Signal(int)
-    # Objeto que controla os signals enviados quando um QToolButton do tipo
-    # Exibir Texto e pressionado. CW
-    textos = communicate()
 
     def __init__(self, window):
 
@@ -926,7 +913,7 @@ class SceneWidget(QtGui.QGraphicsScene):
         self.dict_prop = {}
         self.lista_no_conectivo = []
         # Definição da geometria inicial da cena
-        self.setSceneRect(0, 0, 800, 800)
+        self.setSceneRect(0, 0, 1600, 1600)
         self.myMode = self.MoveItem
         self.myItemType = Node.Subestacao
         self.my_background_style = self.NoStyle
@@ -1233,15 +1220,6 @@ class SceneWidget(QtGui.QGraphicsScene):
 
         return
 
-        ### redesenha todos os objetos da classe Node CW8
-    def scene_refresh(self):
-        '''    
-            for node in allNode:
-                print node.id
-                node.paint()
-                #node.paint(node.) ######AQUI!!!
-        '''
-
     def mouseMoveEvent(self, mouse_event):
         '''
             Este método define as ações realizadas quando um evento do tipo
@@ -1535,7 +1513,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             super(SceneWidget, self).keyPressEvent(event)
         return
 
-    ### Configura a visibilidade do texto de cada elemento CW6 
+    ### Funções que modificam a visibilidade do texto de cada elemento e redesenham a SceneWidget CW 
     ### Subestação
     def setTextSubstation(self):
         '''
@@ -1546,40 +1524,40 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.Subestacao] = False
         else :
             Node.textVisibility[Node.Subestacao] = True
-        self.textos.signalText.emit()
+        self.update(self.sceneRect())
     ### Religador
     def setTextRecloser(self):
         '''
             Altera o parâmetro da classe Node que seta a visibilidade dos
-            textos dos objetos Node do tipo Subestacao.
+            textos dos objetos Node do tipo Religador.
         '''
         if Node.textVisibility[Node.Religador] == True:
             Node.textVisibility[Node.Religador] = False
         else :
             Node.textVisibility[Node.Religador] = True
-        self.textos.signalText.emit()    
-    ### NoDecarga
+        self.update(self.sceneRect())
+    ### Nó De carga
     def setTextNodeC(self):
         '''
             Altera o parâmetro da classe Node que seta a visibilidade dos
-            textos dos objetos Node do tipo Subestacao.
+            textos dos objetos Node do tipo No de carga.
         '''
         if Node.textVisibility[Node.NoDeCarga] == True:
             Node.textVisibility[Node.NoDeCarga] = False
         else :
             Node.textVisibility[Node.NoDeCarga] = True
-        self.textos.signalText.emit()
+        self.update(self.sceneRect())
     ### Barra
     def setTextBus(self):
         '''
             Altera o parâmetro da classe Node que seta a visibilidade dos
-            textos dos objetos Node do tipo Subestacao.
+            textos dos objetos Node do tipo Barra.
         '''
         if Node.textVisibility[Node.Barra] == True:
             Node.textVisibility[Node.Barra] = False
         else :
             Node.textVisibility[Node.Barra] = True
-        self.textos.signalText.emit()
+        self.update(self.sceneRect())
 
     def keyReleaseEvent(self, event):
         key = event.key()
@@ -1742,8 +1720,6 @@ class SceneWidget(QtGui.QGraphicsScene):
                                     item.Noc, edge.w1, self.myLineMenu)
                             self.addItem(new_edge)
                     item.remove_edges()
-                ### remove o objeto da lista allNode CW8
-                    allNode.pop(allNode.index(item))
                 # Caso o item possua mais de duas linhas ligadas, o comporta
                 # mento se torna imprevisível, então é emitida uma mensagem ao
                 # usuário restringindo esta ação.

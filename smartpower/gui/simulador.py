@@ -70,7 +70,7 @@ class JanelaPrincipal(object):
         self.helpMenu = self.menubar.addMenu('Ajuda')
         #Cria o submenu Alinhar e o coloca no menu Organizar
         self.alignSubmenu = self.orgMenu.addMenu('Alinhar')
-        #Cria o submenu Texto e o coloca no menu Organizar CW7
+        #Cria o submenu Texto e o coloca no menu Organizar CW
         self.textSubmenu = self.showMenu.addMenu('Texto')
 
         # define a barra de status
@@ -324,7 +324,7 @@ class JanelaPrincipal(object):
         #self.toolBar.addAction(self.action_simulate)
         self.simulationMenu.addAction(self.action_simulate)
 
-        # cria e configura a acao de tornar o texto visível ou não CW1
+        # cria e configura a acao de tornar o texto visível ou não CW
         ### subestação
         self.actionTextVisibleSubstation = QtGui.QAction(
             main_window, triggered=self.sceneWidget.setTextSubstation)
@@ -341,13 +341,13 @@ class JanelaPrincipal(object):
         self.textSubmenu.addAction(self.actionTextVisibleRecloser)
         ### barra
         self.actionTextVisibleBus =QtGui.QAction(
-            main_window, triggered=self.sceneWidget.setTextRecloser)
+            main_window, triggered=self.sceneWidget.setTextBus)
         self.actionTextVisibleBus.setIcon(icon)
         self.actionTextVisibleBus.setObjectName("actionTextVisibleBus")
         self.textSubmenu.addAction(self.actionTextVisibleBus)
         ### no de carga
         self.actionTextVisibleNodeC =QtGui.QAction(
-            main_window, triggered=self.sceneWidget.setTextRecloser)
+            main_window, triggered=self.sceneWidget.setTextNodeC)
         self.actionTextVisibleNodeC.setIcon(icon)
         self.actionTextVisibleNodeC.setObjectName("actionTextVisibleNodeC")
         self.textSubmenu.addAction(self.actionTextVisibleNodeC)
@@ -594,45 +594,39 @@ class JanelaPrincipal(object):
             QtGui.QApplication.translate(
                 "main_window", "Simular", None,
                 QtGui.QApplication.UnicodeUTF8))
-        '''
-        self.action_simulate.setShortcut(
-            QtGui.QApplication.translate(
-                "main_window", "Ctrl, m", None,
-                QtGui.QApplication.UnicodeUTF8))
-        '''
-        ######cw2
         
+        ## Configuração das QActions para exibir textos dos elementos, sem atalhos. CW
         self.actionTextVisibleSubstation.setText(
             QtGui.QApplication.translate(
-                "main_window", "Texto Subestação", None, QtGui.QApplication.UnicodeUTF8))
+                "main_window", "Subestações", None, QtGui.QApplication.UnicodeUTF8))
 
         self.actionTextVisibleSubstation.setToolTip(
             QtGui.QApplication.translate(
-                "main_window", "Texto Subestação", None, QtGui.QApplication.UnicodeUTF8))
+                "main_window", "Exibe ou apaga os textos dos elementos do tipo Subestação", None, QtGui.QApplication.UnicodeUTF8))
 
         self.actionTextVisibleRecloser.setText(
             QtGui.QApplication.translate(
-                "main_window", "Texto Religador", None, QtGui.QApplication.UnicodeUTF8))
+                "main_window", "Religadores", None, QtGui.QApplication.UnicodeUTF8))
 
         self.actionTextVisibleRecloser.setToolTip(
             QtGui.QApplication.translate(
-                "main_window", "Texto Religador", None, QtGui.QApplication.UnicodeUTF8))
+                "main_window", "Exibe ou apaga os textos dos elementos do tipo Religador", None, QtGui.QApplication.UnicodeUTF8))
 
         self.actionTextVisibleBus.setText(
             QtGui.QApplication.translate(
-                "main_window", "Texto Barra", None, QtGui.QApplication.UnicodeUTF8))
+                "main_window", "Barras", None, QtGui.QApplication.UnicodeUTF8))
 
         self.actionTextVisibleBus.setToolTip(
             QtGui.QApplication.translate(
-                "main_window", "Texto Barra", None, QtGui.QApplication.UnicodeUTF8))
+                "main_window", "Exibe ou apaga os textos dos elementos do tipo Religador", None, QtGui.QApplication.UnicodeUTF8))
 
         self.actionTextVisibleNodeC.setText(
             QtGui.QApplication.translate(
-                "main_window", "Texto Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
+                "main_window", "Nós de Carga", None, QtGui.QApplication.UnicodeUTF8))
 
-        self.actionTextVisibleRecloser.setToolTip(
+        self.actionTextVisibleNodeC.setToolTip(
             QtGui.QApplication.translate(
-                "main_window", "Texto Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
+                "main_window", "Exibe ou apaga os textos dos elementos do tipo Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
 
 class ControlMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -640,14 +634,8 @@ class ControlMainWindow(QtGui.QMainWindow):
         self.ui = JanelaPrincipal()
         self.ui.inicializar_componentes(self)
 
-    def repaint(self):
-        super.repaint()
-        print "ok"
-        pass
-
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mySW = ControlMainWindow()
-    mySW.ui.sceneWidget.textos.signalText.connect(mySW.repaint())
     mySW.show()
     sys.exit(app.exec_())
