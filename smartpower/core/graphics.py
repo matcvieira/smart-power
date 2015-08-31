@@ -377,6 +377,7 @@ class Node(QtGui.QGraphicsRectItem):
     Subestacao, Religador, Barra, Agent, NoDeCarga, NoConectivo = range(6)
     # lista que armazena a visibilidade dos textos de cada tipo elemento CW
     textVisibility = [True, True, True, True, True, True]
+    allNodes = []
 
     def __init__(self, item_type, node_menu, parent=None, scene=None):
         '''
@@ -400,6 +401,7 @@ class Node(QtGui.QGraphicsRectItem):
         self.mean_pos = None            # Atributo de posição média.
         self.text_config = 'Custom'     # Atributo da configuração de relé.
         self.pos_ref = 0                # Atributo de posição referência.
+        self.scene_node = scene
         # Se o item a ser inserido for do tipo subestação:
         if self.myItemType == self.Subestacao:
             # Define o retângulo.
@@ -474,6 +476,7 @@ class Node(QtGui.QGraphicsRectItem):
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable, True)
         self.setFlag(QtGui.QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setZValue(0)
+        Node.allNodes.append(self)
 
     def fix_item(self):
         '''
@@ -1524,7 +1527,11 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.Subestacao] = False
         else :
             Node.textVisibility[Node.Subestacao] = True
-        self.update(self.sceneRect())
+        self.sUpdate()
+        print self.activePanel()
+        #for item in Node.allNodes:
+        #    item.scene_node.sendEvent(item, QtCore.QEvent(QtCore.QEvent.Paint))
+
     ### Religador
     def setTextRecloser(self):
         '''
@@ -1535,7 +1542,8 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.Religador] = False
         else :
             Node.textVisibility[Node.Religador] = True
-        self.update(self.sceneRect())
+        self.setSceneRect(0, 0, 1600, 1600)
+        self.sUpdate()
     ### Nó De carga
     def setTextNodeC(self):
         '''
@@ -1546,7 +1554,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.NoDeCarga] = False
         else :
             Node.textVisibility[Node.NoDeCarga] = True
-        self.update(self.sceneRect())
+        self.sUpdate()
     ### Barra
     def setTextBus(self):
         '''
@@ -1557,7 +1565,16 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.Barra] = False
         else :
             Node.textVisibility[Node.Barra] = True
-        self.update(self.sceneRect())
+        self.sUpdate()
+
+    def sUpdate(self):
+        '''
+            Atualiza todas as QGraphicsScene do programa
+        '''
+        self.update()
+        #for scene in SceneWidget.allScenes:
+            #scene.update()
+
 
     def keyReleaseEvent(self, event):
         key = event.key()
@@ -1720,6 +1737,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                                     item.Noc, edge.w1, self.myLineMenu)
                             self.addItem(new_edge)
                     item.remove_edges()
+                    Node.allNodes.remove(item)
                 # Caso o item possua mais de duas linhas ligadas, o comporta
                 # mento se torna imprevisível, então é emitida uma mensagem ao
                 # usuário restringindo esta ação.
