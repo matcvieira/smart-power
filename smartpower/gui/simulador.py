@@ -7,6 +7,7 @@
 
 from PySide import QtCore, QtGui
 from smartpower.core.graphics import SceneWidget, ViewWidget
+from smartpower.core.cursor import Cursor
 import sys
 import os
 import smartpower.core.models as models
@@ -19,8 +20,6 @@ class JanelaPrincipal(object):
 
     def __init__(self):
         pass
-        # self.createActions()
-        # self.createMenus()
 
     def inicializar_componentes(self, main_window):
         '''
@@ -125,12 +124,12 @@ class JanelaPrincipal(object):
         self.gridlayout_page_1.setObjectName("gridlayout_page_1")
 
         # define os botoes da primeira pagina do dockWidget e insere no
-        # FormLayout
-        self.iconSubstation = QtGui.QIcon("iconSubstation.png")
-        self.iconBus = QtGui.QIcon("iconBus.png")
-        self.iconRecloser = QtGui.QIcon("iconRecloser.png")
-        self.iconLine = QtGui.QIcon("iconLine.png")
-        self.iconNode = QtGui.QIcon("iconNode.png")
+        # FormLayout cw
+        self.iconSubstation = QtGui.QIcon("icones/iconSubstation.png")
+        self.iconBus = QtGui.QIcon("icones/iconBus.png")
+        self.iconRecloser = QtGui.QIcon("icones/iconRecloser.png")
+        self.iconLine = QtGui.QIcon("icones/iconLine.png")
+        self.iconNode = QtGui.QIcon("icones/iconNode.png")
         self.icontam = QtCore.QSize(90,90)
         self.substationButton = QtGui.QToolButton(self.page_1)
         self.substationButton.setIcon(self.iconSubstation)
@@ -168,7 +167,8 @@ class JanelaPrincipal(object):
         self.buttonGroup.addButton(self.noButton, 4)
         self.buttonGroup.setExclusive(False)
 
-        self.buttonGroup.buttonClicked[int].connect(self.buttonGroupClicked)
+        self.buttonGroup.buttonPressed[int].connect(self.buttonGroupPressed)
+        #self.buttonGroup.buttonReleased[int].connect(self.buttonGroupReleased)
 
         # define labels da primeira pagina do dockWidget
         self.substationLabel = QtGui.QLabel('')
@@ -394,34 +394,61 @@ class JanelaPrincipal(object):
         else:
             self.sceneWidget.set_mode(self.sceneWidget.SelectItems)
 
-    def buttonGroupClicked(self, id):
+    def buttonGroupPressed(self, id):
         '''
             Callback chamada no momento em que um botão de inserção
-            de itens e pressionado.
+            de itens é pressionado. CW
         '''
 
-        if self.buttonGroup.button(id).isChecked():
-            state = 'COMP 1'
-        else:
-            state = 'COMP 2'
+        self.buttonGroup.button(id).setChecked(True)
 
-        buttons = self.buttonGroup.buttons()
+        # Altera o icone de acordo com o button pressionado: AQUIIII!!!!!
+        #self.main_window.cursor.setShapeRecl(self.main_window)
+        #print "mudou"
+        '''
+        buttons = self.buttonGroup.buttons() 
         for button in buttons:
-            if state == 'COMP 1':
+            if self.buttonGroup.button(id).isChecked():
                 if self.buttonGroup.button(id) != button:
                     button.setChecked(False)
-            elif state == 'COMP 2':
-                button.setChecked(False)
+            #else:
+                #button.setChecked(False)
 
-        if state == 'COMP 1':
+        # Altera o modo para: inserir linha, inserir item ou mover item.
+        if self.buttonGroup.button(id).isChecked():
             if id == 3:
                 self.sceneWidget.set_mode(SceneWidget.InsertLine)
             else:
                 self.sceneWidget.set_item_type(id)
                 self.sceneWidget.set_mode(SceneWidget.InsertItem)
-        elif state == 'COMP 2':
+        else:
             self.sceneWidget.set_mode(SceneWidget.MoveItem)
+        '''
 
+        buttons = self.buttonGroup.buttons() 
+        for button in buttons:
+            if self.buttonGroup.button(id) != button:
+                button.setChecked(False)
+
+        # Altera o modo para: inserir linha, inserir item ou mover item.
+        if id == 3:
+            self.sceneWidget.set_mode(SceneWidget.InsertLine)
+        else:
+            self.sceneWidget.set_item_type(id)
+            self.sceneWidget.set_mode(SceneWidget.InsertItem)
+        print "press group"
+
+    def buttonGroupUncheck(self):
+        '''
+            Callback chamada para desselecionar todos os buttons.
+        '''
+
+        buttons = self.buttonGroup.buttons()
+
+        for button in buttons:
+            button.setChecked(False)
+
+        self.sceneWidget.set_mode(SceneWidget.MoveItem)
 
     def retranslateUi(self, main_window):
 
@@ -631,8 +658,26 @@ class JanelaPrincipal(object):
 class ControlMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(ControlMainWindow, self).__init__(parent)
+        self.cursor = Cursor("")
+        self.setCursor(self.cursor)
         self.ui = JanelaPrincipal()
         self.ui.inicializar_componentes(self)
+
+    def mouseReleaseEvent(self, mouse_event):
+        self.cursor.setShapePad(self)
+        super(ControlMainWindow, self).mouseReleaseEvent(mouse_event)
+        
+        
+        sinal = QtGui.QGraphicsSceneMouseEvent(QtCore.QEvent.GraphicsSceneMouseRelease)
+        sinal.setPos(self.mapFromGlobal(self.cursor.pos()))
+        self.ui.sceneWidget.mouseReleaseEvent(sinal)
+        self.ui.buttonGroupUncheck()
+        print "release ControlMainWindow"
+    
+    def mousePressEvent(self, mouse_event):
+        self.cursor.setShapeSubs(self)
+        super(ControlMainWindow, self).mousePressEvent(mouse_event)
+        print "press ControlMainWindow"
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)

@@ -18,7 +18,6 @@ from smartpower.core import Bridge
 
 from smartpower.calc import xml2objects
 
-
 lista_no_conectivo = []
 
 class DashedLine(QtGui.QGraphicsLineItem):
@@ -953,6 +952,9 @@ class SceneWidget(QtGui.QGraphicsScene):
             Este método define as ações realizadas quando um evento do tipo
             mousePress é detectado no diagrama grafico
         '''
+
+        print "press Scene"
+
         super(SceneWidget, self).mousePressEvent(mouse_event)
         # Armazena em um atributo a posição em que o mouse foi apertado.
         self.pressPos = mouse_event.scenePos()
@@ -1016,6 +1018,7 @@ class SceneWidget(QtGui.QGraphicsScene):
         # Entra no modo passado à cena.
         # Se o modo for de inserção de itens:
         if self.myMode == self.InsertItem:
+            print "ok!!" #cw
             # Insere o item com determinado tipo (ver Node).
             if self.myItemType == Node.Religador:
                 item = Node(self.myItemType, self.myRecloserMenu)
@@ -1254,6 +1257,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             os dois elementos que estão ligados pela linha criada no evento
             mousePress.
         '''
+        print "Release Scene"
 
         # Se o modo atual for de inserção de linha, desligam-se as prioridades
         # de node e edge e cria uma flag block_on.
@@ -1631,7 +1635,7 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def set_mode(self, mode):
         '''
-            Define em qual modo
+            Define em qual modo.
         '''
         self.myMode = mode
 
@@ -2081,9 +2085,8 @@ class SceneWidget(QtGui.QGraphicsScene):
             self.my_background_style = self.GridStyle
 
     def simulate(self):
-
         '''
-        Inicia a simulação: cálculos de fluxo de carga e curto circuito
+            Inicia a simulação: cálculos de fluxo de carga e curto circuito
         '''
         # Força o usuário a salvar o diagrama antes da simulação
         path = self.main_window.save()
