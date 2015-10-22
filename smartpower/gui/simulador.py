@@ -19,6 +19,7 @@ class JanelaPrincipal(object):
     '''
 
     def __init__(self):
+        self.cursor = Cursor("") #cww
         pass
 
     def inicializar_componentes(self, main_window):
@@ -84,8 +85,9 @@ class JanelaPrincipal(object):
         main_window.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         '''
         # define o widget dockWidget dockWidget_Buttons e configura seu
-        # conteudo dockWidget_Buttons_Contents
-        self.dockWidget_Buttons = QtGui.QDockWidget(main_window)
+        # conteudo dockWidget_Buttons_Contents CWW
+        self.dockWidget_Buttons = ButtonWidget(main_window)#QtGui.QDockWidget(main_window)
+        self.dockWidget_Buttons.setCursor(self.cursor) #CWW'
         self.dockWidget_Buttons.setObjectName("dockWidget_Buttons")
         self.dockWidget_Buttons_Contents = QtGui.QWidget()
         self.dockWidget_Buttons_Contents.setMinimumWidth(230)
@@ -168,6 +170,8 @@ class JanelaPrincipal(object):
         self.buttonGroup.setExclusive(False)
 
         self.buttonGroup.buttonPressed[int].connect(self.buttonGroupPressed)
+        self.buttonGroup.buttonPressed[int].connect(main_window.setCursorIcon)
+        #self.buttonGroup.buttonReleased[int].connect(main_window.setCursorPad)
         #self.buttonGroup.buttonReleased[int].connect(self.buttonGroupReleased)
 
         # define labels da primeira pagina do dockWidget
@@ -399,8 +403,7 @@ class JanelaPrincipal(object):
             Callback chamada no momento em que um botão de inserção
             de itens é pressionado. CW
         '''
-
-        self.buttonGroup.button(id).setChecked(True)
+        self.buttonGroup.button(id).setChecked(True) #cwwww
 
         # Altera o icone de acordo com o button pressionado: AQUIIII!!!!!
         #self.main_window.cursor.setShapeRecl(self.main_window)
@@ -438,11 +441,19 @@ class JanelaPrincipal(object):
             self.sceneWidget.set_mode(SceneWidget.InsertItem)
         print "press group"
 
+    def buttonGroupReleased(self):
+        '''
+            Callback chamada no momento em que um botão de inserção
+            de itens é liberado. CW
+        '''
+        print "group release"
+        self.dockWidget_Buttons.setCursor(Cursor(""))
+
+
     def buttonGroupUncheck(self):
         '''
             Callback chamada para desselecionar todos os buttons.
         '''
-
         buttons = self.buttonGroup.buttons()
 
         for button in buttons:
@@ -655,6 +666,18 @@ class JanelaPrincipal(object):
             QtGui.QApplication.translate(
                 "main_window", "Exibe ou apaga os textos dos elementos do tipo Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
 
+class ButtonWidget(QtGui.QDockWidget):
+    '''
+        Classe que cria a widget que conterá os buttons. CWWWW
+    '''
+    def __init__(self, main_window):
+        super(ButtonWidget, self).__init__(main_window)
+
+    def mouseReleaseEvent(self, mouse_event):
+        print "ButtonWidget release"
+        self.setCursor(Cursor(""))
+        super(ButtonWidget, self).mouseReleaseEvent(mouse_event)
+
 class ControlMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(ControlMainWindow, self).__init__(parent)
@@ -664,20 +687,28 @@ class ControlMainWindow(QtGui.QMainWindow):
         self.ui.inicializar_componentes(self)
 
     def mouseReleaseEvent(self, mouse_event):
-        self.cursor.setShapePad(self)
+        self.setCursorPad(1)
         super(ControlMainWindow, self).mouseReleaseEvent(mouse_event)
-        
-        
         sinal = QtGui.QGraphicsSceneMouseEvent(QtCore.QEvent.GraphicsSceneMouseRelease)
         sinal.setPos(self.mapFromGlobal(self.cursor.pos()))
         self.ui.sceneWidget.mouseReleaseEvent(sinal)
         self.ui.buttonGroupUncheck()
         print "release ControlMainWindow"
-    
-    def mousePressEvent(self, mouse_event):
-        self.cursor.setShapeSubs(self)
-        super(ControlMainWindow, self).mousePressEvent(mouse_event)
-        print "press ControlMainWindow"
+
+    def setCursorIcon(self, id):
+        '''
+            Callback que altera o formato do cursor dando a impressão visual de 
+            'arrastar' o elemento para dentro do diagrama gráfico. cw
+        '''
+        self.cursor.setShape(self, id)
+        self.ui.cursor.setShape(self.ui.dockWidget_Buttons, id)
+
+    def setCursorPad(self, id):
+        '''
+            Função que altera o formato do cursor para a seta padrão. cw
+        '''
+        self.cursor.setShapePad(self)
+        self.ui.cursor.setShapePad(self.ui.dockWidget_Buttons)
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)

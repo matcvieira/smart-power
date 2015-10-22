@@ -317,7 +317,7 @@ class Edge(QtGui.QGraphicsLineItem):
 
         self.setSelected(True)
         super(Edge, self).mousePressEvent(mouse_event)
-        return
+        #return
 
     def contextMenuEvent(self, event):
         '''
@@ -1016,6 +1016,7 @@ class SceneWidget(QtGui.QGraphicsScene):
 
         # Caso o botão pressionado do mouse for o esquerdo:
         # Entra no modo passado à cena.
+        '''
         # Se o modo for de inserção de itens:
         if self.myMode == self.InsertItem:
             print "ok!!" #cw
@@ -1071,6 +1072,16 @@ class SceneWidget(QtGui.QGraphicsScene):
 
         # Caso o modo passado à cena seja de inserção de linha:
         elif self.myMode == self.InsertLine:
+        '''
+        ### Cww alteração para inserir items ao liberar
+        ###
+        ###
+        # Caso o modo passado à cena seja de inserção de linha:
+        if self.myMode == self.InsertLine:
+        ###
+        ###
+        ###
+
             # Cria o elipse para o mesmo fim explicado anteriormente: dar
             # margem de ação para os "presses" do mouse
             ell = QtGui.QGraphicsEllipseItem()
@@ -1435,6 +1446,79 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.setSelected(False)
 
             self.no = None
+            self.line = None
+            self.itemInserted.emit(3)
+
+
+        ###cww tentativa de fazer o release desenhar itens
+        ###
+        ###
+
+
+        # Armazena em um atributo a posição em que o mouse foi apertado.
+        self.pressPos = mouse_event.scenePos()
+        # Define o break_mode, utilizado no método de quebrar linhas (ver
+        # break_edge em SceneWidget.
+        self.break_mode = 2
+        # Cria uma variável para receber uma edge que foi quebrada.
+        self.edge_broken = None
+
+        # Se o modo for o de inserção de itens
+        if self.myMode == self.InsertItem:
+            print "ok!!" #cw
+            # Insere o item com determinado tipo (ver Node).
+            if self.myItemType == Node.Religador:
+                item = Node(self.myItemType, self.myRecloserMenu)
+            elif self.myItemType == Node.Barra:
+                item = Node(self.myItemType, self.myBusMenu)
+            elif self.myItemType == Node.Subestacao:
+                item = Node(self.myItemType, self.mySubstationMenu)
+            elif self.myItemType == Node.NoDeCarga:
+                item = Node(self.myItemType, self.mySubstationMenu)
+            # Ajusta a posição do item para a posição do press do mouse.
+            item.setPos(item.adjust_in_grid(mouse_event.scenePos()))
+            self.addItem(item)
+
+            # Quando um item é adicionado, o dialog de configuração se abre
+            # para que o usuário prontamente insira seus dados (ver
+            # launch_dialog). Caso o usuário cancele a janela, o item é
+            # removido da cena.
+            if self.myItemType == Node.Religador:
+                item.setSelected(True)
+                result = self.launch_dialog()
+                item.setSelected(False)
+                if result == 0:
+                    self.removeItem(item)
+
+            elif self.myItemType == Node.Barra:
+                item.setSelected(True)
+                result = self.launch_dialog()
+                item.setSelected(False)
+                if result == 0:
+                    self.removeItem(item)
+            elif self.myItemType == Node.Subestacao:
+                item.setSelected(True)
+                result = self.launch_dialog()
+                item.setSelected(False)
+                if result == 0:
+                    self.removeItem(item)
+
+            elif self.myItemType == Node.NoDeCarga:
+                item.setSelected(True)
+                result = self.launch_dialog()
+                item.setSelected(False)
+                if result == 0:
+                    self.removeItem(item)
+            # Cria um comando para que seja possibilitada a ação de desfazer/
+            # refazer. PENDÊNCIA
+            comando = AddRemoveCommand("Add", self, item)
+            self.undoStack.push(comando)
+            # Emite um sinal contendo o tipo do item.
+            self.itemInserted.emit(self.myItemType)
+
+        ###
+        ###
+        ###
 
         # Caso o modo seja de seleção de itens, seleciona os itens englobados
         # pelo retângulo de seleção.
@@ -1445,8 +1529,8 @@ class SceneWidget(QtGui.QGraphicsScene):
             self.removeItem(self.selectRect)
             self.selectRect = None
 
-        self.line = None
-        self.itemInserted.emit(3)
+        #self.line = None
+        #self.itemInserted.emit(3)
         super(SceneWidget, self).mouseReleaseEvent(mouse_event)
 
     def mouseDoubleClickEvent(self, mouse_event):

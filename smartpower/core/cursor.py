@@ -24,6 +24,7 @@ class Cursor(QtGui.QCursor):
         '''
         cursor = Cursor(QtGui.QBitmap(u"icones/iconSubstation.png"))
         widget.setCursor(cursor)
+        print "subs"
 
     def setShapeRecl(self, widget):
         '''
@@ -31,6 +32,7 @@ class Cursor(QtGui.QCursor):
         '''
         cursor = Cursor(QtGui.QBitmap(u"icones/iconRecloser.png"))
         widget.setCursor(cursor)
+        print "recl"
 
     def setShapeBus(self, widget):
         '''
@@ -38,6 +40,7 @@ class Cursor(QtGui.QCursor):
         '''
         cursor = Cursor(QtGui.QBitmap(u"icones/iconBus.png"))
         widget.setCursor(cursor)
+        print "bus"
 
     def setShapeNodeC(self, widget):
         '''
@@ -45,6 +48,7 @@ class Cursor(QtGui.QCursor):
         '''
         cursor = Cursor(QtGui.QBitmap(u"icones/iconNode.png"))
         widget.setCursor(cursor)
+        print "nod"
 
     def setShapeImage(self, widget, image):
         '''
@@ -60,6 +64,21 @@ class Cursor(QtGui.QCursor):
         '''
         cursor = Cursor("")
         widget.setCursor(cursor)
+        print "nada"
+
+    def setShape(self, widget, id):
+        '''
+            Método que seta o formato do cursor para o icone do botao 
+            pressionado de acordo com o id passado
+        '''
+        if id == 0:
+            self.setShapeSubs(widget)
+        elif id == 1:
+            self.setShapeRecl(widget)
+        elif id == 2:
+            self.setShapeBus(widget)
+        elif id == 4:
+            self.setShapeNodeC(widget)
     
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
