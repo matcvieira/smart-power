@@ -12,25 +12,25 @@ Classe que implementa a interface gráfica do simulador.
 Métodos
 ++++++++++
 
-* `inicializar_componentes(main_window)`_
-* `itemInserted(item_type)`_
+* `inicializar_componentes( main_window )`_
+* `itemInserted( item_type )`_
 * `save()`_
 * `open()`_
 * `setSelect()`_
-* `buttonGroupClicked(id)`_
-* `retranslateUi(main_window)`_
+* `buttonGroupClicked( id )`_
+* `retranslateUi( main_window )`_
 
 __init__()
 ++++++++++++++++++++++++++
 Metodo construtor da classe JanelaPrincipal.
 
-inicializar_componentes(main_window)
+inicializar_componentes( main_window )
 ++++++++++++++++++++++++++++++++++++++
 **Parâmetro: main_window** - object.JanelaPrincipal
 
 Método que implementa os componentes da interface gráfica.
 
-itemInserted(item_type)
+itemInserted( item_type )
 ++++++++++++++++++++++++++
 **Parâmetro: item_type** - 
 
@@ -51,13 +51,13 @@ setSelect()
 
 Callback chamada no momento em que se faz necessário alterar o modo de seleção para movimentação de itens no diagrama gráfico ou vice-versa.
 
-buttonGroupClicked(id)
-+++++++++++++++++++++++
+buttonGroupClicked( id )
++++++++++++++++++++++++++
 **Parâmetro: id** - 
 
 Callback chamada no momento em que um botão de inserção de itens é pressionado.
 
-retranslateUi(main_window)
+retranslateUi( main_window )
 +++++++++++++++++++++++++++
 **Parâmetro: main_window** - object.JanelaPrincipal
 

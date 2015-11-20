@@ -579,6 +579,10 @@ class Node(QtGui.QGraphicsRectItem):
         return (self.pos() + point / 2)
 
     def set_center(self, pos):
+        '''
+            Método que define o posicionamento do objeto na tela de desenho
+            setando o seu ponto central.
+        '''
         w = self.rect().width()
         h = self.rect().height()
         point = QtCore.QPointF(w / 2, h / 2)
@@ -1456,7 +1460,9 @@ class SceneWidget(QtGui.QGraphicsScene):
 
 
         # Armazena em um atributo a posição em que o mouse foi apertado.
-        self.pressPos = mouse_event.scenePos()
+        self.pressPos = mouse_event.pos() #cw77
+        print mouse_event.pos()
+        print "posicao do mouse"
         # Define o break_mode, utilizado no método de quebrar linhas (ver
         # break_edge em SceneWidget.
         self.break_mode = 2
@@ -1465,7 +1471,6 @@ class SceneWidget(QtGui.QGraphicsScene):
 
         # Se o modo for o de inserção de itens
         if self.myMode == self.InsertItem:
-            print "ok!!" #cw
             # Insere o item com determinado tipo (ver Node).
             if self.myItemType == Node.Religador:
                 item = Node(self.myItemType, self.myRecloserMenu)
@@ -1476,7 +1481,8 @@ class SceneWidget(QtGui.QGraphicsScene):
             elif self.myItemType == Node.NoDeCarga:
                 item = Node(self.myItemType, self.mySubstationMenu)
             # Ajusta a posição do item para a posição do press do mouse.
-            item.setPos(item.adjust_in_grid(mouse_event.scenePos()))
+            item.setPos(item.adjust_in_grid(self.pressPos))
+            #item.setPos(item.adjust_in_grid(mouse_event.scenePos()))
             self.addItem(item)
 
             # Quando um item é adicionado, o dialog de configuração se abre
@@ -1571,6 +1577,10 @@ class SceneWidget(QtGui.QGraphicsScene):
     # Define a função de aperto de diversas teclas. O trecho a seguir é
     # auto-explicativo.
     def keyPressEvent(self, event):
+        '''
+            Define a função de pressionar múltiplas teclas e executar comandos ou atalhos.
+            ctrl+Z, por exemplo. 
+        '''
         key = event.key()
         if self.keyControlIsPressed is True:
             if key == QtCore.Qt.Key_Z:
@@ -1657,21 +1667,23 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def sUpdate(self):
         '''
-            Atualiza todas as QGraphicsScene do programa
+            Atualiza todos os elementos da QGraphicsScene do programa
         '''
         self.update()
-        #for scene in SceneWidget.allScenes:
-            #scene.update()
-
 
     def keyReleaseEvent(self, event):
+        '''
+            Função que implementa a função chamada quando uma tecla é liberada. 
+        '''
         key = event.key()
         if key == QtCore.Qt.Key_Control:
             self.keyControlIsPressed = False
 
-    # Função break_edge usada para quebrar a linha quando a inserção é a partir
-    # ou em cima de uma linha.
     def break_edge(self, edge, mode, original_edge, insert=None):
+        '''
+            Função break_edge usada para quebrar a linha quando a inserção é a partir
+            ou em cima de uma linha.
+        '''
         if mode == 3:
             break_point = insert
         if mode == 2:
@@ -1692,8 +1704,10 @@ class SceneWidget(QtGui.QGraphicsScene):
         new_edge_1.update_position()
         new_edge_2.update_position()
 
-    # Definição da função de recuperar uma linha quando está foi quebrada.
     def recover_edge(self, item):
+        '''
+            Definição da função de recuperar uma linha quando esta foi quebrada.
+        '''
         w = []
 
         for edge in item.edges:
@@ -2027,6 +2041,10 @@ class SceneWidget(QtGui.QGraphicsScene):
                     item.rect().height() / 1.25)
 
     def align_line_h(self):
+        '''
+            Este método implementa a ação de alinhar horizontalmente os objetos da 
+            classe Line no diagrama gráfico.
+        '''
         w1_is_locked = False
         w2_is_locked = False
         for item in self.selectedItems():
@@ -2060,6 +2078,10 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.update_position()
 
     def align_line_v(self):
+        '''
+            Este método implementa a ação de alinhar verticalmente os objetos da 
+            classe Line no diagrama gráfico.
+        '''
         for item in self.selectedItems():
             if isinstance(item, Edge):
                 if item.w1.x() < item.w2.x():
@@ -2074,6 +2096,10 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.update_ret()
 
     def h_align(self):
+        '''
+            Este método implementa a ação de alinhar horizontalmente os objetos da 
+            classe Node no diagrama gráfico.
+        '''
         has_pos_priority = False
         has_bar_priority = False
         y_pos_list = []
@@ -2142,6 +2168,10 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.update_position()
 
     def v_align(self):
+        '''
+            Este método implementa a ação de alinhar verticalmente os objetos da 
+            classe Node no diagrama gráfico.
+        '''
         x_pos_list = []
         for item in self.selectedItems():
             if isinstance(item, Node):
@@ -2159,6 +2189,9 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.update_position()
 
     def set_grid(self):
+        '''
+            Cria uma grade no desenho, impondo posições pré-determinadas aos elementos 
+        '''
         if self.my_background_style == self.GridStyle:
             self.setBackgroundBrush(QtGui.QBrush(
                 QtCore.Qt.white, QtCore.Qt.NoBrush))
@@ -2170,7 +2203,7 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def simulate(self):
         '''
-            Inicia a simulação: cálculos de fluxo de carga e curto circuito
+            Inicia a simulação: cálculos de fluxo de carga e curto circuito.
         '''
         # Força o usuário a salvar o diagrama antes da simulação
         path = self.main_window.save()
@@ -2228,11 +2261,9 @@ class SceneWidget(QtGui.QGraphicsScene):
 
 class ViewWidget(QtGui.QGraphicsView):
     '''
-        Esta classe implementa o container QGraphicsView
-        onde residirá o objeto QGraphicsScene.
+        Esta classe implementa o container QGraphicsView onde residirá o objeto QGraphicsScene.
     '''
     def __init__(self, scene):
-
         super(ViewWidget, self).__init__(scene)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -2240,9 +2271,17 @@ class ViewWidget(QtGui.QGraphicsView):
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
 
     def wheelEvent(self, event):
+        '''
+            Função que implementa a ação de girar o scroll do mouse, ampliando ou reduzindo
+            o zoom do diagrama.
+        '''
         self.scale_view(math.pow(2.0, -event.delta() / 240.0))
 
     def scale_view(self, scale_factor):
+        '''
+            Função que calcula o fator de escala aplicado ao diagrama, alterando o tamanho do
+            mesmo e simulando a função zoom.
+        '''
         factor = self.matrix().scale(scale_factor, scale_factor).mapRect(
             QtCore.QRectF(0, 0, 1, 1)).width()
         if factor < 0.5 or factor > 3:

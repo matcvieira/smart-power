@@ -280,8 +280,9 @@ class XMLToDiagram():
 
 
 class CimXML():
-
-    '''Classe que representa os dados dos componentes em padrão CIM'''
+    '''
+        Classe que representa os dados dos componentes em padrão CIM
+    '''
 
     def __init__(self, scene):
         self.scene = scene
@@ -514,6 +515,10 @@ class CimXML():
 
 
     def montar_rede(self, scene):
+        '''
+            Função que lê os elementos contidos na scene, os classifica e os divide em listas 
+            de acordo com a função deles na rede, para então montar a rede seguindo o padrão CIM.
+        '''
 
         for item in self.scene.items():
             if isinstance(item, Node):

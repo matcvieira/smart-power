@@ -38,7 +38,7 @@ class Cursor(QtGui.QCursor):
         '''
             Método que seta o formato do cursor para o ícone de Barra #corrigir!!!
         '''
-        cursor = Cursor(QtGui.QBitmap(u"icones/iconBus.png"))
+        cursor = Cursor(QtGui.QBitmap(u"icones/iconBus2.png"))
         widget.setCursor(cursor)
         print "bus"
 
@@ -69,7 +69,7 @@ class Cursor(QtGui.QCursor):
     def setShape(self, widget, id):
         '''
             Método que seta o formato do cursor para o icone do botao 
-            pressionado de acordo com o id passado
+            pressionado de acordo com o id passado.
         '''
         if id == 0:
             self.setShapeSubs(widget)

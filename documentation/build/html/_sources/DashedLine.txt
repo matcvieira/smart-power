@@ -12,7 +12,7 @@ Descrição.............
 Métodos
 +++++++
 
-* ``paint(painter, option, widget)``_
+* `paint(painter, option, widget)`_
 
 __init__()
 ++++++++++

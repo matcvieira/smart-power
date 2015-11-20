@@ -86,7 +86,7 @@ class JanelaPrincipal(object):
         '''
         # define o widget dockWidget dockWidget_Buttons e configura seu
         # conteudo dockWidget_Buttons_Contents CWW
-        self.dockWidget_Buttons = ButtonWidget(main_window)#QtGui.QDockWidget(main_window)
+        self.dockWidget_Buttons = QtGui.QDockWidget(main_window)#QtGui.QDockWidget(main_window)
         self.dockWidget_Buttons.setCursor(self.cursor) #CWW'
         self.dockWidget_Buttons.setObjectName("dockWidget_Buttons")
         self.dockWidget_Buttons_Contents = QtGui.QWidget()
@@ -169,6 +169,7 @@ class JanelaPrincipal(object):
         self.buttonGroup.addButton(self.noButton, 4)
         self.buttonGroup.setExclusive(False)
 
+        self.buttonGroup.buttonClicked[int].connect(self.buttonGroupClicked)
         self.buttonGroup.buttonPressed[int].connect(self.buttonGroupPressed)
         self.buttonGroup.buttonPressed[int].connect(main_window.setCursorIcon)
         #self.buttonGroup.buttonReleased[int].connect(main_window.setCursorPad)
@@ -371,6 +372,9 @@ class JanelaPrincipal(object):
         pass
 
     def save(self):
+        '''
+            Função que salva o diagrama gráfico em um arquivo .XML 
+        '''
         filename = QtGui.QFileDialog.getSaveFileName(
             None, 'Salvar Diagrama', os.getenv('HOME'))
         file = models.DiagramToXML(self.sceneWidget)
@@ -383,6 +387,9 @@ class JanelaPrincipal(object):
         return filename_CIM
 
     def open(self):
+        '''
+            Função que redesenha um diagrama gráfico que foi salvo anteriormente em um arquivo .XML
+        '''
         filename = QtGui.QFileDialog.getOpenFileName(
             None, 'Abrir Diagrama', os.getenv('HOME'))
         file = models.XMLToDiagram(self.sceneWidget, filename[0])
@@ -397,6 +404,18 @@ class JanelaPrincipal(object):
             self.sceneWidget.set_mode(self.sceneWidget.MoveItem)
         else:
             self.sceneWidget.set_mode(self.sceneWidget.SelectItems)
+
+        for id in range(6):
+            self.buttonGroup.button(id).setChecked(False)       
+
+    def buttonGroupClicked(self, id):
+        '''
+            Callback chamada no momento em que um botão de inserção
+            de itens é clicado. CW
+        '''
+        if id==3:
+           self.buttonGroup.button(id).setChecked(True) 
+        pass
 
     def buttonGroupPressed(self, id):
         '''
@@ -666,19 +685,21 @@ class JanelaPrincipal(object):
             QtGui.QApplication.translate(
                 "main_window", "Exibe ou apaga os textos dos elementos do tipo Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
 
-class ButtonWidget(QtGui.QDockWidget):
-    '''
-        Classe que cria a widget que conterá os buttons. CWWWW
-    '''
-    def __init__(self, main_window):
-        super(ButtonWidget, self).__init__(main_window)
-
-    def mouseReleaseEvent(self, mouse_event):
-        print "ButtonWidget release"
-        self.setCursor(Cursor(""))
-        super(ButtonWidget, self).mouseReleaseEvent(mouse_event)
+#
+#class ButtonWidget(QtGui.QDockWidget):
+#    '''
+        #Classe que cria a widget que conterá os buttons. CWWWW
+#    '''
+#    def __init__(self, main_window):
+##
+ #   def mouseReleaseEvent(self, mouse_event):
+#        print "ButtonWidget release"
+#        self.setCursor(Cursor(""))
+#        super(ButtonWidget, self).mouseReleaseEvent(mouse_event)
+#    
 
 class ControlMainWindow(QtGui.QMainWindow):
+
     def __init__(self, parent=None):
         super(ControlMainWindow, self).__init__(parent)
         self.cursor = Cursor("")
@@ -687,13 +708,18 @@ class ControlMainWindow(QtGui.QMainWindow):
         self.ui.inicializar_componentes(self)
 
     def mouseReleaseEvent(self, mouse_event):
+        '''
+            Função da chamada no momento que o evento mouse release é enviado. Quando um
+            item arrastado para a área de desenho é liberado, este item é desenhado e o 
+            programa volta para o modo de seleção de itens.
+        ''' 
         self.setCursorPad(1)
         super(ControlMainWindow, self).mouseReleaseEvent(mouse_event)
         sinal = QtGui.QGraphicsSceneMouseEvent(QtCore.QEvent.GraphicsSceneMouseRelease)
-        sinal.setPos(self.mapFromGlobal(self.cursor.pos()))
+        sinal.setPos(self.ui.graphicsView.mapToScene(
+            self.ui.graphicsView.mapFromGlobal(self.cursor.pos()))) 
         self.ui.sceneWidget.mouseReleaseEvent(sinal)
         self.ui.buttonGroupUncheck()
-        print "release ControlMainWindow"
 
     def setCursorIcon(self, id):
         '''
