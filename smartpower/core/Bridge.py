@@ -20,8 +20,8 @@ class Substation(object):
 
 class Convert(object):
     '''
-        Classe que realiza a conversão da rede em RNP salva em um arquivo .xml
-        em uma rede padrão CIM.
+        Classe que realiza a conversão da rede padrão CIM salva em um arquivo .xml
+        em uma rede padrão RNP.
     '''
     def __init__(self, cim_path = None):
 

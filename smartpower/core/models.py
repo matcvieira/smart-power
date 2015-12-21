@@ -12,7 +12,7 @@ from elementos import NoConect, Terminal, Religador, EnergyConsumer, Substation,
 class DiagramToXML(ElementTree.Element):
     '''
         Esta classe possui as funções que armazenam as informações
-        necessárias à reconstrução do diagrama grafico em um
+        necessárias à conversão do diagrama grafico em um
         arquivo XML
     '''
     def __init__(self, scene):
@@ -156,7 +156,7 @@ class DiagramToXML(ElementTree.Element):
     def write_xml(self, path):
         '''
             Função que cria o arquivo XML na localização indicada pelo
-            argumento path
+            argumento path.
         '''
         xml_string = ElementTree.tostring(self)
         dom_element = (minidom.parseString(xml_string))
@@ -165,10 +165,9 @@ class DiagramToXML(ElementTree.Element):
         f.close()
 
 
-class XMLToDiagram():
+class XMLToDiagram(object):
     '''
-        Classe que realiza a conversão do arquivo XML com as informações do 
-        diagrama em um diagrama gráfico interativo.
+        Classe que constrói um diagrama gráfico a partir de um arquivo XML.
     '''
 
     def __init__(self, scene, file_path):
@@ -279,7 +278,7 @@ class XMLToDiagram():
                 print "opa"
 
 
-class CimXML():
+class CimXML(object):
     '''
         Classe que representa os dados dos componentes em padrão CIM
     '''

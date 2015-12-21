@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>class AddRemoveCommand([parent]) &mdash; SmartPower 0.1 documentação</title>
+    
+    <link rel="stylesheet" href="_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="SmartPower 0.1 documentação" href="index.html" /> 
+  </head>
+  <body>
+    <div class="header-wrapper">
+      <div class="header">
+        <div class="headertitle"><a
+          href="index.html">SmartPower 0.1 documentação</a></div>
+        <div class="rel">
+          <a href="genindex.html" title="Índice Geral"
+             accesskey="I">índice</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="class-addremovecommand-parent">
+<h1><em>class</em> AddRemoveCommand(<em>[parent]</em>)<a class="headerlink" href="#class-addremovecommand-parent" title="Link permanente para este título">¶</a></h1>
+<p><strong>Herança:</strong></p>
+<ul class="simple">
+<li><strong>parent -</strong> PySide.QtGui.QUndoCommand</li>
+</ul>
+<p>Classe que implementa os comandos &#8220;desfazer&#8221;(undo) e &#8220;refazer&#8221;(redo) em itens do diagrama gráfico.</p>
+<div class="section" id="metodos">
+<h2>Métodos<a class="headerlink" href="#metodos" title="Link permanente para este título">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="#undo">undo()</a></li>
+<li><a class="reference internal" href="#redo">redo()</a></li>
+</ul>
+</div>
+<div class="section" id="init-mode-scene-item">
+<h2>__init__(mode,scene,item)<a class="headerlink" href="#init-mode-scene-item" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>mode -</strong> PySide.QtGui.QGraphicsScene.SceneWidget</li>
+<li><strong>scene -</strong> PySide.QtGui.QGraphicsScene.SceneWidget</li>
+<li><strong>item -</strong> PySide.QtGui.QGraphicsItem.item</li>
+</ul>
+<p>Método construtor da classe AddRemoveCommand, é chamado sempre que um objeto da classe node (item) é adicionado ao ou removido do diagrama gráfico (scene). O parâmetro mode define qual ação (remoção ou inserção) foi realizada e permite que a mesma possa ser desfeita (ou refeita), pois uma cópia do objeto Node é armazenada no objeto AddRemoveCommand criado.</p>
+</div>
+<div class="section" id="redo">
+<h2>redo()<a class="headerlink" href="#redo" title="Link permanente para este título">¶</a></h2>
+<p>Refaz uma ação que foi desfeita.</p>
+</div>
+<div class="section" id="undo">
+<h2>undo()<a class="headerlink" href="#undo" title="Link permanente para este título">¶</a></h2>
+<p>Desfaz a última ação de remoção ou inserção de item realizada.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Tabela de Conteúdo</h3>
+          <ul>
+<li class="toctree-l1"><a class="reference internal" href="simulador.html">simulador.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dialogs-pasta.html">dialogs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">graphics.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">models.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="elementos.html">elementos.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cursor.html">cursor.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bridge.html">bridge.py</a></li>
+</ul>
+
+          <h3 style="margin-top: 1.5em;">Pesquisar</h3>
+          <form class="search" action="search.html" method="get">
+            <input type="text" name="q" />
+            <input type="submit" value="Ir" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Digite os termos da busca ou o nome de um módulo, classe ou função.
+          </p>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <a href="genindex.html" title="Índice Geral"
+             >índice</a>
+            <br/>
+            <a href="_sources/AddRemoveCommand.txt"
+               rel="nofollow">Exibir Fonte</a>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer">
+        &copy; Copyright 2015, Watson.
+      Criado usando <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

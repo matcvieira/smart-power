@@ -3,9 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-*class* Edge( *[parent = QGraphicsLineItem]* )
+*class* Edge(*[parent]*)
 ===============================================
-**Parâmetro: parent** - QtGui.QGraphicsLineItem
+**Herança:**
+
+* **parent -** PySide.QtGui.QGraphicsLineItem
 
 Classe que implementa o objeto Edge que liga dois objetos Node um ao outro.
 
@@ -18,60 +20,69 @@ Métodos
 * `boundingRect()`_
 * `paint(painter, option, widget)`_
 * `mousePressEvent(mouse_event)`_
-* `contestMenuEvent(event)`_
+* `contextMenuEvent(event)`_
 
 __init__(w1, w2, edge_menu)
-++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++
 **Parâmetros:**
 
-**w1, w2** - QtGui.QGraphicsRectItem.Node
+* **w1, w2 -** PySide.QtGui.QGraphicsRectItem.Node
 
-**edge_menu** - QtGui.QGraphicsLineItem
+* **edge_menu -** Pyside.QtGui.QMenu
 
 Metodo inicial (construtor) da classe Edge. Recebe como parâmetros os objetos Node Inicial e Final. Define o objeto QtCore.QLineF que define a linha que representa o objeto QtGui.QGraphicsLineItem
 
 get_fraction(pos)
 ++++++++++++++++++
-**Parâmetro: pos** -
 
-Descriçao...
+**Parâmetros:**
+
+* **pos -** PySide.QtCore.QPointF
+
+Esta função obtém uma fração da linha e é utilizada durante o modelo denominado "Sticky to Line" de um nó de carga. Pode ser usado para outros fins em futuras expansões.
 
 update_position()
 ++++++++++++++++++
-``Retorna a nova posição do objeto`` ...............
+
+Método de atualização da posição do objeto edge implementado pela classe Edge. Sempre que um dos objetos Nodes w1 ou w2 modifica sua posição este método é chamado para que o objeto edge possa acompanhar o movimento dos Objetos Node.
 
 set_color(color)
 +++++++++++++++++
-**Parâmetro: color** - QtGui.QColor
 
-Descriçao....
+**Parâmetro:**
 
-boundingRect()
-++++++++++++++++
-Descriçao...
+* **color -** PySide.QtGui.QColor
+
+Metodo que seta a cor do objeto Edge como a definida pelo parametro color.
 
 paint(painter, option, widget)
 ++++++++++++++++++++++++++++++
 
 **Parâmetros:**
 
-**painter** -
+* **painter -** PySide.QtGui.QPainter
 
-**option** -
+* **option -** PySide.QtGui.QStyleOptionGraphicsItem
 
-**widget** -
+* **widget -** PySide.QtGui.QGraphicsView.ViewWidget 
 
-Descriçao....
+Metodo de desenho do objeto edge implementado pela classe Edge. A classe executa esta função constantemente.
 
 mousePressEvent(mouse_event)
 +++++++++++++++++++++++++++++++++++
 
-**Parâmetro: mouse_event** -
+**Parâmetros:**
 
-contestMenuEvent(event)
+* **mouse_event -** PySide.QtGui.QGraphicsSceneMouseEvent
+
+Metodo chamado quando um objeto da classe edge é pressionado (mousePressEvent).
+
+contextMenuEvent(event)
 ++++++++++++++++++++++++
 
-**Parâmetro: - event**
+**Parâmetros:**
 
+* **event -** PySide.QtGui.QGraphicsSceneContextMenuEvent
 
+Callback chamada quando o botão direito do mouse é pressionado sobre a linha, executando o myLineMenu (QtGui.QMenu), o menu de configuração de condutor. 
  

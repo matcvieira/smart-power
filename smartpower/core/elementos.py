@@ -62,7 +62,7 @@ class Condutor(object):
 
 class NoConect(object):
     '''
-        Classe abstrata que define objetos do tipo Nó de Conectivo.
+        Classe que define objetos abstratos do tipo Nó Conectivo.
     '''
     def __init__(self, terminal_list):
         super(NoConect, self).__init__()
@@ -71,14 +71,14 @@ class NoConect(object):
 
     def define_no(self):
         '''
-            Define quais os terminais de cada nó conectivos.
+            Define quais os terminais de cada nó conectivo.
         '''
         for terminal in self.terminal_list:
             terminal.no = self
 
 class Terminal(object):
     '''
-        Classe abstrata que define objetos do tipo terminal.
+        Classe que define objetos abstratos do tipo Terminal.
     '''
     def __init__(self, parent, connected = False):
         self.mRID = id(self)

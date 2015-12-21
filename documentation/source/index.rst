@@ -6,7 +6,7 @@
 Bem-vindo a documentaçao do SmartPower!
 ==========================================
 
-O SmartPower e um simulador de redes de media tensao desenvolvido pelo GREI - Grupo de Redes Elétricas Inteligentes da Universidade Federal do Ceara. Totalmente desenvolvido em Python, utilizando as bibliotecas graficas PySide e Qt, o SmartPower tem por proposito representar graficamente qualquer tipo de rede de Media Tensao em formato Representaçao No-profundidade (RNP) que pode ser convertido em arquivos .xml.
+O SmartPower e um simulador de redes de media tensao desenvolvido pelo GREI - Grupo de Redes de Energia Inteligentes(?) da Universidade Federal do Ceara. Totalmente desenvolvido em Python, utilizando as bibliotecas graficas PySide e Qt, o SmartPower tem por proposito representar graficamente qualquer tipo de rede de Media Tensao em formato Representaçao No-profundidade (RNP) que pode ser convertido em arquivos .xml.
 
 Indices
 -------
@@ -15,11 +15,22 @@ Indices
 * :ref:`modindex`
 * :ref:`search`
 
-Arquivos (Bibliotecas)
-------------------------
+Módulo gui
+-------------
 
 .. toctree::
    :maxdepth: 1
    
    simulador.py<simulador>
+   dialogs<dialogs-pasta>
+
+Módulo core
+------------------------
+.. toctree::
+   :maxdepth: 1
+
    graphics.py<graphics>
+   models.py<models>
+   elementos.py<elementos>
+   cursor.py<cursor>   
+   bridge.py<bridge>

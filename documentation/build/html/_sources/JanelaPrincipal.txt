@@ -3,36 +3,47 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-*class* JanelaPrincipal( *[parent = object]* )
+*class* JanelaPrincipal(*[parent]*)
 ===============================================
-**Parâmetro: parent** - object
+
+**Herança:**
+
+* **parent -** object
 
 Classe que implementa a interface gráfica do simulador.
 
 Métodos
 ++++++++++
 
-* `inicializar_componentes( main_window )`_
-* `itemInserted( item_type )`_
+* `inicializar_componentes(main_window)`_
+* `itemInserted(item_type)`_
 * `save()`_
 * `open()`_
 * `setSelect()`_
-* `buttonGroupClicked( id )`_
-* `retranslateUi( main_window )`_
+* `buttonGroupClicked(id)`_
+* `buttonGroupPressed(id)`_
+* `buttonGroupReleased()`_
+* `buttonGroupUncheck()`_
+* `retranslateUi(main_window)`_
 
 __init__()
 ++++++++++++++++++++++++++
 Metodo construtor da classe JanelaPrincipal.
 
-inicializar_componentes( main_window )
-++++++++++++++++++++++++++++++++++++++
-**Parâmetro: main_window** - object.JanelaPrincipal
+inicializar_componentes(main_window)
++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+**Parâmetros:**
+
+* **main_window -** Pyside.QtGui.QMainWindow.ControlMainWindow
 
 Método que implementa os componentes da interface gráfica.
 
-itemInserted( item_type )
+itemInserted(item_type)
 ++++++++++++++++++++++++++
-**Parâmetro: item_type** - 
+**Parâmetros:**
+
+* **item_type -** PySide.QtCore.int 
 
 Callback chamada no momento em que um item é inserido no diagrama gráfico.
 
@@ -51,14 +62,38 @@ setSelect()
 
 Callback chamada no momento em que se faz necessário alterar o modo de seleção para movimentação de itens no diagrama gráfico ou vice-versa.
 
-buttonGroupClicked( id )
+buttonGroupClicked(id)
 +++++++++++++++++++++++++
-**Parâmetro: id** - 
+ 
+**Parâmetros:**
+
+* **id -** PySide.QtCore.int
 
 Callback chamada no momento em que um botão de inserção de itens é pressionado.
 
-retranslateUi( main_window )
+buttonGroupPressed(id)
+++++++++++++++++++++++++++++++
+
+**Parâmetros:**
+
+* **id -** PySide.QtCore.int
+
+Callback chamada no momento em que um botão de inserção de itens é pressionado.
+
+buttonGroupReleased()
+++++++++++++++++++++++
+
+Callback chamada no momento em que um botão de inserção de itens é liberado.
+
+buttonGroupUncheck()
++++++++++++++++++++++++++
+            
+Callback chamada para remover a seleção de todos os buttons.
+
+retranslateUi(main_window)
 +++++++++++++++++++++++++++
-**Parâmetro: main_window** - object.JanelaPrincipal
+**Parâmetros:**
+
+* **main_window -** Pyside.QtGui.QMainWindow.ControlMainWindow
 
 Callback chamada no momento em que um botão de inserção de itens é pressionado.

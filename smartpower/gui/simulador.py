@@ -471,7 +471,7 @@ class JanelaPrincipal(object):
 
     def buttonGroupUncheck(self):
         '''
-            Callback chamada para desselecionar todos os buttons.
+            Callback chamada para remover a seleção de todos os buttons.
         '''
         buttons = self.buttonGroup.buttons()
 

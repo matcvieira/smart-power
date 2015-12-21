@@ -321,7 +321,8 @@ class Edge(QtGui.QGraphicsLineItem):
 
     def contextMenuEvent(self, event):
         '''
-            Callback chamada... ***continuar***
+            Callback chamada quando a linha é selecionada, executando
+            o myLineMenu (QtGui.QMenu), o menu de configuração de condutor. 
         '''
         self.scene().clearSelection()
         self.setSelected(True)
@@ -522,7 +523,7 @@ class Node(QtGui.QGraphicsRectItem):
 
     def remove_edge(self, edge):
         '''
-            Esta função remove a edge passada na chamada do item presente.
+            Método de remoção a edge passada na chamada do item presente.
         '''
         self.edges.pop(edge)
         self.update_count()
@@ -1543,8 +1544,7 @@ class SceneWidget(QtGui.QGraphicsScene):
         '''
             Este método define as ações realizadas quando um evento do tipo
             mouseDoubleClick e detectado no diagrama grafico. Neste caso
-            conecta os dois elementos que estão ligados pela linha criada no
-            evento mousePress.
+            abre o diálogo de configuração de parâmetros.
         '''
         # Se um item for clicado duplamente, abre o diálogo de configuração
         # de parâmetros.
@@ -1614,6 +1614,15 @@ class SceneWidget(QtGui.QGraphicsScene):
             super(SceneWidget, self).keyPressEvent(event)
         return
 
+    def keyReleaseEvent(self, event):
+        '''
+            Função que implementa a função chamada quando uma tecla é liberada. 
+        '''
+        key = event.key()
+        if key == QtCore.Qt.Key_Control:
+            self.keyControlIsPressed = False
+
+
     ### Funções que modificam a visibilidade do texto de cada elemento e redesenham a SceneWidget CW 
     ### Subestação
     def setTextSubstation(self):
@@ -1625,8 +1634,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.Subestacao] = False
         else :
             Node.textVisibility[Node.Subestacao] = True
-        self.sUpdate()
-        print self.activePanel()
+        self.update()
         #for item in Node.allNodes:
         #    item.scene_node.sendEvent(item, QtCore.QEvent(QtCore.QEvent.Paint))
 
@@ -1640,8 +1648,8 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.Religador] = False
         else :
             Node.textVisibility[Node.Religador] = True
-        self.setSceneRect(0, 0, 1600, 1600)
-        self.sUpdate()
+        #self.setSceneRect(0, 0, 1600, 1600)
+        self.update()
     ### Nó De carga
     def setTextNodeC(self):
         '''
@@ -1652,7 +1660,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.NoDeCarga] = False
         else :
             Node.textVisibility[Node.NoDeCarga] = True
-        self.sUpdate()
+        self.update()
     ### Barra
     def setTextBus(self):
         '''
@@ -1663,21 +1671,13 @@ class SceneWidget(QtGui.QGraphicsScene):
             Node.textVisibility[Node.Barra] = False
         else :
             Node.textVisibility[Node.Barra] = True
-        self.sUpdate()
-
-    def sUpdate(self):
-        '''
-            Atualiza todos os elementos da QGraphicsScene do programa
-        '''
         self.update()
 
-    def keyReleaseEvent(self, event):
-        '''
-            Função que implementa a função chamada quando uma tecla é liberada. 
-        '''
-        key = event.key()
-        if key == QtCore.Qt.Key_Control:
-            self.keyControlIsPressed = False
+    #def sUpdate(self):
+     #   '''
+      #      Atualiza todos os elementos da QGraphicsScene do programa
+       # '''
+        #self.update()
 
     def break_edge(self, edge, mode, original_edge, insert=None):
         '''
@@ -1733,7 +1733,8 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def set_mode(self, mode):
         '''
-            Define em qual modo.
+            Define o modo em que o sistema está atuando (seleção de item, inserção
+            de item ou inserção de linha).
         '''
         self.myMode = mode
 
@@ -2290,6 +2291,9 @@ class ViewWidget(QtGui.QGraphicsView):
 
 
 class AddRemoveCommand(QtGui.QUndoCommand):
+'''
+    Classe que implementa os comandos "desfazer"(undo) e "refazer"(undo).
+'''
     def __init__(self, mode, scene, item):
         super(AddRemoveCommand, self).__init__(mode)
         self.mode = mode
@@ -2298,6 +2302,10 @@ class AddRemoveCommand(QtGui.QUndoCommand):
         self.count = 0
 
     def redo(self):
+        '''
+            Refaz uma ação que foi desfeita.
+            ctrl+y
+        '''
         self.count += 1
         if self.count <= 1:
             return
@@ -2308,6 +2316,10 @@ class AddRemoveCommand(QtGui.QUndoCommand):
             self.scene.removeItem(self.item)
 
     def undo(self):
+        '''
+            Desfaz a última ação de remoção ou inserção de item realizada.
+            ctrl+z 
+        '''
         if self.mode == "Add":
             self.scene.removeItem(self.item)
         if self.mode == "Remove":
