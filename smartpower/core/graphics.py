@@ -50,7 +50,6 @@ class DashedLine(QtGui.QGraphicsLineItem):
                        )
         painter.drawLine(self.line())  
 
-
 class Edge(QtGui.QGraphicsLineItem):
     '''
         Classe que implementa o objeto Edge que liga dois objetos Node um ao
@@ -204,7 +203,6 @@ class Edge(QtGui.QGraphicsLineItem):
             color.
         '''
         self.setPen(QtGui.QPen(color))
-
 
     def paint(self, painter, option, widget):
         '''
@@ -367,7 +365,6 @@ class Text(QtGui.QGraphicsTextItem):
         self.lostFocus.emit(self)
         super(Text, self).focusOutEvent(event)
 
-
 class Node(QtGui.QGraphicsRectItem):
     '''
        Classe que implementa o objeto Node Genérico. Este elemento gráfico irá
@@ -405,7 +402,9 @@ class Node(QtGui.QGraphicsRectItem):
         # Se o item a ser inserido for do tipo subestação:
         if self.myItemType == self.Subestacao:
             # Define o retângulo.
-            rect = QtCore.QRectF(0, 0, 50.0, 50.0)
+            rect = QtCore.QRectF(0, 0, 75.0, 50.0)
+            # Define o símbolo de transformador, contido na subestação:
+            self.sTrafo = [QtCore.QRectF(0, 0, 50.0, 50.0),QtCore.QRectF(25, 0, 50.0, 50.0)]
             # Define e ajusta a posição do label do item gráfico. Começa com
             # um texto vazio.
             self.text = Text('', self, self.scene())
@@ -452,17 +451,23 @@ class Node(QtGui.QGraphicsRectItem):
 
         # Se o item a ser inserido for do tipo nó de carga:
         elif self.myItemType == self.NoDeCarga:
-            rect = QtCore.QRectF(0, 0, 8, 8)
+            rect = QtCore.QRectF(3, 10, 8, 8)
+            # Triangulo que representa nó com carga
+            self.triCarga = QtGui.QPolygon()
+            self.triCarga.append(QtCore.QPoint(7,9))
+            self.triCarga.append(QtCore.QPoint(0,0))
+            self.triCarga.append(QtCore.QPoint(14,0))     
             # Define e ajusta a posição do label do item gráfico. Começa com
             # um texto vazio.
             self.text = Text('', self, self.scene())
-            self.text.setPos(self.mapFromItem(self.text, 0, rect.height()))
+            self.text.setPos(QtCore.QPointF(8,4)+self.mapFromItem(self.text, 0, rect.height()))
             # Define uma lista vazia com os terminais que possivelmente o nó
             # de carga terá
             self.terminals = []
             # Cria o objeto barra que contém os dados elétricos do elemento
             # barra.
             self.no_de_carga = EnergyConsumer('', 0, 0)
+        
         # Estabelece o retângulo do item gráfico como o rect obtido, dependendo
         # do item.
         self.setRect(rect)
@@ -477,6 +482,9 @@ class Node(QtGui.QGraphicsRectItem):
         self.setFlag(QtGui.QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setZValue(0)
         Node.allNodes.append(self)
+
+    def setNodeShape(self):
+        pass
 
     def fix_item(self):
         '''
@@ -594,7 +602,7 @@ class Node(QtGui.QGraphicsRectItem):
             Reimplementação da função virtual que especifica a borda do objeto
             node (ver biblioteca Pyside, QtGui.QGraphicsRectItem.boundingRect)
         '''
-        extra = 5.0
+        extra = 10.0
         return self.rect().adjusted(-extra, -extra, extra, extra)
 
     def paint(self, painter, option, widget):
@@ -611,7 +619,11 @@ class Node(QtGui.QGraphicsRectItem):
         if self.myItemType == self.Subestacao:
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
             painter.setBrush(QtCore.Qt.white)
-            painter.drawEllipse(self.rect())
+            for item in self.sTrafo:
+                painter.drawEllipse(item)
+            painter.setBrush(QtCore.Qt.NoBrush)
+            painter.drawEllipse(self.sTrafo[0])
+
         # Caso o item a ser inserido seja do tipo religador:
         elif self.myItemType == self.Religador:
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
@@ -642,9 +654,19 @@ class Node(QtGui.QGraphicsRectItem):
 
         # Caso o item a ser inserido seja do tipo nó de carga:
         elif self.myItemType == self.NoDeCarga:
-            painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
+            painter.setPen(QtGui.QPen(QtCore.Qt.black, 2.5))
             painter.setBrush(QtCore.Qt.black)
             painter.drawRect(self.rect())
+            if int(self.no_de_carga.potencia_ativa) == 0 & int(self.no_de_carga.potencia_reativa) == 0:
+                pass
+            else:
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 2.5))
+                painter.setBrush(QtCore.Qt.black)
+                painter.drawPolygon(self.triCarga)
+            ## cwpaint 
+            #for item in self.scene_node.items():
+                #if self.id == item.id():
+                    #print " ok!"
 
         # Se o item estiver selecionado, desenha uma caixa pontilhada de
         # seleção em seu redor.
@@ -887,7 +909,6 @@ class Node(QtGui.QGraphicsRectItem):
         self.setSelected(True)
         # Executa o menu, dependendo do tipo de item.
         self.myNodeMenu.exec_(event.screenPos())
-
 
 class SceneWidget(QtGui.QGraphicsScene):
     '''
@@ -1455,13 +1476,13 @@ class SceneWidget(QtGui.QGraphicsScene):
             self.itemInserted.emit(3)
 
 
-        ###cww tentativa de fazer o release desenhar itens
-        ###
+        ###cw777 release desenhando itens
+        ### 
         ###
 
 
         # Armazena em um atributo a posição em que o mouse foi apertado.
-        self.pressPos = mouse_event.pos() #cw77
+        self.pressPos = mouse_event.pos()
         print mouse_event.pos()
         print "posicao do mouse"
         # Define o break_mode, utilizado no método de quebrar linhas (ver
@@ -1485,6 +1506,8 @@ class SceneWidget(QtGui.QGraphicsScene):
             item.setPos(item.adjust_in_grid(self.pressPos))
             #item.setPos(item.adjust_in_grid(mouse_event.scenePos()))
             self.addItem(item)
+
+            ###cw777
 
             # Quando um item é adicionado, o dialog de configuração se abre
             # para que o usuário prontamente insira seus dados (ver
@@ -2291,9 +2314,9 @@ class ViewWidget(QtGui.QGraphicsView):
 
 
 class AddRemoveCommand(QtGui.QUndoCommand):
-'''
-    Classe que implementa os comandos "desfazer"(undo) e "refazer"(undo).
-'''
+    '''
+        Classe que implementa os comandos "desfazer"(undo) e "refazer"(undo).
+    '''
     def __init__(self, mode, scene, item):
         super(AddRemoveCommand, self).__init__(mode)
         self.mode = mode

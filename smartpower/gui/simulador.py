@@ -492,7 +492,7 @@ class JanelaPrincipal(object):
 
         self.substationButton.setText(
             QtGui.QApplication.translate(
-                "main_window", "Subestação", None,
+                "main_window", "Transformador", None,
                 QtGui.QApplication.UnicodeUTF8))
 
         self.busButton.setText(
@@ -505,17 +505,17 @@ class JanelaPrincipal(object):
 
         self.substationLabel.setText(
             QtGui.QApplication.translate(
-                "main_window", "Subestação", None,
+                "main_window", "Transformador", None,
                 QtGui.QApplication.UnicodeUTF8))
 
         self.recloserButton.setText(
             QtGui.QApplication.translate(
-                "main_window", "Religador", None,
+                "main_window", "Elemento Interruptor", None,
                 QtGui.QApplication.UnicodeUTF8))
 
         self.recloserLabel.setText(
             QtGui.QApplication.translate(
-                "main_window", "Religador", None,
+                "main_window", "Chaves", None,
                 QtGui.QApplication.UnicodeUTF8))
 
         self.lineButton.setText(

@@ -21,7 +21,7 @@ class MainWindow(QtGui.QMainWindow):
     	self.cursor.setShapePad(self)
         super(MainWindow, self).mouseReleaseEvent(mouse_event)
         print "release"
-        self.view.drawItem(self.mapFromGlobal(self.cursor.pos()))
+        self.view.drawItem(self.view.mapToScene(self.view.mapFromGlobal(self.cursor.pos())))
     
     def mousePressEvent(self, mouse_event):
     	self.cursor.setShapeSubs(self)
@@ -51,20 +51,91 @@ class SceneSpecial(QtGui.QGraphicsScene):
                 QtCore.QSizeF(30, 30)))
         self.addItem(ell)
 
-    def drawItem(self, point):
-        ell = QtGui.QGraphicsEllipseItem()
+    def drawItem(self, pointf):
+        cont=1
+        point = pointf.toPoint()
+        """
+        ell = QtGui.QGraphicsEllipseItem()        
         ell.setRect(
             QtCore.QRectF(
                 point-QtCore.QPoint(15, 15),
                 QtCore.QSizeF(30, 30)))
-        self.addItem(ell)
+        #self.addItem(ell)
+
+        traf = QtGui.QPolygon()
+        traf.append(point+QtCore.QPoint(4,8))
+        traf.append(point+QtCore.QPoint(0,14))
+        traf.append(point+QtCore.QPoint(8,14))
+        
+
+        #self.addItem(QtGui.QGraphicsPolygonItem(traf))
+
+        #TESTE FUNCIONAL DO PATH
+        path = QtGui.QPainterPath()
+        #path.addEllipse(ell)]
+
+        traf = QtGui.QPolygon()
+        traf.append(point+QtCore.QPoint(4,7)+QtCore.QPoint(46,47))
+        traf.append(point+QtCore.QPoint(0,0)+QtCore.QPoint(46,47))
+        traf.append(point+QtCore.QPoint(8,0)+QtCore.QPoint(46,47))
+        traf.append(point+QtCore.QPoint(4,7)+QtCore.QPoint(46,47))
+
+        path.moveTo(point+QtCore.QPoint(0, 0))
+        path.cubicTo(point.x()+99, point.y()+0, point.x()+50, point.y()+50, point.x()+99, point.y()+99)
+        path.cubicTo(point.x()+0, point.y()+99, point.x()+50, point.y()+50, point.x()+0, point.y()+0)
+        
+        path.addPolygon(traf)
+        """
+
+        self.addItem(Node(cont,point))
+        self.update()
 
 
     def paint(self, painter, option, widget):
         self.rectangle = QtCore.QRectF(10.0, 20.0, 80.0, 60.0)
         painter.drawRect(self.rectangle)
 
+
+
+class Node(QtGui.QGraphicsRectItem):
+
+    def __init__(self,mytype,point):
+        super(Node, self).__init__()
+        cont = mytype
+        #Path para nó de passagem:
+        if cont == 1:
+            self.shapes = [self,]
+            self.rect = QtCore.QRectF(point.x()+0, point.y()+7, 8, 8)
+            self.trif = QtGui.QPolygon()
+
+            self.trif.append(point+QtCore.QPoint(4,7))
+            self.trif.append(point+QtCore.QPoint(0,0))
+            self.trif.append(point+QtCore.QPoint(8,0))
+            self.trif.append(point+QtCore.QPoint(4,7))
+            
+            # Define e ajusta a posição do label do item gráfico. Começa com
+            # um texto vazio.
+            self.text = QtGui.QGraphicsTextItem('A', self, self.scene())
+            self.text.setPos(self.mapFromItem(self.text, 0, self.rect.height()))
+
+            self.shapes[0].setRect(self.rect)
+            self.shapes[1].setPolygon(self.trif)
+
+
+    def paint(self, painter, option, widget):
+        #Desenho do nó de passagem
+            painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
+            painter.setBrush(QtCore.Qt.black)
+            painter.drawRoundedRect(self.rect,5,5)
+            painter.drawPolygon(self.shapes[1].trif)
+        
+
+
+
+
+
 if __name__ == '__main__':
+
     app = QtGui.QApplication(sys.argv)
     widget = MainWindow()
     widget.show()
