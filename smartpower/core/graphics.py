@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from PySide import QtCore, QtGui
+from PySide import QtCore, QtGui, QtSvg
 import math
 import sys
 # Importa os módulos necessários para implementação do diagrama gráfico
@@ -196,6 +196,7 @@ class Edge(QtGui.QGraphicsLineItem):
         self.prepareGeometryChange()
         # Seta a linha obtida como linha da Edge.
         self.setLine(line)
+        self.update()
 
     def set_color(self, color):
         '''
@@ -211,10 +212,15 @@ class Edge(QtGui.QGraphicsLineItem):
         '''
         # Se os itens colidirem graficamente, a linha não é desenhada.
         if (self.w1.collidesWithItem(self.w2)):
-            return
+            return        
 
         # Temos abaixo a lógica de distribuição de linhas quando elas são
-        # conectadas a uma barra.
+        # conectadas a um elemento interruptor ou a uma barra.
+        ## cw88:
+
+
+        if (self.w1.myItemType == Node.Religador):
+            pass
 
         # Se o item self.w1 for do tipo barra deve-se alinhar o item self.w2.
         # Note que este alinhamento não se aplica ao elemento Subestação:
@@ -411,16 +417,20 @@ class Node(QtGui.QGraphicsRectItem):
             self.substation = Substation(
                 self.text.toPlainText(), 0.0, 0.0, 0.0, complex(0, 0))
             self.text.setPos(self.mapFromItem(self.text, 0, rect.height()))
-        # Se o item a ser inserido for do tipo religador:
+        # Se o item a ser inserido for do tipo religador/disjuntor/chave:
         elif self.myItemType == self.Religador:
-            rect = QtCore.QRectF(0, 0, 20, 20)
+            # Cria o objeto chave que contém os dados elétricos do elemento
+            self.chave = Religador("", 0, 0, 0, 0, 1)
+            # Define o retângulo.
+            rect = self.setNodeRect()
             # Define e ajusta a posição do label do item gráfico. Começa com
             # um texto vazio.
             self.text = Text('', self, self.scene())
             self.text.setPos(self.mapFromItem(self.text, 10, rect.height()))
-            # Cria o objeto chave que contém os dados elétricos do elemento
-            # religador
-            self.chave = Religador(self.text.toPlainText(), 0, 0, 0, 0, 1)
+            self.chave.nome = self.text.toPlainText()
+
+            
+
         # Se o item a ser inserido for do tipo barra:
         elif self.myItemType == self.Barra:
             rect = QtCore.QRectF(0, 0, 10.0, 100.0)
@@ -484,7 +494,42 @@ class Node(QtGui.QGraphicsRectItem):
         Node.allNodes.append(self)
 
     def setNodeShape(self):
-        pass
+        '''
+            Altera a forma do elemento interruptor de acordo com o seu tipo
+            e posiciona o seu texto. 
+        '''
+        if self.myItemType == self.Religador:
+            rect = self.setNodeRect()
+            self.setRect(rect)
+            self.text.setPos(self.mapFromItem(self, rect.width()-7, rect.height()-7))
+
+
+    def setNodeRect(self):
+        '''
+            Altera a forma do retângulo que abriga o interruptor de acordo
+            com o seu tipo: Religador, disjuntor, chave ou relé
+        '''
+        if self.myItemType == self.Religador:
+            if self.chave.tipo == 0:
+                # Chave Tipo(0):
+                rect = QtCore.QRectF(0, 0, 30, 30)
+                self.termE = QtCore.QPoint(0,rect.height()/2)
+                self.termS = QtCore.QPoint(rect.width(),rect.height()/2)
+            elif self.chave.tipo == 1:
+                # Chave motorizada Tipo(1):
+                rect = QtCore.QRectF(0, 0, 30, 30)
+                self.termE = QtCore.QPoint(0,rect.height()/2)
+                self.termS = QtCore.QPoint(rect.width(),rect.height()/2)
+            elif self.chave.tipo == 4:
+                # Religador associado com TP/TC Tipo(4):
+                #rect = QtCore.QRectF(0, 0, 40, 60)
+                rect = QtCore.QRectF(0, 0, 200, 200)
+                self.termE = QtCore.QPoint(0,rect.height()/2)
+                self.termS = QtCore.QPoint(rect.width(),rect.height()/2)
+            else:
+                # Religador/Disjuntor Tipos(1,2):
+                rect = QtCore.QRectF(0, 0, 20, 20)
+            return rect
 
     def fix_item(self):
         '''
@@ -624,18 +669,110 @@ class Node(QtGui.QGraphicsRectItem):
             painter.setBrush(QtCore.Qt.NoBrush)
             painter.drawEllipse(self.sTrafo[0])
 
-        # Caso o item a ser inserido seja do tipo religador:
+        # Caso o item a ser inserido seja do tipo interruptor:
+        # cw88
+
         elif self.myItemType == self.Religador:
-            painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
-            # Faz-se aqui importante observação: se a chave associada ao
-            # elemento gráfico religador estiver fechada, desenha-se o
-            # religador preenchido de preto. Caso contrário, ele é vazado
-            # (branco)
-            if self.chave.normalOpen == 1:
+            # Religador associado com TP/TC Tipo(4):
+            if self.chave.tipo == 4:
+                '''
+                image = QtGui.QImage(500,500,"png")
+                if image.load(U"rele.png","PNG"):
+                    print "carregou"
+                else:
+                    print "não carregou"
+                '''
+                filename = "icons/rele.png"
+                image = QtGui.QImage(500, 500, QtGui.QImage.Format_Mono)
+
+                '''
+                value = QtGui.qRgb(189, 149, 39)  # 0xffbd9527
+                image.setPixel(1, 1, value)
+
+                value = QtGui.qRgb(122, 163, 39)  # 0xff7aa327
+                image.setPixel(0, 1, value)
+                image.setPixel(1, 0, value)
+
+                value = QtGui.qRgb(237, 187, 51)  # 0xffedba31
+                image.setPixel(2, 1, value)
+                '''
+
+                if image.load(filename,"PNG"):
+                    print "carregou"
+                else:
+                    print "não carregou"
+
+                if image.isNull():
+                    print "nula"
+                else:
+                    print "não"
+
+
+
+                painter.drawImage(QtCore.QRectF(0,0,200,200),image)
+
+
+            # Chave Tipo(0):
+            elif self.chave.tipo == 0:
+                circ1 = QtCore.QPointF(0, self.rect().height()/2) 
+                circ2 = QtCore.QPointF(self.rect().width(), self.rect().height()/2)
+                scFac = self.rect().width()*(2.0**(1.0/2)/2)
+                circ3 = QtCore.QPointF(scFac, scFac+self.rect().height()/2)
+                #painter.setPen(QtGui.QPen(QtCore.Qt.black, 3))
+                #painter.drawEllipse(circ1, self.rect().width(),self.rect().width())
+                if self.chave.normalOpen == 0:
+                    painter.setPen(QtGui.QPen(QtCore.Qt.black, 3))
+                    painter.drawLine(circ1, circ2)
+                else:
+                    painter.setPen(QtGui.QPen(QtCore.Qt.black, 3))
+                    painter.drawLine(circ1,circ3)
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
                 painter.setBrush(QtCore.Qt.white)
+                painter.drawEllipse(circ1,4,4)
+                painter.drawEllipse(circ2,4,4)   
+            # Chave motorizada Tipo(1):
+            elif self.chave.tipo == 1:
+                
+                circT1 = QtCore.QPointF((self.rect().width()/2)-6.5, (3.0*self.rect().height()/4)+4) 
+                circT2 = QtCore.QPointF(self.rect().width()/2, 3.0*self.rect().height()/4)
+                circT3 = QtCore.QPointF(0, self.rect().height()+4) 
+                circT4 = QtCore.QPointF(6.5, self.rect().height())
+                
+                circ1 = QtCore.QPointF(0, self.rect().height()/2) #bola1
+                circ2 = QtCore.QPointF(self.rect().width(), self.rect().height()/2) #bola2
+                circ3 = QtCore.QPointF(self.rect().width()/2, self.rect().height()/2) #meiofechado
+                scFac = self.rect().width()*(2.0**(1.0/2)/2)
+                circ4 = QtCore.QPointF(scFac, scFac+self.rect().height()/2) #fimaberto
+                circ5 = QtCore.QPointF(scFac/2, (scFac/2)+(self.rect().height()/2)) #meioaberto
+
+                if self.chave.normalOpen == 0:
+                    circ5 = circ3
+                    circ4 = circ2
+                    circT3 = circT1
+                    circT4 = circT2
+                
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 3))
+                painter.drawLine(circ1,circ4)
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 1))
+                #painter.drawLine(circT4,circ5)
+                painter.setBrush(QtCore.Qt.white)
+                painter.drawEllipse(circT4,7,7)
+                painter.drawText(circT3,u'm')
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
+                painter.drawEllipse(circ1,4,4)
+                painter.drawEllipse(circ2,4,4)
+
             else:
-                painter.setBrush(QtCore.Qt.black)
-            painter.drawRoundedRect(self.rect(), 5, 5)
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
+                # Faz-se aqui importante observação: se a chave associada ao
+                # elemento gráfico religador estiver fechada, desenha-se o
+                # religador preenchido de preto. Caso contrário, ele é vazado
+                # (branco)
+                if self.chave.normalOpen == 1:
+                    painter.setBrush(QtCore.Qt.white)
+                else:
+                    painter.setBrush(QtCore.Qt.black)
+                painter.drawRoundedRect(self.rect(), 5, 5)
         # Caso o item a ser inserido seja do tipo barra:
         elif self.myItemType == self.Barra:
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
@@ -1917,6 +2054,19 @@ class SceneWidget(QtGui.QGraphicsScene):
                         # valor atribuído a ele anteriormente. Caso contrário,
                         # atribui o valor inserido pelo usuário ao parâmetro
                         # correspondente.
+                        '''
+
+                            cw88
+
+                        '''
+
+                        item.chave.tipo = dialog.tipoElementoCheck.checkedId()
+                        item.setNodeShape()
+                        if item.chave.tipo == 4:
+                            #dialog = TCTPDialog(item)
+                            pass
+
+
                         if dialog.identificaOLineEdit.text() == "":
                             pass
                         else:

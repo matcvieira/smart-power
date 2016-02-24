@@ -23,10 +23,12 @@ class RecloserDialog(QtGui.QWidget):
 
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(380, 210)
+        #Dialog.resize(380, 210)
+        sc = 10.0
+        Dialog.resize(380, 40+33*sc)
         #Define o tamanho da caixa dialogo
         self.buttonBox = QtGui.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(0, 170, 341, 32))
+        self.buttonBox.setGeometry(QtCore.QRect(0, 33*sc, 341, 32))
         #Define o tamanho do layout dos botões do dialogo
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.cadastro = QtGui.QPushButton('Cadastrar Novo')
@@ -36,17 +38,23 @@ class RecloserDialog(QtGui.QWidget):
         self.buttonBox.clicked.connect(self.cadastrar)
         #print self.buttonBox.buttons
         self.formLayoutWidget = QtGui.QWidget(Dialog)
-        self.formLayoutWidget.setGeometry(QtCore.QRect(10, 10, 350, 150))
+        self.formLayoutWidget.setGeometry(QtCore.QRect(10, 10, 350, 33*sc))
         #Define a localização do layout das propriedades (coordenada x do ponto, coordenada y do ponto, dimensão em x, dimensão em y)
         self.formLayoutWidget.setObjectName("formLayoutWidget")
         self.formLayout = QtGui.QFormLayout(self.formLayoutWidget)
         self.formLayout.setContentsMargins(0, 0, 0, 0)
         self.formLayout.setObjectName("formLayout")
 
+        '''
+        self.formLayout1 = QtGui.QFormLayout(self.formLayoutWidget)
+        self.formLayout1.setContentsMargins(0, 0, 0, 0)
+        self.formLayout1.setObjectName("formLayout1")
+        '''
+
         # Definição da COMBOBOX
         self.testeLabel = QtGui.QLabel(self.formLayoutWidget)
         self.testeLabel.setObjectName("testeLabel")
-        self.formLayout.setWidget(4, QtGui.QFormLayout.LabelRole, self.testeLabel)
+        self.formLayout.setWidget(10, QtGui.QFormLayout.LabelRole, self.testeLabel)
         self.testeLineEdit = QtGui.QComboBox(self.formLayoutWidget)
         self.testeLineEdit.setObjectName("testeEdit")
         self.testeLineEdit.addItems(self.scene.dict_prop.keys())
@@ -55,7 +63,7 @@ class RecloserDialog(QtGui.QWidget):
         # if index < 0:
         #     index = 0
         self.testeLineEdit.setCurrentIndex(index)
-        self.formLayout.setWidget(4, QtGui.QFormLayout.FieldRole, self.testeLineEdit)
+        self.formLayout.setWidget(10, QtGui.QFormLayout.FieldRole, self.testeLineEdit)
         self.testeLineEdit.currentIndexChanged.connect(self.update_values)
 
 
@@ -68,7 +76,6 @@ class RecloserDialog(QtGui.QWidget):
         self.identificaOLineEdit.setPlaceholderText(self.item.text.toPlainText())
         self.formLayout.setWidget(0, QtGui.QFormLayout.FieldRole, self.identificaOLineEdit)
         self.identificaOLineEdit.textChanged.connect(self.en_dis_button)
-
 
         #definição da propriedade CORRENTE NOMINAL
         self.correnteNominalLabel = QtGui.QLabel(self.formLayoutWidget)
@@ -101,6 +108,42 @@ class RecloserDialog(QtGui.QWidget):
         self.nDeSequNciasDeReligamentoLineEdit.setText(str(self.item.chave.recloseSequences))
         self.formLayout.setWidget(3, QtGui.QFormLayout.FieldRole, self.nDeSequNciasDeReligamentoLineEdit)
         self.nDeSequNciasDeReligamentoLineEdit.textEdited.connect(self.custom)
+
+        #definição da propriedade TIPO DE ELEMENTO INTERRUPTOR:
+        #self.tipoDeElementoLabel = QtGui.QLabel(self.formLayoutWidget)
+        #self.tipoDeElementoLabel.setObjectName("tipoDeElementoLabel")
+        #self.formLayout.setWidget(4, QtGui.QFormLayout.LabelRole, self.tipoDeElementoLabel)
+
+        self.tipoElementoLabel = QtGui.QLabel(self.formLayoutWidget)
+        self.tipoElementoLabel.setObjectName("tipoElementoLabel")
+        self.formLayout.setWidget(4, QtGui.QFormLayout.LabelRole, self.tipoElementoLabel)
+
+        self.tipoElementoCheck = QtGui.QButtonGroup()
+        self.tipoElementoCheck.addButton(QtGui.QCheckBox(u"Chave",self.formLayoutWidget), 0)        
+        self.tipoElementoCheck.addButton(QtGui.QCheckBox(u"Chave motor.",self.formLayoutWidget), 1)
+        self.tipoElementoCheck.addButton(QtGui.QCheckBox(u"Disjuntor",self.formLayoutWidget), 2)
+        self.tipoElementoCheck.addButton(QtGui.QCheckBox(u"Religador",self.formLayoutWidget), 3)
+        self.tipoElementoCheck.addButton(QtGui.QCheckBox(u"Rel. e TC/TP",self.formLayoutWidget), 4)
+        self.tipoElementoCheck.setExclusive(True)
+
+        for item in self.tipoElementoCheck.buttons():
+            item.setObjectName("tipoElementoCheck"+str(self.tipoElementoCheck.id(item)))
+            self.formLayout.setWidget((4+self.tipoElementoCheck.id(item)), QtGui.QFormLayout.FieldRole, item)
+        self.tipoElementoCheck.button(self.item.chave.tipo).setChecked(True)
+
+        '''
+        self.tipoDeElementoCheck = []
+        self.tipoDeElementoCheck.append(QtGui.QCheckBox(u"Chave",self.formLayoutWidget))
+        self.tipoDeElementoCheck.append(QtGui.QCheckBox(u"Disjuntor",self.formLayoutWidget))
+        self.tipoDeElementoCheck.append(QtGui.QCheckBox(u"Religador",self.formLayoutWidget))
+        self.tipoDeElementoCheck.append(QtGui.QCheckBox(u"Relé e TC/TP",self.formLayoutWidget))
+
+        for item in self.tipoDeElementoCheck:
+            item.setObjectName("tipoDeElementoCheck"+str(self.tipoDeElementoCheck.index(item)))
+            self.formLayout.setWidget((4+self.tipoDeElementoCheck.index(item)), QtGui.QFormLayout.FieldRole, item)
+        self.tipoDeElementoCheck[2].setChecked(True)
+        #self.tipoDeElementoCheck.setChecked(True)
+        '''
 
         lista_comp = [int(self.capacidadeDeInterrupOLineEdit.text()), int(self.correnteNominalLineEdit.text()), int(self.nDeSequNciasDeReligamentoLineEdit.text())]
         print lista_comp
@@ -139,8 +182,13 @@ class RecloserDialog(QtGui.QWidget):
         self.capacidadeDeInterrupOLineEdit.setText(str(self.scene.dict_prop[self.testeLineEdit.currentText()]['Capacidade de Interrupcao']))
         self.nDeSequNciasDeReligamentoLineEdit.setText(str(self.scene.dict_prop[self.testeLineEdit.currentText()]['Sequencia']))
 
+
     def custom(self):
         self.testeLineEdit.setCurrentIndex(0)
+
+    def setFormaDialog(self):
+        self.dialog.resize(530,370)
+
 
     def cadastrar(self, button):
         role = self.buttonBox.buttonRole(button)
@@ -173,6 +221,7 @@ class RecloserDialog(QtGui.QWidget):
         self.correnteNominalLabel.setText(QtGui.QApplication.translate("Dialog", "Corrente Nominal (A): ", None, QtGui.QApplication.UnicodeUTF8))
         self.capacidadeDeInterrupOLabel.setText(QtGui.QApplication.translate("Dialog", "Capacidade de Interrupção (kA):", None, QtGui.QApplication.UnicodeUTF8))
         self.nDeSequNciasDeReligamentoLabel.setText(QtGui.QApplication.translate("Dialog", "Nº de Sequências de Religamento:", None, QtGui.QApplication.UnicodeUTF8))
+        self.tipoElementoLabel.setText(QtGui.QApplication.translate("Dialog", "Tipo de elemento interruptor:", None, QtGui.QApplication.UnicodeUTF8))
         self.testeLabel.setText(QtGui.QApplication.translate("Dialog", "Fabricante:", None, QtGui.QApplication.UnicodeUTF8))
 
     if __name__ == '__main__':
