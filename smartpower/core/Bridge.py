@@ -4,17 +4,25 @@ from xml.etree import ElementTree
 from xml.dom import minidom
 
 class Setor(object):
+    '''
+        Classe que define os objetos do tipo Setor
+    '''
     def __init__(self):
         self.vizinhos = []
         self.nos = []
 
 class Substation(object):
+    '''
+        Classe que define os objetos da classe Substation
+    '''
     def __init__(self, lista_alimentadores):
         self.alimentadores = lista_alimentadores
 
-
-
 class Convert(object):
+    '''
+        Classe que realiza a conversão da rede padrão CIM salva em um arquivo .xml
+        em uma rede padrão RNP.
+    '''
     def __init__(self, cim_path = None):
 
         if cim_path == None:
@@ -625,6 +633,9 @@ class Convert(object):
 
 
     def definir_alimentadores(self):
+        '''
+            Função que identifica os alimentadores da rede, armazenando-os em uma lista.
+        '''
 
         lista_duplas = []
         duplas_raiz = []
@@ -667,6 +678,9 @@ class Convert(object):
 
 
     def detectar_barra(self, breaker):
+        '''
+            Função que pesquisa na cwwwwww
+        '''
         for terminal in breaker.findAll('terminal'):
             noconectivo = self.achar_terminal_noc(terminal)
             

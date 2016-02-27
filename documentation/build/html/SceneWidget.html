@@ -1,0 +1,334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>class SceneWidget([parent]) &mdash; SmartPower 0.1 documentação</title>
+    
+    <link rel="stylesheet" href="_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="SmartPower 0.1 documentação" href="index.html" />
+    <link rel="up" title="Arquivo graphics.py" href="graphics.html" />
+    <link rel="next" title="class ViewWidget([parent])" href="ViewWidget.html" />
+    <link rel="prev" title="class Node([parent)" href="Node.html" /> 
+  </head>
+  <body>
+    <div class="header-wrapper">
+      <div class="header">
+        <div class="headertitle"><a
+          href="index.html">SmartPower 0.1 documentação</a></div>
+        <div class="rel">
+          <a href="Node.html" title="class Node([parent)"
+             accesskey="P">anterior</a> |
+          <a href="ViewWidget.html" title="class ViewWidget([parent])"
+             accesskey="N">próximo</a> |
+          <a href="genindex.html" title="Índice Geral"
+             accesskey="I">índice</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="class-scenewidget-parent">
+<h1><em>class</em> SceneWidget(<em>[parent]</em>)<a class="headerlink" href="#class-scenewidget-parent" title="Link permanente para este título">¶</a></h1>
+<p><strong>Herança:</strong></p>
+<ul class="simple">
+<li><strong>parent -</strong> PySide.QtGui.QGraphicsScene</li>
+</ul>
+<p>Classe que implementa o container gráfico onde os elementos (religadores, barras, subestações, nós de carga e condutores) residirão, denominado cena.</p>
+<div class="section" id="metodos">
+<h2>Métodos<a class="headerlink" href="#metodos" title="Link permanente para este título">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="#create-dict-recloser-corrente-capacidade-num-rel-padrao">create_dict_recloser(corrente,capacidade,num_rel,padrao)</a></li>
+<li><a class="reference internal" href="#mousepressevent-mouse-event">mousePressEvent(mouse_event)</a></li>
+<li><a class="reference internal" href="#mousemoveevent-mouse-event">mouseMoveEvent(mouse_event)</a></li>
+<li><a class="reference internal" href="#mousereleaseevent-mouse-event">mouseReleaseEvent(mouse_event)</a></li>
+<li><a class="reference internal" href="#mousedoubleclickevent-mouse-event">mouseDoubleClickEvent(mouse_event)</a></li>
+<li><a class="reference internal" href="#keypressevent-event">keyPressEvent(event)</a></li>
+<li><a class="reference internal" href="#keyreleaseevent-event">keyReleaseEvent(event)</a></li>
+<li><a class="reference internal" href="#settextsubstation">setTextSubstation()</a></li>
+<li><a class="reference internal" href="#settextrecloser">setTextRecloser()</a></li>
+<li><a class="reference internal" href="#settextnodec">setTextNodeC()</a></li>
+<li><a class="reference internal" href="#settextbus">setTextBus()</a></li>
+<li><a class="reference internal" href="#break-edge-edge-mode-original-edge-insert">break_edge(edge,mode,original_edge,insert)</a></li>
+<li><a class="reference internal" href="#recover-edge-item">recover_edge(item)</a></li>
+<li><a class="reference internal" href="#set-item-type-type">set_item_type(type)</a></li>
+<li><a class="reference internal" href="#set-mode-mode">set_mode(mode)</a></li>
+<li><a class="reference internal" href="#change-state">change_state()</a></li>
+<li><a class="reference internal" href="#create-actions">create_actions()</a></li>
+<li><a class="reference internal" href="#create-menus">create_menus()</a></li>
+<li><a class="reference internal" href="#delete-item">delete_item()</a></li>
+<li><a class="reference internal" href="#launch-dialog">launch_dialog()</a></li>
+<li><a class="reference internal" href="#increase-bus">increase_bus()</a></li>
+<li><a class="reference internal" href="#decrease-bus">decrease_bus()</a></li>
+<li><a class="reference internal" href="#align-line-h">align_line_h()</a></li>
+<li><a class="reference internal" href="#align-line-v">align_line_v()</a></li>
+<li><a class="reference internal" href="#h-align">h_align()</a></li>
+<li><a class="reference internal" href="#v-align">v_align()</a></li>
+<li><a class="reference internal" href="#set-grid">set_grid()</a></li>
+<li><a class="reference internal" href="#simulate">simulate()</a></li>
+</ul>
+</div>
+<div class="section" id="init-window">
+<h2>__init__(window)<a class="headerlink" href="#init-window" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>window -</strong> object.JanelaPrincipal</li>
+</ul>
+<p>Método construtor da classe SceneWidget, realiza a definição de flags, atributos auxiliares e da geometria inicial da cena. Cria também as ações, os menus executados na cena e o dicionário padrão dos relés.</p>
+</div>
+<div class="section" id="create-dict-recloser-corrente-capacidade-num-rel-padrao">
+<h2>create_dict_recloser(corrente,capacidade,num_rel,padrao)<a class="headerlink" href="#create-dict-recloser-corrente-capacidade-num-rel-padrao" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>corrente -</strong> unicode</li>
+<li><strong>capacidade -</strong> unicode</li>
+<li><strong>num_rel -</strong> unicode</li>
+<li><strong>padrao -</strong> PySide.QtCore.int</li>
+</ul>
+<p>Este método cria um dicionário de um padrão de religador comercial, de acordo com os parâmetros passados.</p>
+</div>
+<div class="section" id="mousepressevent-mouse-event">
+<h2>mousePressEvent(mouse_event)<a class="headerlink" href="#mousepressevent-mouse-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>mouse_event -</strong> PySide.QtGui.QGraphicsSceneMouseEvent</li>
+</ul>
+<p>Este método define as ações realizadas quando um evento do tipo mousePress é detectado no diagrama gráfico.</p>
+</div>
+<div class="section" id="mousemoveevent-mouse-event">
+<h2>mouseMoveEvent(mouse_event)<a class="headerlink" href="#mousemoveevent-mouse-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>mouse_event -</strong> PySide.QtGui.QGraphicsSceneMouseEvent</li>
+</ul>
+<p>Este método define as ações realizadas quando um evento do tipo mouseMove é detectado no diagrama grafico.</p>
+</div>
+<div class="section" id="mousereleaseevent-mouse-event">
+<h2>mouseReleaseEvent(mouse_event)<a class="headerlink" href="#mousereleaseevent-mouse-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>mouse_event -</strong> PySide.QtGui.QGraphicsSceneMouseEvent</li>
+</ul>
+<p>Este método define as ações realizadas quando um evento do tipo mouseRelease e detectado no diagrama grafico. Neste caso conecta os dois elementos que estão ligados pela linha criada no evento mousePress.</p>
+</div>
+<div class="section" id="mousedoubleclickevent-mouse-event">
+<h2>mouseDoubleClickEvent(mouse_event)<a class="headerlink" href="#mousedoubleclickevent-mouse-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parametros:</strong></p>
+<ul class="simple">
+<li><strong>mouse_event -</strong> PySide.QtGui.QGraphicsSceneMouseEvent</li>
+</ul>
+<p>Este método define as ações realizadas quando um evento do tipo mouseDoubleClick e detectado no diagrama grafico. Neste caso abre o diálogo de configuração de parâmetros.</p>
+</div>
+<div class="section" id="keypressevent-event">
+<h2>keyPressEvent(event)<a class="headerlink" href="#keypressevent-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>event -</strong> PySide.QtGui.QKeyEvent</li>
+</ul>
+<p>Método que implementa a ação de pressionar qualquer tecla.</p>
+</div>
+<div class="section" id="keyreleaseevent-event">
+<h2>keyReleaseEvent(event)<a class="headerlink" href="#keyreleaseevent-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>event -</strong> PySide.QtGui.QKeyEvent</li>
+</ul>
+<p>Método que implementa a ação de liberar qualquer tecla.</p>
+</div>
+<div class="section" id="settextsubstation">
+<h2>setTextSubstation()<a class="headerlink" href="#settextsubstation" title="Link permanente para este título">¶</a></h2>
+<p>Altera o parâmetro visibility da classe Node que seta a visibilidade dos textos dos objetos Node do tipo Subestação.</p>
+</div>
+<div class="section" id="settextrecloser">
+<h2>setTextRecloser()<a class="headerlink" href="#settextrecloser" title="Link permanente para este título">¶</a></h2>
+<p>Altera o parâmetro visibility da classe Node que seta a visibilidade dos textos dos objetos Node do tipo Religador.</p>
+</div>
+<div class="section" id="settextnodec">
+<h2>setTextNodeC()<a class="headerlink" href="#settextnodec" title="Link permanente para este título">¶</a></h2>
+<p>Altera o parâmetro visibility da classe Node que seta a visibilidade dos textos dos objetos Node do tipo Nó de carga.</p>
+</div>
+<div class="section" id="settextbus">
+<h2>setTextBus()<a class="headerlink" href="#settextbus" title="Link permanente para este título">¶</a></h2>
+<p>Altera o parâmetro visibility da classe Node que seta a visibilidade dos textos dos objetos Node do tipo Barra.</p>
+</div>
+<div class="section" id="break-edge-edge-mode-original-edge-insert">
+<h2>break_edge(edge,mode,original_edge,insert)<a class="headerlink" href="#break-edge-edge-mode-original-edge-insert" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parametros:</strong></p>
+<ul class="simple">
+<li><strong>edge -</strong> PySide.QtGui.QGraphicsLineItem.Edge</li>
+<li><strong>mode -</strong> PySide.QtCore.int</li>
+<li><strong>original_edge -</strong> PySide.QtGui.QGraphicsLineItem.Edge</li>
+<li><strong>insert -</strong> PySide.QtGui.QGraphicsLineItem.Node</li>
+</ul>
+<p>Função break_edge usada para quebrar a linha quando a inserção é a partir ou em cima de uma linha. (Não implementada no modo de arrastar itens).</p>
+</div>
+<div class="section" id="recover-edge-item">
+<h2>recover_edge(item)<a class="headerlink" href="#recover-edge-item" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parametros:</strong></p>
+<ul class="simple">
+<li><strong>item</strong>- PySide.QtGui.QGraphicsLineItem.Node</li>
+</ul>
+<p>Definição da função de recuperar uma linha quando está foi quebrada.</p>
+</div>
+<div class="section" id="set-item-type-type">
+<h2>set_item_type(type)<a class="headerlink" href="#set-item-type-type" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parametros:</strong></p>
+<p><strong>type</strong>- PySide.QtCore.int</p>
+<dl class="docutils">
+<dt>Define em qual tipo de item será inserido no diagrama grafico assim que um evento do tipo mousePress for detectado, podendo ser:</dt>
+<dd>Node.Subestacao
+Node.Religador
+Node.Barra
+Node.Agent</dd>
+</dl>
+</div>
+<div class="section" id="set-mode-mode">
+<h2>set_mode(mode)<a class="headerlink" href="#set-mode-mode" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>mode -</strong> PySide.QtCore.int</li>
+</ul>
+<p>Define o modo em que o sistema está atuando (seleção de item, inserção de item ou inserção de linha).</p>
+</div>
+<div class="section" id="change-state">
+<h2>change_state()<a class="headerlink" href="#change-state" title="Link permanente para este título">¶</a></h2>
+<p>Define a função que muda o estado do religador. Esta função será chamada no momento que o usuário tiver selecionado um religador e pressionado a barra de espaço.</p>
+</div>
+<div class="section" id="create-actions">
+<h2>create_actions()<a class="headerlink" href="#create-actions" title="Link permanente para este título">¶</a></h2>
+<p>Este método cria as ações que serão utilizadas nos menus dos itens gráficos.</p>
+</div>
+<div class="section" id="create-menus">
+<h2>create_menus()<a class="headerlink" href="#create-menus" title="Link permanente para este título">¶</a></h2>
+<p>Este metodo cria os menus de cada um dos itens gráficos: religador, subestação, barra e linha.
+Auto-explicativo: ver QtGui.QMenu na biblioteca do Pyside.</p>
+</div>
+<div class="section" id="delete-item">
+<h2>delete_item()<a class="headerlink" href="#delete-item" title="Link permanente para este título">¶</a></h2>
+<p>Este método implementa a ação de exclusão de um item gráfico do diagrama.</p>
+</div>
+<div class="section" id="launch-dialog">
+<h2>launch_dialog()<a class="headerlink" href="#launch-dialog" title="Link permanente para este título">¶</a></h2>
+<p>Este método inicia os diálogos de configuração de cada um dos itens gráficos do diagrama.</p>
+</div>
+<div class="section" id="increase-bus">
+<h2>increase_bus()<a class="headerlink" href="#increase-bus" title="Link permanente para este título">¶</a></h2>
+<p>Este método implementa a ação de aumentar o tamanho do item gráfico barra.</p>
+</div>
+<div class="section" id="decrease-bus">
+<h2>decrease_bus()<a class="headerlink" href="#decrease-bus" title="Link permanente para este título">¶</a></h2>
+<p>Este método implementa a ação de diminuir o tamanho do item gráfico barra.</p>
+</div>
+<div class="section" id="align-line-h">
+<h2>align_line_h()<a class="headerlink" href="#align-line-h" title="Link permanente para este título">¶</a></h2>
+<p>Este método implementa a ação de alinhar horizontalmente os objetos da classe Line no diagrama gráfico.</p>
+</div>
+<div class="section" id="align-line-v">
+<h2>align_line_v()<a class="headerlink" href="#align-line-v" title="Link permanente para este título">¶</a></h2>
+<p>Este método implementa a ação de alinhar verticalmente os objetos da classe Line no diagrama gráfico.</p>
+</div>
+<div class="section" id="h-align">
+<h2>h_align()<a class="headerlink" href="#h-align" title="Link permanente para este título">¶</a></h2>
+<p>Este método implementa a ação de alinhar horizontalmente os objetos da classe Node no diagrama gráfico.</p>
+</div>
+<div class="section" id="v-align">
+<h2>v_align()<a class="headerlink" href="#v-align" title="Link permanente para este título">¶</a></h2>
+<p>Este método implementa a ação de alinhar verticalmente os objetos da classe Node no diagrama gráfico.</p>
+</div>
+<div class="section" id="set-grid">
+<h2>set_grid()<a class="headerlink" href="#set-grid" title="Link permanente para este título">¶</a></h2>
+<p>Cria uma grade no desenho, impondo posições pré-determinadas aos elementos</p>
+</div>
+<div class="section" id="simulate">
+<h2>simulate()<a class="headerlink" href="#simulate" title="Link permanente para este título">¶</a></h2>
+<p>Inicia a simulação: cálculos de fluxo de carga e curto circuito</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Tabela de Conteúdo</h3>
+          <ul>
+<li class="toctree-l1"><a class="reference internal" href="simulador.html">simulador.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dialogs-pasta.html">dialogs</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="graphics.html">graphics.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">models.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="elementos.html">elementos.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cursor.html">cursor.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bridge.html">bridge.py</a></li>
+</ul>
+
+          <h3 style="margin-top: 1.5em;">Pesquisar</h3>
+          <form class="search" action="search.html" method="get">
+            <input type="text" name="q" />
+            <input type="submit" value="Ir" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Digite os termos da busca ou o nome de um módulo, classe ou função.
+          </p>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <a href="Node.html" title="class Node([parent)"
+             >anterior</a> |
+          <a href="ViewWidget.html" title="class ViewWidget([parent])"
+             >próximo</a> |
+          <a href="genindex.html" title="Índice Geral"
+             >índice</a>
+            <br/>
+            <a href="_sources/SceneWidget.txt"
+               rel="nofollow">Exibir Fonte</a>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer">
+        &copy; Copyright 2015, Watson.
+      Criado usando <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

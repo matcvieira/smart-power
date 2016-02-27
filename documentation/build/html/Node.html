@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>class Node([parent) &mdash; SmartPower 0.1 documentação</title>
+    
+    <link rel="stylesheet" href="_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="SmartPower 0.1 documentação" href="index.html" />
+    <link rel="up" title="Arquivo graphics.py" href="graphics.html" />
+    <link rel="next" title="class SceneWidget([parent])" href="SceneWidget.html" />
+    <link rel="prev" title="class Text([parent])" href="Text.html" /> 
+  </head>
+  <body>
+    <div class="header-wrapper">
+      <div class="header">
+        <div class="headertitle"><a
+          href="index.html">SmartPower 0.1 documentação</a></div>
+        <div class="rel">
+          <a href="Text.html" title="class Text([parent])"
+             accesskey="P">anterior</a> |
+          <a href="SceneWidget.html" title="class SceneWidget([parent])"
+             accesskey="N">próximo</a> |
+          <a href="genindex.html" title="Índice Geral"
+             accesskey="I">índice</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="class-node-parent">
+<h1><em>class</em> Node(<em>[parent</em>)<a class="headerlink" href="#class-node-parent" title="Link permanente para este título">¶</a></h1>
+<p><strong>Herança:</strong></p>
+<ul class="simple">
+<li><strong>parent -</strong> QtGui.QGraphicsTextItem</li>
+</ul>
+<p>Classe que implementa o objeto DashedLine, utilizado para indicar que um elemento do diagrama foi selecionado. Sua representaçao é uma linha tracejada laranja ao redor do item selecionado.</p>
+<div class="section" id="metodos">
+<h2>Métodos<a class="headerlink" href="#metodos" title="Link permanente para este título">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="#fix-item">fix_item()</a></li>
+<li><a class="reference internal" href="#update-count">update_count()</a></li>
+<li><a class="reference internal" href="#remove-edges">remove_edges()</a></li>
+<li><a class="reference internal" href="#remove-edge-edge">remove_edge(edge)</a></li>
+<li><a class="reference internal" href="#add-edge-edge">add_edge(edge)</a></li>
+<li><a class="reference internal" href="#edge-position-edge">edge_position(edge)</a></li>
+<li><a class="reference internal" href="#center">center()</a></li>
+<li><a class="reference internal" href="#set-center-pos">set_center(pos)</a></li>
+<li><a class="reference internal" href="#boundingrect">boundingRect()</a></li>
+<li><a class="reference internal" href="#paint-painter-option-widget">paint(painter,option,widget)</a></li>
+<li><a class="reference internal" href="#itemchange-change-value">itemChange(change,value)</a></li>
+<li><a class="reference internal" href="#mousepressevent-mouse-event">MousePressEvent(mouse_event)</a></li>
+<li><a href="#id1"><span class="problematic" id="id2">`MouseMoveEvent(mouse_event)`_</span></a></li>
+<li><a href="#id3"><span class="problematic" id="id4">`MouseReleaseEvent(mouse_event)`_</span></a></li>
+<li><a class="reference internal" href="#mousedoubleclickevent-event">MouseDoubleClickEvent(event)</a></li>
+<li><a class="reference internal" href="#mousereleaseevent-event">MouseReleaseEvent(event)</a></li>
+<li><a class="reference internal" href="#adjust-in-grid-pos">adjust_in_grid(pos)</a></li>
+<li><a class="reference internal" href="#contextmenuevent-event">contextMenuEvent(event)</a></li>
+</ul>
+</div>
+<div class="section" id="init-self-item-type-node-menu-parent-none-scene-none">
+<h2>__init__(self,item_type,node_menu,parent[=None],scene[=None])<a class="headerlink" href="#init-self-item-type-node-menu-parent-none-scene-none" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parametros:</strong></p>
+<ul class="simple">
+<li><strong>item_type -</strong> PySide.QtCore.int</li>
+<li><strong>parent -</strong> PySide.QtGui.QGraphicsView.ViewWidget [or None]</li>
+<li><strong>scene -</strong> PySide.QtGui.QGraphicsScene.SceneWidget [or None]</li>
+<li><strong>node_menu -</strong> Pyside.QtGui.QMenu</li>
+</ul>
+<p>Método inicial da classe Node.
+Recebe como parâmetros os objetos myItemType (que define o tipo de Node desejado) e o menu desejado (menu que abre com clique direito). Analogamente ao que acontece com a Edge, este item é apenas a representação de um retângulo do tipo QtCore.QRectF.</p>
+</div>
+<div class="section" id="fix-item">
+<h2>fix_item()<a class="headerlink" href="#fix-item" title="Link permanente para este título">¶</a></h2>
+<p>Seta a flag de fixação do item.</p>
+</div>
+<div class="section" id="update-count">
+<h2>update_count()<a class="headerlink" href="#update-count" title="Link permanente para este título">¶</a></h2>
+<p>Atualiza o contador que acompanha o número de Edges do item.</p>
+</div>
+<div class="section" id="remove-edges">
+<h2>remove_edges()<a class="headerlink" href="#remove-edges" title="Link permanente para este título">¶</a></h2>
+<p>Método de remoção de todos objetos Edge associados ao objeto node.</p>
+</div>
+<div class="section" id="remove-edge-edge">
+<h2>remove_edge(edge)<a class="headerlink" href="#remove-edge-edge" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>edge</strong> - PySide.QtGui.QGraphicsLineItem.Edge</li>
+</ul>
+<p>Método de remoção da edge passada como parâmetro do item presente.</p>
+</div>
+<div class="section" id="add-edge-edge">
+<h2>add_edge(edge)<a class="headerlink" href="#add-edge-edge" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>edge</strong> - PySide.QtGui.QGraphicsLineItem.Edge</li>
+</ul>
+<p>Método de associação de objetos edge ao objeto node.</p>
+</div>
+<div class="section" id="edge-position-edge">
+<h2>edge_position(edge)<a class="headerlink" href="#edge-position-edge" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>edge</strong> - PySide.QtGui.QGraphicsLineItem.Edge</li>
+</ul>
+<p>Este método é utilizado da distribuição das Edges ligadas numa barra, seguindo uma lógica de alinhamento.</p>
+</div>
+<div class="section" id="center">
+<h2>center()<a class="headerlink" href="#center" title="Link permanente para este título">¶</a></h2>
+<p><strong>Retorno:</strong> PySide.QtCore.QPointF</p>
+<p>Método que retorna o centro do objeto passado</p>
+</div>
+<div class="section" id="set-center-pos">
+<h2>set_center(pos)<a class="headerlink" href="#set-center-pos" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<p><strong>pos -</strong> PySide.QtCore.QPointF</p>
+<p>Método que define o posicionamento do objeto na tela de desenho setando o seu ponto central.</p>
+</div>
+<div class="section" id="boundingrect">
+<h2>boundingRect()<a class="headerlink" href="#boundingrect" title="Link permanente para este título">¶</a></h2>
+<p>Reimplementação da função virtual que especifica a borda do objeto node</p>
+</div>
+<div class="section" id="paint-painter-option-widget">
+<h2>paint(painter,option,widget)<a class="headerlink" href="#paint-painter-option-widget" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>painter -</strong> PySide.QtGui.QPainter</li>
+<li><strong>option -</strong> PySide.QtGui.QStyleOptionGraphicsItem</li>
+<li><strong>widget -</strong> PySide.QtGui.QGraphicsView.ViewWidget</li>
+</ul>
+<p>Método de desenho do objeto node implementado pela classe Node.Aqui se diferencia os objetos pela sua forma. Todos eram definidos por um retângulo QtCore.QRectF. Neste método, serão desenhadas suas formas baseadas em seus retângulos.</p>
+</div>
+<div class="section" id="itemchange-change-value">
+<h2>itemChange(change,value)<a class="headerlink" href="#itemchange-change-value" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>change -</strong> PySide.QtGui.QGraphicsItem.Node.GraphicsItemChange</li>
+<li><strong>value -</strong> object</li>
+</ul>
+<p>Método que detecta mudanças na posição do objeto Node.</p>
+</div>
+<div class="section" id="mousepressevent-mouse-event">
+<h2>mousePressEvent(mouse_event)<a class="headerlink" href="#mousepressevent-mouse-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>mouse_event -</strong> PySide.QtGui.QGraphicsSceneMouseEvent</li>
+</ul>
+<p>Reimplementação da função virtual que define o evento referente ao aperto de botão do mouse.</p>
+</div>
+<div class="section" id="mousemoveevent-mouse-event">
+<h2>mouseMoveEvent(mouse_event):<a class="headerlink" href="#mousemoveevent-mouse-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>mouse_event -</strong> PySide.QtGui.QGraphicsSceneMouseEvent</li>
+</ul>
+<p>Reimplementação da função virtual que define o evento referente ao movimento do mouse durante enquanto este pressiona um item.</p>
+</div>
+<div class="section" id="mousereleaseevent-mouse-event">
+<h2>mouseReleaseEvent(mouse_event):<a class="headerlink" href="#mousereleaseevent-mouse-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>mouse_event -</strong> PySide.QtGui.QGraphicsSceneMouseEvent</li>
+</ul>
+<p>Reimplementação da função virtual que define o evento referente ao soltar do botão mouse após aperto.</p>
+</div>
+<div class="section" id="mousedoubleclickevent-event">
+<h2>mouseDoubleClickEvent(event)<a class="headerlink" href="#mousedoubleclickevent-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>event -</strong> PySide.QtGui.QGraphicsSceneMouseEvent</li>
+</ul>
+<p>Reimplementação da função de duplo clique do mouse.</p>
+</div>
+<div class="section" id="mousereleaseevent-event">
+<h2>mouseReleaseEvent(event)<a class="headerlink" href="#mousereleaseevent-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>event -</strong> PySide.QtGui.QGraphicsSceneMouseEvent</li>
+</ul>
+<p>Reimplementação da função virtual que define o evento lançado quando o botão do mouse é liberado.</p>
+</div>
+<div class="section" id="adjust-in-grid-pos">
+<h2>adjust_in_grid(pos)<a class="headerlink" href="#adjust-in-grid-pos" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>pos -</strong> PySide.QtCore.QPointF</li>
+</ul>
+<p>Este método implementa uma grade invisível na cena, que limita o movimento dos Nodes para posições bem definidas.</p>
+</div>
+<div class="section" id="contextmenuevent-event">
+<h2>contextMenuEvent(event)<a class="headerlink" href="#contextmenuevent-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>event -</strong> PySide.QtGui.QGraphicsSceneContextMenuEvent</li>
+</ul>
+<p>Método que reimplementa a função virtual do menu aberto pelo clique com botão direito.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Tabela de Conteúdo</h3>
+          <ul>
+<li class="toctree-l1"><a class="reference internal" href="simulador.html">simulador.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dialogs-pasta.html">dialogs</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="graphics.html">graphics.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">models.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="elementos.html">elementos.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cursor.html">cursor.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bridge.html">bridge.py</a></li>
+</ul>
+
+          <h3 style="margin-top: 1.5em;">Pesquisar</h3>
+          <form class="search" action="search.html" method="get">
+            <input type="text" name="q" />
+            <input type="submit" value="Ir" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Digite os termos da busca ou o nome de um módulo, classe ou função.
+          </p>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <a href="Text.html" title="class Text([parent])"
+             >anterior</a> |
+          <a href="SceneWidget.html" title="class SceneWidget([parent])"
+             >próximo</a> |
+          <a href="genindex.html" title="Índice Geral"
+             >índice</a>
+            <br/>
+            <a href="_sources/Node.txt"
+               rel="nofollow">Exibir Fonte</a>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer">
+        &copy; Copyright 2015, Watson.
+      Criado usando <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>
