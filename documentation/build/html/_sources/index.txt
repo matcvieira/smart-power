@@ -15,11 +15,22 @@ Indices
 * :ref:`modindex`
 * :ref:`search`
 
-Arquivos (Bibliotecas)
-------------------------
+Módulo gui
+-------------
 
 .. toctree::
    :maxdepth: 1
    
    simulador.py<simulador>
+   dialogs<dialogs-pasta>
+
+Módulo core
+------------------------
+.. toctree::
+   :maxdepth: 1
+
    graphics.py<graphics>
+   models.py<models>
+   elementos.py<elementos>
+   cursor.py<cursor>   
+   bridge.py<bridge>

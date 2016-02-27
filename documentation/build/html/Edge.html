@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>class Edge( [parent = QGraphicsLineItem] ) &mdash; SmartPower 0.1 documentação</title>
+    <title>class Edge([parent]) &mdash; SmartPower 0.1 documentação</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/agogo.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -27,31 +27,39 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="SmartPower 0.1 documentação" href="index.html" />
     <link rel="up" title="Arquivo graphics.py" href="graphics.html" />
-    <link rel="prev" title="class DashedLine([parent = QGraphicsLineItem])" href="DashedLine.html" /> 
+    <link rel="next" title="class Text([parent])" href="Text.html" />
+    <link rel="prev" title="class DashedLine([parent])" href="DashedLine.html" /> 
   </head>
   <body>
-    <div class="related">
-      <h3>Navegação</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
+    <div class="header-wrapper">
+      <div class="header">
+        <div class="headertitle"><a
+          href="index.html">SmartPower 0.1 documentação</a></div>
+        <div class="rel">
+          <a href="DashedLine.html" title="class DashedLine([parent])"
+             accesskey="P">anterior</a> |
+          <a href="Text.html" title="class Text([parent])"
+             accesskey="N">próximo</a> |
           <a href="genindex.html" title="Índice Geral"
-             accesskey="I">índice</a></li>
-        <li class="right" >
-          <a href="DashedLine.html" title="class DashedLine([parent = QGraphicsLineItem])"
-             accesskey="P">anterior</a> |</li>
-        <li><a href="index.html">SmartPower 0.1 documentação</a> &raquo;</li>
-          <li><a href="graphics.html" accesskey="U">Arquivo graphics.py</a> &raquo;</li> 
-      </ul>
-    </div>  
+             accesskey="I">índice</a>
+        </div>
+       </div>
+    </div>
 
-    <div class="document">
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="class-edge-parent-qgraphicslineitem">
-<h1><em>class</em> Edge( <em>[parent = QGraphicsLineItem]</em> )<a class="headerlink" href="#class-edge-parent-qgraphicslineitem" title="Link permanente para este título">¶</a></h1>
-<p><strong>Parâmetro: parent</strong> - QtGui.QGraphicsLineItem</p>
+  <div class="section" id="class-edge-parent">
+<h1><em>class</em> Edge(<em>[parent]</em>)<a class="headerlink" href="#class-edge-parent" title="Link permanente para este título">¶</a></h1>
+<p><strong>Herança:</strong></p>
+<ul class="simple">
+<li><strong>parent -</strong> PySide.QtGui.QGraphicsLineItem</li>
+</ul>
 <p>Classe que implementa o objeto Edge que liga dois objetos Node um ao outro.</p>
 <div class="section" id="metodos">
 <h2>Métodos<a class="headerlink" href="#metodos" title="Link permanente para este título">¶</a></h2>
@@ -59,52 +67,66 @@
 <li><a class="reference internal" href="#get-fraction-pos">get_fraction(pos)</a></li>
 <li><a class="reference internal" href="#update-position">update_position()</a></li>
 <li><a class="reference internal" href="#set-color-color">set_color(color)</a></li>
-<li><a class="reference internal" href="#boundingrect">boundingRect()</a></li>
+<li><a href="#id1"><span class="problematic" id="id2">`boundingRect()`_</span></a></li>
 <li><a class="reference internal" href="#paint-painter-option-widget">paint(painter, option, widget)</a></li>
 <li><a class="reference internal" href="#mousepressevent-mouse-event">mousePressEvent(mouse_event)</a></li>
-<li><a class="reference internal" href="#contestmenuevent-event">contestMenuEvent(event)</a></li>
+<li><a class="reference internal" href="#contextmenuevent-event">contextMenuEvent(event)</a></li>
 </ul>
 </div>
 <div class="section" id="init-w1-w2-edge-menu">
 <h2>__init__(w1, w2, edge_menu)<a class="headerlink" href="#init-w1-w2-edge-menu" title="Link permanente para este título">¶</a></h2>
 <p><strong>Parâmetros:</strong></p>
-<p><strong>w1, w2</strong> - QtGui.QGraphicsRectItem.Node</p>
-<p><strong>edge_menu</strong> - QtGui.QGraphicsLineItem</p>
+<ul class="simple">
+<li><strong>w1, w2 -</strong> PySide.QtGui.QGraphicsRectItem.Node</li>
+<li><strong>edge_menu -</strong> Pyside.QtGui.QMenu</li>
+</ul>
 <p>Metodo inicial (construtor) da classe Edge. Recebe como parâmetros os objetos Node Inicial e Final. Define o objeto QtCore.QLineF que define a linha que representa o objeto QtGui.QGraphicsLineItem</p>
 </div>
 <div class="section" id="get-fraction-pos">
 <h2>get_fraction(pos)<a class="headerlink" href="#get-fraction-pos" title="Link permanente para este título">¶</a></h2>
-<p><strong>Parâmetro: pos</strong> -</p>
-<p>Descriçao...</p>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>pos -</strong> PySide.QtCore.QPointF</li>
+</ul>
+<p>Esta função obtém uma fração da linha e é utilizada durante o modelo denominado &#8220;Sticky to Line&#8221; de um nó de carga. Pode ser usado para outros fins em futuras expansões.</p>
 </div>
 <div class="section" id="update-position">
 <h2>update_position()<a class="headerlink" href="#update-position" title="Link permanente para este título">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">Retorna</span> <span class="pre">a</span> <span class="pre">nova</span> <span class="pre">posição</span> <span class="pre">do</span> <span class="pre">objeto</span></tt> ...............</p>
+<p>Método de atualização da posição do objeto edge implementado pela classe Edge. Sempre que um dos objetos Nodes w1 ou w2 modifica sua posição este método é chamado para que o objeto edge possa acompanhar o movimento dos Objetos Node.</p>
 </div>
 <div class="section" id="set-color-color">
 <h2>set_color(color)<a class="headerlink" href="#set-color-color" title="Link permanente para este título">¶</a></h2>
-<p><strong>Parâmetro: color</strong> - QtGui.QColor</p>
-<p>Descriçao....</p>
-</div>
-<div class="section" id="boundingrect">
-<h2>boundingRect()<a class="headerlink" href="#boundingrect" title="Link permanente para este título">¶</a></h2>
-<p>Descriçao...</p>
+<p><strong>Parâmetro:</strong></p>
+<ul class="simple">
+<li><strong>color -</strong> PySide.QtGui.QColor</li>
+</ul>
+<p>Metodo que seta a cor do objeto Edge como a definida pelo parametro color.</p>
 </div>
 <div class="section" id="paint-painter-option-widget">
 <h2>paint(painter, option, widget)<a class="headerlink" href="#paint-painter-option-widget" title="Link permanente para este título">¶</a></h2>
 <p><strong>Parâmetros:</strong></p>
-<p><strong>painter</strong> -</p>
-<p><strong>option</strong> -</p>
-<p><strong>widget</strong> -</p>
-<p>Descriçao....</p>
+<ul class="simple">
+<li><strong>painter -</strong> PySide.QtGui.QPainter</li>
+<li><strong>option -</strong> PySide.QtGui.QStyleOptionGraphicsItem</li>
+<li><strong>widget -</strong> PySide.QtGui.QGraphicsView.ViewWidget</li>
+</ul>
+<p>Metodo de desenho do objeto edge implementado pela classe Edge. A classe executa esta função constantemente.</p>
 </div>
 <div class="section" id="mousepressevent-mouse-event">
 <h2>mousePressEvent(mouse_event)<a class="headerlink" href="#mousepressevent-mouse-event" title="Link permanente para este título">¶</a></h2>
-<p><strong>Parâmetro: mouse_event</strong> -</p>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>mouse_event -</strong> PySide.QtGui.QGraphicsSceneMouseEvent</li>
+</ul>
+<p>Metodo chamado quando um objeto da classe edge é pressionado (mousePressEvent).</p>
 </div>
-<div class="section" id="contestmenuevent-event">
-<h2>contestMenuEvent(event)<a class="headerlink" href="#contestmenuevent-event" title="Link permanente para este título">¶</a></h2>
-<p><strong>Parâmetro: - event</strong></p>
+<div class="section" id="contextmenuevent-event">
+<h2>contextMenuEvent(event)<a class="headerlink" href="#contextmenuevent-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>event -</strong> PySide.QtGui.QGraphicsSceneContextMenuEvent</li>
+</ul>
+<p>Callback chamada quando o botão direito do mouse é pressionado sobre a linha, executando o myLineMenu (QtGui.QMenu), o menu de configuração de condutor.</p>
 </div>
 </div>
 
@@ -112,65 +134,60 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Tabela de Conteúdo</a></h3>
-  <ul>
-<li><a class="reference internal" href="#"><em>class</em> Edge( <em>[parent = QGraphicsLineItem]</em> )</a><ul>
-<li><a class="reference internal" href="#metodos">Métodos</a></li>
-<li><a class="reference internal" href="#init-w1-w2-edge-menu">__init__(w1, w2, edge_menu)</a></li>
-<li><a class="reference internal" href="#get-fraction-pos">get_fraction(pos)</a></li>
-<li><a class="reference internal" href="#update-position">update_position()</a></li>
-<li><a class="reference internal" href="#set-color-color">set_color(color)</a></li>
-<li><a class="reference internal" href="#boundingrect">boundingRect()</a></li>
-<li><a class="reference internal" href="#paint-painter-option-widget">paint(painter, option, widget)</a></li>
-<li><a class="reference internal" href="#mousepressevent-mouse-event">mousePressEvent(mouse_event)</a></li>
-<li><a class="reference internal" href="#contestmenuevent-event">contestMenuEvent(event)</a></li>
+        </div>
+        <div class="sidebar">
+          <h3>Tabela de Conteúdo</h3>
+          <ul>
+<li class="toctree-l1"><a class="reference internal" href="simulador.html">simulador.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dialogs-pasta.html">dialogs</a></li>
 </ul>
-</li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="graphics.html">graphics.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">models.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="elementos.html">elementos.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cursor.html">cursor.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bridge.html">bridge.py</a></li>
 </ul>
 
-  <h4>Tópico anterior</h4>
-  <p class="topless"><a href="DashedLine.html"
-                        title="capítulo anterior"><em>class</em> DashedLine(<em>[parent = QGraphicsLineItem]</em>)</a></p>
-  <h3>Esta Página</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/Edge.txt"
-           rel="nofollow">Exibir Fonte</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Pesquisa rápida</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Ir" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Digite os termos da busca ou o nome de um módulo, classe ou função.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+          <h3 style="margin-top: 1.5em;">Pesquisar</h3>
+          <form class="search" action="search.html" method="get">
+            <input type="text" name="q" />
+            <input type="submit" value="Ir" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Digite os termos da busca ou o nome de um módulo, classe ou função.
+          </p>
         </div>
+        <div class="clearer"></div>
       </div>
-      <div class="clearer"></div>
     </div>
-    <div class="related">
-      <h3>Navegação</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <a href="DashedLine.html" title="class DashedLine([parent])"
+             >anterior</a> |
+          <a href="Text.html" title="class Text([parent])"
+             >próximo</a> |
           <a href="genindex.html" title="Índice Geral"
-             >índice</a></li>
-        <li class="right" >
-          <a href="DashedLine.html" title="class DashedLine([parent = QGraphicsLineItem])"
-             >anterior</a> |</li>
-        <li><a href="index.html">SmartPower 0.1 documentação</a> &raquo;</li>
-          <li><a href="graphics.html" >Arquivo graphics.py</a> &raquo;</li> 
-      </ul>
-    </div>
+             >índice</a>
+            <br/>
+            <a href="_sources/Edge.txt"
+               rel="nofollow">Exibir Fonte</a>
+        </div>
+
+        <div class="right">
+          
     <div class="footer">
         &copy; Copyright 2015, Watson.
-      Criado usando <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Criado usando <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
   </body>
 </html>

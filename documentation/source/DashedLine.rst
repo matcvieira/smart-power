@@ -3,11 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-*class* DashedLine(*[parent = QGraphicsLineItem]*)
+*class* DashedLine(*[parent]*)
 ====================================================
-**Parâmetro: parent** - QtGui.QGraphicsLineItem
 
-Descrição.............
+**Herança:**
+
+* **parent -** PySide.QtGui.QGraphicsLineItem
+
+Classe que implementa o objeto DashedLine, utilizado para indicar que um elemento do diagrama foi selecionado. Sua representaçao e uma borda tracejada laranja.
 
 Métodos
 +++++++
@@ -16,16 +19,16 @@ Métodos
 
 __init__()
 ++++++++++
-Descriçao...
+Método construtor (inicial) da classe DashedLine. Chama o construtor da classe parent sem passagem de parâmetros (QtGui.QGraphicsLineItem).
 
 paint(painter, option, widget)
-+++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++
 **Parâmetros:**
 
-**painter** - 
+* **painter -** PySide.QtGui.QPainter
 
-**option** - 
+* **option -** PySide.QtGui.QStyleOptionGraphicsItem
 
-**widget** - 
+* **widget -** PySide.QtGui.QGraphicsView.ViewWidget 
 
-Descriçao...
+Método que desenha o objeto dashedLine, chamado sempre que um objeto novo é selecionado.

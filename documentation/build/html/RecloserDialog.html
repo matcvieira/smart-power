@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>class RecloserDialog([parent]) &mdash; SmartPower 0.1 documentação</title>
+    
+    <link rel="stylesheet" href="_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="SmartPower 0.1 documentação" href="index.html" />
+    <link rel="up" title="Pasta Dialogs" href="dialogs-pasta.html" />
+    <link rel="next" title="class SubstationDialog([parent])" href="SubstationDialog.html" />
+    <link rel="prev" title="class EnergyConsumerDialog([parent])" href="EnergyConsumerDialog.html" /> 
+  </head>
+  <body>
+    <div class="header-wrapper">
+      <div class="header">
+        <div class="headertitle"><a
+          href="index.html">SmartPower 0.1 documentação</a></div>
+        <div class="rel">
+          <a href="EnergyConsumerDialog.html" title="class EnergyConsumerDialog([parent])"
+             accesskey="P">anterior</a> |
+          <a href="SubstationDialog.html" title="class SubstationDialog([parent])"
+             accesskey="N">próximo</a> |
+          <a href="genindex.html" title="Índice Geral"
+             accesskey="I">índice</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="class-recloserdialog-parent">
+<h1><em>class</em> RecloserDialog(<em>[parent]</em>)<a class="headerlink" href="#class-recloserdialog-parent" title="Link permanente para este título">¶</a></h1>
+<p><strong>Herança:</strong></p>
+<ul class="simple">
+<li><strong>parent -</strong> PySide.QtGui.QWidget</li>
+</ul>
+<p>Classe que implementa a Dialog de configuração do Religador.</p>
+<div class="section" id="metodos">
+<h2>Métodos<a class="headerlink" href="#metodos" title="Link permanente para este título">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="#setupui-dialog">setupUi(Dialog)</a></li>
+<li><a class="reference internal" href="#en-dis-button">en_dis_button()</a></li>
+<li><a class="reference internal" href="#update-values-index">update_values(index)</a></li>
+<li><a class="reference internal" href="#custom">custom()</a></li>
+<li><a class="reference internal" href="#cadastrar-button">cadastrar(button)</a></li>
+<li><a class="reference internal" href="#retranslateui-dialog">retranslateUi(Dialog)</a></li>
+</ul>
+</div>
+<div class="section" id="init-item">
+<h2>__init__(item)<a class="headerlink" href="#init-item" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>item -</strong> PySide.QtCore.QGraphicsItem.Node</li>
+</ul>
+<p>Metodo inicial (construtor) da classe RecloserDialog. É chamada quando um objeto da classe Node e do tipo Religador (item) é inserido no diagrama, ou quando um evento DoubleClick é realizado nesse objeto.</p>
+</div>
+<div class="section" id="setupui-dialog">
+<h2>setupUi(Dialog)<a class="headerlink" href="#setupui-dialog" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>Dialog -</strong> PySide.QtCore.QDialog</li>
+</ul>
+<p>Método que formata a Dialog, definindo:
+tamanho, posição de buttons e labels, e suas ações.</p>
+</div>
+<div class="section" id="en-dis-button">
+<h2>en_dis_button()<a class="headerlink" href="#en-dis-button" title="Link permanente para este título">¶</a></h2>
+<p>Método que inativa o botão de confirmar enquanto os campos obrigatórios estiverem vazios, evitando objetos com erros de configuração.</p>
+</div>
+<div class="section" id="update-values-index">
+<h2>update_values(index)<a class="headerlink" href="#update-values-index" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>index -</strong> PySide.QtCore.int</li>
+</ul>
+<p>Método que atualiza os valores exibidos pelas lineEdit da Dialog de configuração para os valores atuais do Religador. O parâmetro index indica quantas vezes o menu foi chamado e, caso seja igual a 0 (nenhuma vez), a função não é executada.</p>
+</div>
+<div class="section" id="custom">
+<h2>custom()<a class="headerlink" href="#custom" title="Link permanente para este título">¶</a></h2>
+<p>Método que seta o cursor sempre para o início da lineEdit mesmo que o o usuário clique no meio da mesma.</p>
+</div>
+<div class="section" id="cadastrar-button">
+<h2>cadastrar(button)<a class="headerlink" href="#cadastrar-button" title="Link permanente para este título">¶</a></h2>
+<p>Método que configura a ação do button &#8220;cadastrar&#8221;, executando uma nova Dialog com os parâmetros do religador a preencher (ver Cadastro).</p>
+</div>
+<div class="section" id="retranslateui-dialog">
+<h2>retranslateUi(Dialog)<a class="headerlink" href="#retranslateui-dialog" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>Dialog -</strong> PySide.QtCore.QDialog</li>
+</ul>
+<p>Método que redefine o conteúdo das labels e buttons da Dialog.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Tabela de Conteúdo</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="simulador.html">simulador.py</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="dialogs-pasta.html">dialogs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">graphics.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">models.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="elementos.html">elementos.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cursor.html">cursor.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bridge.html">bridge.py</a></li>
+</ul>
+
+          <h3 style="margin-top: 1.5em;">Pesquisar</h3>
+          <form class="search" action="search.html" method="get">
+            <input type="text" name="q" />
+            <input type="submit" value="Ir" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Digite os termos da busca ou o nome de um módulo, classe ou função.
+          </p>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <a href="EnergyConsumerDialog.html" title="class EnergyConsumerDialog([parent])"
+             >anterior</a> |
+          <a href="SubstationDialog.html" title="class SubstationDialog([parent])"
+             >próximo</a> |
+          <a href="genindex.html" title="Índice Geral"
+             >índice</a>
+            <br/>
+            <a href="_sources/RecloserDialog.txt"
+               rel="nofollow">Exibir Fonte</a>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer">
+        &copy; Copyright 2015, Watson.
+      Criado usando <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

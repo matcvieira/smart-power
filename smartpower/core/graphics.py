@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from PySide import QtCore, QtGui
+from PySide import QtCore, QtGui, QtSvg
 import math
 import sys
 # Importa os módulos necessários para implementação do diagrama gráfico
@@ -17,7 +17,6 @@ from smartpower.gui.dialogs.avisoReligador import AvisoReligador
 from smartpower.core import Bridge
 
 from smartpower.calc import xml2objects
-
 
 lista_no_conectivo = []
 
@@ -50,7 +49,6 @@ class DashedLine(QtGui.QGraphicsLineItem):
                        # QPen join style
                        )
         painter.drawLine(self.line())  
-
 
 class Edge(QtGui.QGraphicsLineItem):
     '''
@@ -198,6 +196,7 @@ class Edge(QtGui.QGraphicsLineItem):
         self.prepareGeometryChange()
         # Seta a linha obtida como linha da Edge.
         self.setLine(line)
+        self.update()
 
     def set_color(self, color):
         '''
@@ -206,7 +205,6 @@ class Edge(QtGui.QGraphicsLineItem):
         '''
         self.setPen(QtGui.QPen(color))
 
-
     def paint(self, painter, option, widget):
         '''
             Metodo de desenho do objeto edge implementado pela classe Edge.
@@ -214,10 +212,15 @@ class Edge(QtGui.QGraphicsLineItem):
         '''
         # Se os itens colidirem graficamente, a linha não é desenhada.
         if (self.w1.collidesWithItem(self.w2)):
-            return
+            return        
 
         # Temos abaixo a lógica de distribuição de linhas quando elas são
-        # conectadas a uma barra.
+        # conectadas a um elemento interruptor ou a uma barra.
+        ## cw88:
+
+
+        if (self.w1.myItemType == Node.Religador):
+            pass
 
         # Se o item self.w1 for do tipo barra deve-se alinhar o item self.w2.
         # Note que este alinhamento não se aplica ao elemento Subestação:
@@ -318,16 +321,16 @@ class Edge(QtGui.QGraphicsLineItem):
 
         self.setSelected(True)
         super(Edge, self).mousePressEvent(mouse_event)
-        return
+        #return
 
     def contextMenuEvent(self, event):
         '''
-            Callback chamada... ***continuar***
+            Callback chamada quando a linha é selecionada, executando
+            o myLineMenu (QtGui.QMenu), o menu de configuração de condutor. 
         '''
         self.scene().clearSelection()
         self.setSelected(True)
         self.myEdgeMenu.exec_(event.screenPos() + QtCore.QPointF(20, 20))
-
 
 class Text(QtGui.QGraphicsTextItem):
     '''
@@ -349,6 +352,7 @@ class Text(QtGui.QGraphicsTextItem):
         self.setZValue(100)
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, False)
         self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, False)
+        self.visibility = True
 
     def itemChange(self, change, value):
         '''
@@ -367,7 +371,6 @@ class Text(QtGui.QGraphicsTextItem):
         self.lostFocus.emit(self)
         super(Text, self).focusOutEvent(event)
 
-
 class Node(QtGui.QGraphicsRectItem):
     '''
        Classe que implementa o objeto Node Genérico. Este elemento gráfico irá
@@ -375,6 +378,8 @@ class Node(QtGui.QGraphicsRectItem):
     '''
     # tipos de itens possiveis
     Subestacao, Religador, Barra, Agent, NoDeCarga, NoConectivo = range(6)
+    textVisibility = [True, True, True, True, True, True]
+    allNodes = []
 
     def __init__(self, item_type, node_menu, parent=None, scene=None):
         '''
@@ -398,26 +403,34 @@ class Node(QtGui.QGraphicsRectItem):
         self.mean_pos = None            # Atributo de posição média.
         self.text_config = 'Custom'     # Atributo da configuração de relé.
         self.pos_ref = 0                # Atributo de posição referência.
+        self.scene_node = scene
         # Se o item a ser inserido for do tipo subestação:
         if self.myItemType == self.Subestacao:
             # Define o retângulo.
-            rect = QtCore.QRectF(0, 0, 50.0, 50.0)
+            rect = QtCore.QRectF(0, 0, 75.0, 50.0)
+            # Define o símbolo de transformador, contido na subestação:
+            self.sTrafo = [QtCore.QRectF(0, 0, 50.0, 50.0),QtCore.QRectF(25, 0, 50.0, 50.0)]
             # Define e ajusta a posição do label do item gráfico. Começa com
             # um texto vazio.
             self.text = Text('', self, self.scene())
             self.substation = Substation(
                 self.text.toPlainText(), 0.0, 0.0, 0.0, complex(0, 0))
             self.text.setPos(self.mapFromItem(self.text, 0, rect.height()))
-        # Se o item a ser inserido for do tipo religador:
+
+        # Se o item a ser inserido for do tipo religador/disjuntor/chave:
         elif self.myItemType == self.Religador:
-            rect = QtCore.QRectF(0, 0, 20, 20)
+            # Cria o objeto chave que contém os dados elétricos do elemento
+            self.chave = Religador("", 0, 0, 0, 0, 1)
+            # Define o retângulo.
+            rect = self.setNodeRect()
             # Define e ajusta a posição do label do item gráfico. Começa com
             # um texto vazio.
             self.text = Text('', self, self.scene())
             self.text.setPos(self.mapFromItem(self.text, 10, rect.height()))
-            # Cria o objeto chave que contém os dados elétricos do elemento
-            # religador.
-            self.chave = Religador(self.text.toPlainText(), 0, 0, 0, 0, 1)
+            self.chave.nome = self.text.toPlainText()
+
+            
+
         # Se o item a ser inserido for do tipo barra:
         elif self.myItemType == self.Barra:
             rect = QtCore.QRectF(0, 0, 10.0, 100.0)
@@ -444,20 +457,27 @@ class Node(QtGui.QGraphicsRectItem):
         # Se o item a ser inserido for do tipo nó conectivo:
         elif self.myItemType == self.NoConectivo:
             rect = QtCore.QRectF(0, 0, 7, 7)
+            self.text = Text('', self, self.scene())    
 
         # Se o item a ser inserido for do tipo nó de carga:
         elif self.myItemType == self.NoDeCarga:
-            rect = QtCore.QRectF(0, 0, 8, 8)
+            rect = QtCore.QRectF(3, 10, 8, 8)
+            # Triangulo que representa nó com carga
+            self.triCarga = QtGui.QPolygon()
+            self.triCarga.append(QtCore.QPoint(7,9))
+            self.triCarga.append(QtCore.QPoint(0,0))
+            self.triCarga.append(QtCore.QPoint(14,0))     
             # Define e ajusta a posição do label do item gráfico. Começa com
             # um texto vazio.
             self.text = Text('', self, self.scene())
-            self.text.setPos(self.mapFromItem(self.text, 0, rect.height()))
+            self.text.setPos(QtCore.QPointF(8,4)+self.mapFromItem(self.text, 0, rect.height()))
             # Define uma lista vazia com os terminais que possivelmente o nó
             # de carga terá
             self.terminals = []
             # Cria o objeto barra que contém os dados elétricos do elemento
             # barra.
             self.no_de_carga = EnergyConsumer('', 0, 0)
+        
         # Estabelece o retângulo do item gráfico como o rect obtido, dependendo
         # do item.
         self.setRect(rect)
@@ -471,6 +491,46 @@ class Node(QtGui.QGraphicsRectItem):
         self.setFlag(QtGui.QGraphicsItem.ItemIsFocusable, True)
         self.setFlag(QtGui.QGraphicsItem.ItemSendsGeometryChanges, True)
         self.setZValue(0)
+        Node.allNodes.append(self)
+
+    def setNodeShape(self):
+        '''
+            Altera a forma do elemento interruptor de acordo com o seu tipo
+            e posiciona o seu texto. 
+        '''
+        if self.myItemType == self.Religador:
+            rect = self.setNodeRect()
+            self.setRect(rect)
+            self.text.setPos(self.mapFromItem(self, rect.width()-7, rect.height()-7))
+
+
+    def setNodeRect(self):
+        '''
+            Altera a forma do retângulo que abriga o interruptor de acordo
+            com o seu tipo: Religador, disjuntor, chave ou relé
+        '''
+        if self.myItemType == self.Religador:
+            if self.chave.tipo == 0:
+                # Chave Tipo(0):
+                rect = QtCore.QRectF(0, 0, 30, 30)
+                self.termE = QtCore.QPoint(0,rect.height()/2)
+                self.termS = QtCore.QPoint(rect.width(),rect.height()/2)
+            elif self.chave.tipo == 1:
+                # Chave motorizada Tipo(1):
+                rect = QtCore.QRectF(0, 0, 30, 30)
+                self.termE = QtCore.QPoint(0,rect.height()/2)
+                self.termS = QtCore.QPoint(rect.width(),rect.height()/2)
+            elif self.chave.tipo == 4:
+                # Religador associado com TP/TC Tipo(4):
+                #rect = QtCore.QRectF(0, 0, 40, 60)
+                sc = 0.4
+                rect = QtCore.QRectF(0, 0, sc*500, sc*385)
+                self.termE = QtCore.QPoint(0,rect.height()/2)
+                self.termS = QtCore.QPoint(rect.width(),rect.height()/2)
+            else:
+                # Religador/Disjuntor Tipos(1,2):
+                rect = QtCore.QRectF(0, 0, 20, 20)
+            return rect
 
     def fix_item(self):
         '''
@@ -517,7 +577,7 @@ class Node(QtGui.QGraphicsRectItem):
 
     def remove_edge(self, edge):
         '''
-            Esta função remove a edge passada na chamada do item presente.
+            Método de remoção a edge passada na chamada do item presente.
         '''
         self.edges.pop(edge)
         self.update_count()
@@ -574,6 +634,10 @@ class Node(QtGui.QGraphicsRectItem):
         return (self.pos() + point / 2)
 
     def set_center(self, pos):
+        '''
+            Método que define o posicionamento do objeto na tela de desenho
+            setando o seu ponto central.
+        '''
         w = self.rect().width()
         h = self.rect().height()
         point = QtCore.QPointF(w / 2, h / 2)
@@ -584,7 +648,7 @@ class Node(QtGui.QGraphicsRectItem):
             Reimplementação da função virtual que especifica a borda do objeto
             node (ver biblioteca Pyside, QtGui.QGraphicsRectItem.boundingRect)
         '''
-        extra = 5.0
+        extra = 10.0
         return self.rect().adjusted(-extra, -extra, extra, extra)
 
     def paint(self, painter, option, widget):
@@ -595,23 +659,87 @@ class Node(QtGui.QGraphicsRectItem):
             suas formas baseadas em seus retângulos.
             Ver método paint em PySide.
         '''
+        # Seta a visibilidade do texto antes de desenhá-lo.
+        self.text.setVisible(self.textVisibility[self.myItemType])
         # Caso o item a ser inserido seja do tipo subestacão:
         if self.myItemType == self.Subestacao:
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
             painter.setBrush(QtCore.Qt.white)
-            painter.drawEllipse(self.rect())
-        # Caso o item a ser inserido seja do tipo religador:
+            for item in self.sTrafo:
+                painter.drawEllipse(item)
+            painter.setBrush(QtCore.Qt.NoBrush)
+            painter.drawEllipse(self.sTrafo[0])
+
+        # Caso o item a ser inserido seja do tipo interruptor:
+        # cw88
+
         elif self.myItemType == self.Religador:
-            painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
-            # Faz-se aqui importante observação: se a chave associada ao
-            # elemento gráfico religador estiver fechada, desenha-se o
-            # religador preenchido de preto. Caso contrário, ele é vazado
-            # (branco)
-            if self.chave.normalOpen == 1:
+            # Religador associado com TP/TC Tipo(4):
+            # cw88
+            if self.chave.tipo == 4:
+                filename = "icones/rele.jpg"
+                rect = self.rect()
+                image = QtGui.QImage(rect.width(),rect.height(), QtGui.QImage.Format_Mono)
+                painter.drawImage(QtCore.QRectF(0,0,200,200),image)
+            # Chave Tipo(0):
+            elif self.chave.tipo == 0:
+                circ1 = QtCore.QPointF(0, self.rect().height()/2) 
+                circ2 = QtCore.QPointF(self.rect().width(), self.rect().height()/2)
+                scFac = self.rect().width()*(2.0**(1.0/2)/2)
+                circ3 = QtCore.QPointF(scFac, scFac+self.rect().height()/2)
+                if self.chave.normalOpen == 0:
+                    painter.setPen(QtGui.QPen(QtCore.Qt.black, 3))
+                    painter.drawLine(circ1, circ2)
+                else:
+                    painter.setPen(QtGui.QPen(QtCore.Qt.black, 3))
+                    painter.drawLine(circ1,circ3)
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
                 painter.setBrush(QtCore.Qt.white)
+                painter.drawEllipse(circ1,4,4)
+                painter.drawEllipse(circ2,4,4)   
+            # Chave motorizada Tipo(1):
+            elif self.chave.tipo == 1:
+                
+                circT1 = QtCore.QPointF((self.rect().width()/2)-6.5, (3.0*self.rect().height()/4)+4) 
+                circT2 = QtCore.QPointF(self.rect().width()/2, 3.0*self.rect().height()/4)
+                circT3 = QtCore.QPointF(0, self.rect().height()+4) 
+                circT4 = QtCore.QPointF(6.5, self.rect().height())
+                
+                circ1 = QtCore.QPointF(0, self.rect().height()/2)
+                circ2 = QtCore.QPointF(self.rect().width(), self.rect().height()/2)
+                circ3 = QtCore.QPointF(self.rect().width()/2, self.rect().height()/2) 
+                scFac = self.rect().width()*(2.0**(1.0/2)/2)
+                circ4 = QtCore.QPointF(scFac, scFac+self.rect().height()/2) 
+                circ5 = QtCore.QPointF(scFac/2, (scFac/2)+(self.rect().height()/2)) 
+
+                if self.chave.normalOpen == 0:
+                    circ5 = circ3
+                    circ4 = circ2
+                    circT3 = circT1
+                    circT4 = circT2
+                
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 3))
+                painter.drawLine(circ1,circ4)
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 1))
+                #painter.drawLine(circT4,circ5)
+                painter.setBrush(QtCore.Qt.white)
+                painter.drawEllipse(circT4,7,7)
+                painter.drawText(circT3,u'm')
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
+                painter.drawEllipse(circ1,4,4)
+                painter.drawEllipse(circ2,4,4)
+
             else:
-                painter.setBrush(QtCore.Qt.black)
-            painter.drawRoundedRect(self.rect(), 5, 5)
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
+                # Faz-se aqui importante observação: se a chave associada ao
+                # elemento gráfico religador estiver fechada, desenha-se o
+                # religador preenchido de preto. Caso contrário, ele é vazado
+                # (branco)
+                if self.chave.normalOpen == 1:
+                    painter.setBrush(QtCore.Qt.white)
+                else:
+                    painter.setBrush(QtCore.Qt.black)
+                painter.drawRoundedRect(self.rect(), 5, 5)
         # Caso o item a ser inserido seja do tipo barra:
         elif self.myItemType == self.Barra:
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
@@ -630,9 +758,16 @@ class Node(QtGui.QGraphicsRectItem):
 
         # Caso o item a ser inserido seja do tipo nó de carga:
         elif self.myItemType == self.NoDeCarga:
-            painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
+            painter.setPen(QtGui.QPen(QtCore.Qt.black, 2.5))
             painter.setBrush(QtCore.Qt.black)
             painter.drawRect(self.rect())
+            if int(self.no_de_carga.potencia_ativa) == 0 & int(self.no_de_carga.potencia_reativa) == 0:
+                pass
+            else:
+                painter.setPen(QtGui.QPen(QtCore.Qt.black, 2.5))
+                painter.setBrush(QtCore.Qt.black)
+                painter.drawPolygon(self.triCarga)
+
 
         # Se o item estiver selecionado, desenha uma caixa pontilhada de
         # seleção em seu redor.
@@ -876,7 +1011,6 @@ class Node(QtGui.QGraphicsRectItem):
         # Executa o menu, dependendo do tipo de item.
         self.myNodeMenu.exec_(event.screenPos())
 
-
 class SceneWidget(QtGui.QGraphicsScene):
     '''
         Classe que implementa o container Gráfico onde os
@@ -908,7 +1042,7 @@ class SceneWidget(QtGui.QGraphicsScene):
         self.dict_prop = {}
         self.lista_no_conectivo = []
         # Definição da geometria inicial da cena
-        self.setSceneRect(0, 0, 800, 800)
+        self.setSceneRect(0, 0, 1600, 1600)
         self.myMode = self.MoveItem
         self.myItemType = Node.Subestacao
         self.my_background_style = self.NoStyle
@@ -945,6 +1079,9 @@ class SceneWidget(QtGui.QGraphicsScene):
             Este método define as ações realizadas quando um evento do tipo
             mousePress é detectado no diagrama grafico
         '''
+
+        print "press Scene"
+
         super(SceneWidget, self).mousePressEvent(mouse_event)
         # Armazena em um atributo a posição em que o mouse foi apertado.
         self.pressPos = mouse_event.scenePos()
@@ -1006,60 +1143,8 @@ class SceneWidget(QtGui.QGraphicsScene):
 
         # Caso o botão pressionado do mouse for o esquerdo:
         # Entra no modo passado à cena.
-        # Se o modo for de inserção de itens:
-        if self.myMode == self.InsertItem:
-            # Insere o item com determinado tipo (ver Node).
-            if self.myItemType == Node.Religador:
-                item = Node(self.myItemType, self.myRecloserMenu)
-            elif self.myItemType == Node.Barra:
-                item = Node(self.myItemType, self.myBusMenu)
-            elif self.myItemType == Node.Subestacao:
-                item = Node(self.myItemType, self.mySubstationMenu)
-            elif self.myItemType == Node.NoDeCarga:
-                item = Node(self.myItemType, self.mySubstationMenu)
-            # Ajusta a posição do item para a posição do press do mouse.
-            item.setPos(item.adjust_in_grid(mouse_event.scenePos()))
-            self.addItem(item)
-
-            # Quando um item é adicionado, o dialog de configuração se abre
-            # para que o usuário prontamente insira seus dados (ver
-            # launch_dialog). Caso o usuário cancele a janela, o item é
-            # removido da cena.
-            if self.myItemType == Node.Religador:
-                item.setSelected(True)
-                result = self.launch_dialog()
-                item.setSelected(False)
-                if result == 0:
-                    self.removeItem(item)
-
-            elif self.myItemType == Node.Barra:
-                item.setSelected(True)
-                result = self.launch_dialog()
-                item.setSelected(False)
-                if result == 0:
-                    self.removeItem(item)
-            elif self.myItemType == Node.Subestacao:
-                item.setSelected(True)
-                result = self.launch_dialog()
-                item.setSelected(False)
-                if result == 0:
-                    self.removeItem(item)
-
-            elif self.myItemType == Node.NoDeCarga:
-                item.setSelected(True)
-                result = self.launch_dialog()
-                item.setSelected(False)
-                if result == 0:
-                    self.removeItem(item)
-            # Cria um comando para que seja possibilitada a ação de desfazer/
-            # refazer. PENDÊNCIA
-            comando = AddRemoveCommand("Add", self, item)
-            self.undoStack.push(comando)
-            # Emite um sinal contendo o tipo do item.
-            self.itemInserted.emit(self.myItemType)
-
         # Caso o modo passado à cena seja de inserção de linha:
-        elif self.myMode == self.InsertLine:
+        if self.myMode == self.InsertLine:
             # Cria o elipse para o mesmo fim explicado anteriormente: dar
             # margem de ação para os "presses" do mouse
             ell = QtGui.QGraphicsEllipseItem()
@@ -1246,6 +1331,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             os dois elementos que estão ligados pela linha criada no evento
             mousePress.
         '''
+        print "Release Scene"
 
         # Se o modo atual for de inserção de linha, desligam-se as prioridades
         # de node e edge e cria uma flag block_on.
@@ -1423,6 +1509,76 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.setSelected(False)
 
             self.no = None
+            self.line = None
+            self.itemInserted.emit(3)
+
+
+        # Armazena em um atributo a posição em que o mouse foi apertado.
+        self.pressPos = mouse_event.pos()
+        print mouse_event.pos()
+        print "posicao do mouse"
+        # Define o break_mode, utilizado no método de quebrar linhas (ver
+        # break_edge em SceneWidget.
+        self.break_mode = 2
+        # Cria uma variável para receber uma edge que foi quebrada.
+        self.edge_broken = None
+
+        # Se o modo for o de inserção de itens
+        if self.myMode == self.InsertItem:
+            # Insere o item com determinado tipo (ver Node).
+            if self.myItemType == Node.Religador:
+                item = Node(self.myItemType, self.myRecloserMenu)
+            elif self.myItemType == Node.Barra:
+                item = Node(self.myItemType, self.myBusMenu)
+            elif self.myItemType == Node.Subestacao:
+                item = Node(self.myItemType, self.mySubstationMenu)
+            elif self.myItemType == Node.NoDeCarga:
+                item = Node(self.myItemType, self.mySubstationMenu)
+            # Ajusta a posição do item para a posição do press do mouse.
+            item.setPos(item.adjust_in_grid(self.pressPos))
+            #item.setPos(item.adjust_in_grid(mouse_event.scenePos()))
+            self.addItem(item)
+
+            # Quando um item é adicionado, o dialog de configuração se abre
+            # para que o usuário prontamente insira seus dados (ver
+            # launch_dialog). Caso o usuário cancele a janela, o item é
+            # removido da cena.
+            if self.myItemType == Node.Religador:
+                item.setSelected(True)
+                result = self.launch_dialog()
+                item.setSelected(False)
+                if result == 0:
+                    self.removeItem(item)
+
+            elif self.myItemType == Node.Barra:
+                item.setSelected(True)
+                result = self.launch_dialog()
+                item.setSelected(False)
+                if result == 0:
+                    self.removeItem(item)
+            elif self.myItemType == Node.Subestacao:
+                item.setSelected(True)
+                result = self.launch_dialog()
+                item.setSelected(False)
+                if result == 0:
+                    self.removeItem(item)
+
+            elif self.myItemType == Node.NoDeCarga:
+                item.setSelected(True)
+                result = self.launch_dialog()
+                item.setSelected(False)
+                if result == 0:
+                    self.removeItem(item)
+            # Cria um comando para que seja possibilitada a ação de desfazer/
+            # refazer. PENDÊNCIA
+            comando = AddRemoveCommand("Add", self, item)
+            self.undoStack.push(comando)
+            # Emite um sinal contendo o tipo do item.
+            self.itemInserted.emit(self.myItemType)
+
+        ###
+        ###
+        ###
 
         # Caso o modo seja de seleção de itens, seleciona os itens englobados
         # pelo retângulo de seleção.
@@ -1433,16 +1589,15 @@ class SceneWidget(QtGui.QGraphicsScene):
             self.removeItem(self.selectRect)
             self.selectRect = None
 
-        self.line = None
-        self.itemInserted.emit(3)
+        #self.line = None
+        #self.itemInserted.emit(3)
         super(SceneWidget, self).mouseReleaseEvent(mouse_event)
 
     def mouseDoubleClickEvent(self, mouse_event):
         '''
             Este método define as ações realizadas quando um evento do tipo
             mouseDoubleClick e detectado no diagrama grafico. Neste caso
-            conecta os dois elementos que estão ligados pela linha criada no
-            evento mousePress.
+            abre o diálogo de configuração de parâmetros.
         '''
         # Se um item for clicado duplamente, abre o diálogo de configuração
         # de parâmetros.
@@ -1475,6 +1630,10 @@ class SceneWidget(QtGui.QGraphicsScene):
     # Define a função de aperto de diversas teclas. O trecho a seguir é
     # auto-explicativo.
     def keyPressEvent(self, event):
+        '''
+            Define a função de pressionar múltiplas teclas e executar comandos ou atalhos.
+            ctrl+Z, por exemplo. 
+        '''
         key = event.key()
         if self.keyControlIsPressed is True:
             if key == QtCore.Qt.Key_Z:
@@ -1509,13 +1668,75 @@ class SceneWidget(QtGui.QGraphicsScene):
         return
 
     def keyReleaseEvent(self, event):
+        '''
+            Função que implementa a função chamada quando uma tecla é liberada. 
+        '''
         key = event.key()
         if key == QtCore.Qt.Key_Control:
             self.keyControlIsPressed = False
 
-    # Função break_edge usada para quebrar a linha quando a inserção é a partir
-    # ou em cima de uma linha.
+
+    ### Funções que modificam a visibilidade do texto de cada elemento e redesenham a SceneWidget
+    ### Subestação
+    def setTextSubstation(self):
+        '''
+            Altera o parâmetro da classe Node que seta a visibilidade dos
+            textos dos objetos Node do tipo Subestacao.
+        '''
+        if Node.textVisibility[Node.Subestacao] == True:
+            Node.textVisibility[Node.Subestacao] = False
+        else :
+            Node.textVisibility[Node.Subestacao] = True
+        self.update()
+        #for item in Node.allNodes:
+        #    item.scene_node.sendEvent(item, QtCore.QEvent(QtCore.QEvent.Paint))
+
+    ### Religador
+    def setTextRecloser(self):
+        '''
+            Altera o parâmetro da classe Node que seta a visibilidade dos
+            textos dos objetos Node do tipo Religador.
+        '''
+        if Node.textVisibility[Node.Religador] == True:
+            Node.textVisibility[Node.Religador] = False
+        else :
+            Node.textVisibility[Node.Religador] = True
+        #self.setSceneRect(0, 0, 1600, 1600)
+        self.update()
+    ### Nó De carga
+    def setTextNodeC(self):
+        '''
+            Altera o parâmetro da classe Node que seta a visibilidade dos
+            textos dos objetos Node do tipo No de carga.
+        '''
+        if Node.textVisibility[Node.NoDeCarga] == True:
+            Node.textVisibility[Node.NoDeCarga] = False
+        else :
+            Node.textVisibility[Node.NoDeCarga] = True
+        self.update()
+    ### Barra
+    def setTextBus(self):
+        '''
+            Altera o parâmetro da classe Node que seta a visibilidade dos
+            textos dos objetos Node do tipo Barra.
+        '''
+        if Node.textVisibility[Node.Barra] == True:
+            Node.textVisibility[Node.Barra] = False
+        else :
+            Node.textVisibility[Node.Barra] = True
+        self.update()
+
+    #def sUpdate(self):
+     #   '''
+      #      Atualiza todos os elementos da QGraphicsScene do programa
+       # '''
+        #self.update()
+
     def break_edge(self, edge, mode, original_edge, insert=None):
+        '''
+            Função break_edge usada para quebrar a linha quando a inserção é a partir
+            ou em cima de uma linha.
+        '''
         if mode == 3:
             break_point = insert
         if mode == 2:
@@ -1536,8 +1757,10 @@ class SceneWidget(QtGui.QGraphicsScene):
         new_edge_1.update_position()
         new_edge_2.update_position()
 
-    # Definição da função de recuperar uma linha quando está foi quebrada.
     def recover_edge(self, item):
+        '''
+            Definição da função de recuperar uma linha quando esta foi quebrada.
+        '''
         w = []
 
         for edge in item.edges:
@@ -1563,7 +1786,8 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def set_mode(self, mode):
         '''
-            Define em qual modo
+            Define o modo em que o sistema está atuando (seleção de item, inserção
+            de item ou inserção de linha).
         '''
         self.myMode = mode
 
@@ -1669,6 +1893,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                                     item.Noc, edge.w1, self.myLineMenu)
                             self.addItem(new_edge)
                     item.remove_edges()
+                    Node.allNodes.remove(item)
                 # Caso o item possua mais de duas linhas ligadas, o comporta
                 # mento se torna imprevisível, então é emitida uma mensagem ao
                 # usuário restringindo esta ação.
@@ -1722,6 +1947,15 @@ class SceneWidget(QtGui.QGraphicsScene):
                         # valor atribuído a ele anteriormente. Caso contrário,
                         # atribui o valor inserido pelo usuário ao parâmetro
                         # correspondente.
+                        '''
+
+                            cw88
+
+                        '''
+
+                        item.chave.tipo = dialog.tipoElementoCheck.checkedId()
+                        item.setNodeShape()
+
                         if dialog.identificaOLineEdit.text() == "":
                             pass
                         else:
@@ -1870,6 +2104,10 @@ class SceneWidget(QtGui.QGraphicsScene):
                     item.rect().height() / 1.25)
 
     def align_line_h(self):
+        '''
+            Este método implementa a ação de alinhar horizontalmente os objetos da 
+            classe Line no diagrama gráfico.
+        '''
         w1_is_locked = False
         w2_is_locked = False
         for item in self.selectedItems():
@@ -1903,6 +2141,10 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.update_position()
 
     def align_line_v(self):
+        '''
+            Este método implementa a ação de alinhar verticalmente os objetos da 
+            classe Line no diagrama gráfico.
+        '''
         for item in self.selectedItems():
             if isinstance(item, Edge):
                 if item.w1.x() < item.w2.x():
@@ -1917,6 +2159,10 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.update_ret()
 
     def h_align(self):
+        '''
+            Este método implementa a ação de alinhar horizontalmente os objetos da 
+            classe Node no diagrama gráfico.
+        '''
         has_pos_priority = False
         has_bar_priority = False
         y_pos_list = []
@@ -1985,6 +2231,10 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.update_position()
 
     def v_align(self):
+        '''
+            Este método implementa a ação de alinhar verticalmente os objetos da 
+            classe Node no diagrama gráfico.
+        '''
         x_pos_list = []
         for item in self.selectedItems():
             if isinstance(item, Node):
@@ -2002,6 +2252,9 @@ class SceneWidget(QtGui.QGraphicsScene):
                 item.update_position()
 
     def set_grid(self):
+        '''
+            Cria uma grade no desenho, impondo posições pré-determinadas aos elementos 
+        '''
         if self.my_background_style == self.GridStyle:
             self.setBackgroundBrush(QtGui.QBrush(
                 QtCore.Qt.white, QtCore.Qt.NoBrush))
@@ -2012,9 +2265,8 @@ class SceneWidget(QtGui.QGraphicsScene):
             self.my_background_style = self.GridStyle
 
     def simulate(self):
-
         '''
-        Inicia a simulação: cálculos de fluxo de carga e curto circuito
+            Inicia a simulação: cálculos de fluxo de carga e curto circuito.
         '''
         # Força o usuário a salvar o diagrama antes da simulação
         path = self.main_window.save()
@@ -2069,21 +2321,12 @@ class SceneWidget(QtGui.QGraphicsScene):
         #     self.main_window.sim_table.setRowCount()
         #     self.main_window.sim_table.setColumnCount(len(top["trechos"]))
         #     self.main_window.sim_table.adjustSize()
-            
-
-
-        
-
-
-
 
 class ViewWidget(QtGui.QGraphicsView):
     '''
-        Esta classe implementa o container QGraphicsView
-        onde residirá o objeto QGraphicsScene.
+        Esta classe implementa o container QGraphicsView onde residirá o objeto QGraphicsScene.
     '''
     def __init__(self, scene):
-
         super(ViewWidget, self).__init__(scene)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -2091,9 +2334,17 @@ class ViewWidget(QtGui.QGraphicsView):
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
 
     def wheelEvent(self, event):
+        '''
+            Função que implementa a ação de girar o scroll do mouse, ampliando ou reduzindo
+            o zoom do diagrama.
+        '''
         self.scale_view(math.pow(2.0, -event.delta() / 240.0))
 
     def scale_view(self, scale_factor):
+        '''
+            Função que calcula o fator de escala aplicado ao diagrama, alterando o tamanho do
+            mesmo e simulando a função zoom.
+        '''
         factor = self.matrix().scale(scale_factor, scale_factor).mapRect(
             QtCore.QRectF(0, 0, 1, 1)).width()
         if factor < 0.5 or factor > 3:
@@ -2102,6 +2353,9 @@ class ViewWidget(QtGui.QGraphicsView):
 
 
 class AddRemoveCommand(QtGui.QUndoCommand):
+    '''
+        Classe que implementa os comandos "desfazer"(undo) e "refazer"(undo).
+    '''
     def __init__(self, mode, scene, item):
         super(AddRemoveCommand, self).__init__(mode)
         self.mode = mode
@@ -2110,6 +2364,10 @@ class AddRemoveCommand(QtGui.QUndoCommand):
         self.count = 0
 
     def redo(self):
+        '''
+            Refaz uma ação que foi desfeita.
+            ctrl+y
+        '''
         self.count += 1
         if self.count <= 1:
             return
@@ -2120,6 +2378,10 @@ class AddRemoveCommand(QtGui.QUndoCommand):
             self.scene.removeItem(self.item)
 
     def undo(self):
+        '''
+            Desfaz a última ação de remoção ou inserção de item realizada.
+            ctrl+z 
+        '''
         if self.mode == "Add":
             self.scene.removeItem(self.item)
         if self.mode == "Remove":

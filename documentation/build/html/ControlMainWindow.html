@@ -6,9 +6,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>class ControlMainWindow([parent = QMainWindow]) &mdash; SmartPower 0.1 documentação</title>
+    <title>class ControlMainWindow([parent = PySide.QtGui.QMainWindow]) &mdash; SmartPower 0.1 documentação</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/agogo.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -27,41 +27,71 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="SmartPower 0.1 documentação" href="index.html" />
     <link rel="up" title="Arquivo simulador.py" href="simulador.html" />
-    <link rel="next" title="Arquivo graphics.py" href="graphics.html" />
-    <link rel="prev" title="class JanelaPrincipal( [parent = object] )" href="JanelaPrincipal.html" /> 
+    <link rel="next" title="Pasta Dialogs" href="dialogs-pasta.html" />
+    <link rel="prev" title="class JanelaPrincipal([parent])" href="JanelaPrincipal.html" /> 
   </head>
   <body>
-    <div class="related">
-      <h3>Navegação</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
+    <div class="header-wrapper">
+      <div class="header">
+        <div class="headertitle"><a
+          href="index.html">SmartPower 0.1 documentação</a></div>
+        <div class="rel">
+          <a href="JanelaPrincipal.html" title="class JanelaPrincipal([parent])"
+             accesskey="P">anterior</a> |
+          <a href="dialogs-pasta.html" title="Pasta Dialogs"
+             accesskey="N">próximo</a> |
           <a href="genindex.html" title="Índice Geral"
-             accesskey="I">índice</a></li>
-        <li class="right" >
-          <a href="graphics.html" title="Arquivo graphics.py"
-             accesskey="N">próximo</a> |</li>
-        <li class="right" >
-          <a href="JanelaPrincipal.html" title="class JanelaPrincipal( [parent = object] )"
-             accesskey="P">anterior</a> |</li>
-        <li><a href="index.html">SmartPower 0.1 documentação</a> &raquo;</li>
-          <li><a href="simulador.html" accesskey="U">Arquivo simulador.py</a> &raquo;</li> 
-      </ul>
-    </div>  
+             accesskey="I">índice</a>
+        </div>
+       </div>
+    </div>
 
-    <div class="document">
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="class-controlmainwindow-parent-qmainwindow">
-<h1><em>class</em> ControlMainWindow(<em>[parent = QMainWindow]</em>)<a class="headerlink" href="#class-controlmainwindow-parent-qmainwindow" title="Link permanente para este título">¶</a></h1>
+  <div class="section" id="class-controlmainwindow-parent-pyside-qtgui-qmainwindow">
+<h1><em>class</em> ControlMainWindow(<em>[parent = PySide.QtGui.QMainWindow]</em>)<a class="headerlink" href="#class-controlmainwindow-parent-pyside-qtgui-qmainwindow" title="Link permanente para este título">¶</a></h1>
 <p>Classe que cria a janela principal do programa.</p>
 <div class="section" id="metodos">
 <h2>Métodos<a class="headerlink" href="#metodos" title="Link permanente para este título">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="#mousereleaseevent-mouse-event">mouseReleaseEvent(mouse_event)</a></li>
+<li><a class="reference internal" href="#setcursoricon-id">setCursorIcon(id)</a></li>
+<li><a class="reference internal" href="#setcursorpad-id">setCursorPad(id)</a></li>
+</ul>
 </div>
 <div class="section" id="init">
 <h2>__init__()<a class="headerlink" href="#init" title="Link permanente para este título">¶</a></h2>
 <p>Metodo inicial (construtor) da classe ControlMainWindow. Chama o metodo construtor da classe QtGui.QMainWindow passando como parametro parent.</p>
+</div>
+<div class="section" id="mousereleaseevent-mouse-event">
+<h2>mouseReleaseEvent(mouse_event)<a class="headerlink" href="#mousereleaseevent-mouse-event" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>mouse_event -</strong> PySide.QtGui.QMouseEvent</li>
+</ul>
+<p>Função da chamada no momento que o evento mouse release é enviado. Quando um item arrastado para a área de desenho é liberado, este item é desenhado e o programa volta para o modo de seleção de itens.</p>
+</div>
+<div class="section" id="setcursoricon-id">
+<h2>setCursorIcon(id)<a class="headerlink" href="#setcursoricon-id" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>id -</strong> PySide.QtCore.int</li>
+</ul>
+<p>Callback que altera o formato do cursor dando a impressão visual de &#8216;arrastar&#8217; o elemento para dentro do diagrama gráfico.</p>
+</div>
+<div class="section" id="setcursorpad-id">
+<h2>setCursorPad(id)<a class="headerlink" href="#setcursorpad-id" title="Link permanente para este título">¶</a></h2>
+<p><strong>Parâmetros:</strong></p>
+<ul class="simple">
+<li><strong>id -</strong> PySide.QtCore.int</li>
+</ul>
+<p>Função que altera o formato do cursor para a seta padrão.</p>
 </div>
 </div>
 
@@ -69,64 +99,60 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Tabela de Conteúdo</a></h3>
-  <ul>
-<li><a class="reference internal" href="#"><em>class</em> ControlMainWindow(<em>[parent = QMainWindow]</em>)</a><ul>
-<li><a class="reference internal" href="#metodos">Métodos</a></li>
-<li><a class="reference internal" href="#init">__init__()</a></li>
+        </div>
+        <div class="sidebar">
+          <h3>Tabela de Conteúdo</h3>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="simulador.html">simulador.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dialogs-pasta.html">dialogs</a></li>
 </ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">graphics.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">models.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="elementos.html">elementos.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cursor.html">cursor.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bridge.html">bridge.py</a></li>
 </ul>
 
-  <h4>Tópico anterior</h4>
-  <p class="topless"><a href="JanelaPrincipal.html"
-                        title="capítulo anterior"><em>class</em> JanelaPrincipal( <em>[parent = object]</em> )</a></p>
-  <h4>Próximo tópico</h4>
-  <p class="topless"><a href="graphics.html"
-                        title="próximo capítulo">Arquivo graphics.py</a></p>
-  <h3>Esta Página</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/ControlMainWindow.txt"
-           rel="nofollow">Exibir Fonte</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Pesquisa rápida</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Ir" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Digite os termos da busca ou o nome de um módulo, classe ou função.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+          <h3 style="margin-top: 1.5em;">Pesquisar</h3>
+          <form class="search" action="search.html" method="get">
+            <input type="text" name="q" />
+            <input type="submit" value="Ir" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Digite os termos da busca ou o nome de um módulo, classe ou função.
+          </p>
         </div>
+        <div class="clearer"></div>
       </div>
-      <div class="clearer"></div>
     </div>
-    <div class="related">
-      <h3>Navegação</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <a href="JanelaPrincipal.html" title="class JanelaPrincipal([parent])"
+             >anterior</a> |
+          <a href="dialogs-pasta.html" title="Pasta Dialogs"
+             >próximo</a> |
           <a href="genindex.html" title="Índice Geral"
-             >índice</a></li>
-        <li class="right" >
-          <a href="graphics.html" title="Arquivo graphics.py"
-             >próximo</a> |</li>
-        <li class="right" >
-          <a href="JanelaPrincipal.html" title="class JanelaPrincipal( [parent = object] )"
-             >anterior</a> |</li>
-        <li><a href="index.html">SmartPower 0.1 documentação</a> &raquo;</li>
-          <li><a href="simulador.html" >Arquivo simulador.py</a> &raquo;</li> 
-      </ul>
-    </div>
+             >índice</a>
+            <br/>
+            <a href="_sources/ControlMainWindow.txt"
+               rel="nofollow">Exibir Fonte</a>
+        </div>
+
+        <div class="right">
+          
     <div class="footer">
         &copy; Copyright 2015, Watson.
-      Criado usando <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Criado usando <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
   </body>
 </html>
