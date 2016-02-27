@@ -19,7 +19,7 @@ class JanelaPrincipal(object):
     '''
 
     def __init__(self):
-        self.cursor = Cursor("") #cww
+        self.cursor = Cursor("")
         pass
 
     def inicializar_componentes(self, main_window):
@@ -70,24 +70,18 @@ class JanelaPrincipal(object):
         self.helpMenu = self.menubar.addMenu('Ajuda')
         #Cria o submenu Alinhar e o coloca no menu Organizar
         self.alignSubmenu = self.orgMenu.addMenu('Alinhar')
-        #Cria o submenu Texto e o coloca no menu Organizar CW
+        #Cria o submenu Texto e o coloca no menu Organizar 
         self.textSubmenu = self.showMenu.addMenu('Texto')
 
         # define a barra de status
         self.statusbar = QtGui.QStatusBar(main_window)
         self.statusbar.setObjectName("statusbar")
         main_window.setStatusBar(self.statusbar)
-        '''
-        # define a barra de ferramentas
-        self.toolBar = QtGui.QToolBar(main_window)
-        self.toolBar.setEnabled(True)
-        self.toolBar.setObjectName("toolBar")
-        main_window.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
-        '''
+
         # define o widget dockWidget dockWidget_Buttons e configura seu
-        # conteudo dockWidget_Buttons_Contents CWW
-        self.dockWidget_Buttons = QtGui.QDockWidget(main_window)#QtGui.QDockWidget(main_window)
-        self.dockWidget_Buttons.setCursor(self.cursor) #CWW'
+        # conteudo dockWidget_Buttons_Contents 
+        self.dockWidget_Buttons = QtGui.QDockWidget(main_window)
+        self.dockWidget_Buttons.setCursor(self.cursor)
         self.dockWidget_Buttons.setObjectName("dockWidget_Buttons")
         self.dockWidget_Buttons_Contents = QtGui.QWidget()
         self.dockWidget_Buttons_Contents.setMinimumWidth(230)
@@ -126,8 +120,8 @@ class JanelaPrincipal(object):
         self.gridlayout_page_1.setObjectName("gridlayout_page_1")
 
         # define os botoes da primeira pagina do dockWidget e insere no
-        # FormLayout cw
-        self.iconSubstation = QtGui.QIcon("icones/iconSubstation.png")
+        # FormLayout
+        self.iconSubstation = QtGui.QIcon("icones/iconTrafo.png")
         self.iconBus = QtGui.QIcon("icones/iconBus.png")
         self.iconRecloser = QtGui.QIcon("icones/iconRecloser.png")
         self.iconLine = QtGui.QIcon("icones/iconLine.png")
@@ -329,7 +323,7 @@ class JanelaPrincipal(object):
         #self.toolBar.addAction(self.action_simulate)
         self.simulationMenu.addAction(self.action_simulate)
 
-        # cria e configura a acao de tornar o texto visível ou não CW
+        # cria e configura a acao de tornar o texto visível ou não
         ### subestação
         self.actionTextVisibleSubstation = QtGui.QAction(
             main_window, triggered=self.sceneWidget.setTextSubstation)
@@ -411,7 +405,7 @@ class JanelaPrincipal(object):
     def buttonGroupClicked(self, id):
         '''
             Callback chamada no momento em que um botão de inserção
-            de itens é clicado. CW
+            de itens é clicado.
         '''
         if id==3:
            self.buttonGroup.button(id).setChecked(True) 
@@ -420,32 +414,11 @@ class JanelaPrincipal(object):
     def buttonGroupPressed(self, id):
         '''
             Callback chamada no momento em que um botão de inserção
-            de itens é pressionado. CW
+            de itens é pressionado. 
         '''
-        self.buttonGroup.button(id).setChecked(True) #cwwww
+        self.buttonGroup.button(id).setChecked(True)
 
-        # Altera o icone de acordo com o button pressionado: AQUIIII!!!!!
-        #self.main_window.cursor.setShapeRecl(self.main_window)
-        #print "mudou"
-        '''
-        buttons = self.buttonGroup.buttons() 
-        for button in buttons:
-            if self.buttonGroup.button(id).isChecked():
-                if self.buttonGroup.button(id) != button:
-                    button.setChecked(False)
-            #else:
-                #button.setChecked(False)
-
-        # Altera o modo para: inserir linha, inserir item ou mover item.
-        if self.buttonGroup.button(id).isChecked():
-            if id == 3:
-                self.sceneWidget.set_mode(SceneWidget.InsertLine)
-            else:
-                self.sceneWidget.set_item_type(id)
-                self.sceneWidget.set_mode(SceneWidget.InsertItem)
-        else:
-            self.sceneWidget.set_mode(SceneWidget.MoveItem)
-        '''
+        # Altera o icone de acordo com o button pressionado:
 
         buttons = self.buttonGroup.buttons() 
         for button in buttons:
@@ -458,14 +431,13 @@ class JanelaPrincipal(object):
         else:
             self.sceneWidget.set_item_type(id)
             self.sceneWidget.set_mode(SceneWidget.InsertItem)
-        print "press group"
 
     def buttonGroupReleased(self):
         '''
             Callback chamada no momento em que um botão de inserção
-            de itens é liberado. CW
+            de itens é liberado.
         '''
-        print "group release"
+
         self.dockWidget_Buttons.setCursor(Cursor(""))
 
 
@@ -485,10 +457,6 @@ class JanelaPrincipal(object):
         main_window.setWindowTitle(QtGui.QApplication.translate(
             "main_window", "Smart Power v0.2 - Simulador de Redes Elétricas de Distribuição",
             None, QtGui.QApplication.UnicodeUTF8))
-
-        #self.toolBar.setWindowTitle(
-        #    QtGui.QApplication.translate("main_window", "toolBar", None,
-        #                                 QtGui.QApplication.UnicodeUTF8))
 
         self.substationButton.setText(
             QtGui.QApplication.translate(
@@ -652,7 +620,7 @@ class JanelaPrincipal(object):
                 "main_window", "Simular", None,
                 QtGui.QApplication.UnicodeUTF8))
         
-        ## Configuração das QActions para exibir textos dos elementos, sem atalhos. CW
+        ## Configuração das QActions para exibir textos dos elementos, sem atalhos.
         self.actionTextVisibleSubstation.setText(
             QtGui.QApplication.translate(
                 "main_window", "Subestações", None, QtGui.QApplication.UnicodeUTF8))
@@ -685,18 +653,6 @@ class JanelaPrincipal(object):
             QtGui.QApplication.translate(
                 "main_window", "Exibe ou apaga os textos dos elementos do tipo Nó de Carga", None, QtGui.QApplication.UnicodeUTF8))
 
-#
-#class ButtonWidget(QtGui.QDockWidget):
-#    '''
-        #Classe que cria a widget que conterá os buttons. CWWWW
-#    '''
-#    def __init__(self, main_window):
-##
- #   def mouseReleaseEvent(self, mouse_event):
-#        print "ButtonWidget release"
-#        self.setCursor(Cursor(""))
-#        super(ButtonWidget, self).mouseReleaseEvent(mouse_event)
-#    
 
 class ControlMainWindow(QtGui.QMainWindow):
 
@@ -724,14 +680,14 @@ class ControlMainWindow(QtGui.QMainWindow):
     def setCursorIcon(self, id):
         '''
             Callback que altera o formato do cursor dando a impressão visual de 
-            'arrastar' o elemento para dentro do diagrama gráfico. cw
+            'arrastar' o elemento para dentro do diagrama gráfico. 
         '''
         self.cursor.setShape(self, id)
         self.ui.cursor.setShape(self.ui.dockWidget_Buttons, id)
 
     def setCursorPad(self, id):
         '''
-            Função que altera o formato do cursor para a seta padrão. cw
+            Função que altera o formato do cursor para a seta padrão. 
         '''
         self.cursor.setShapePad(self)
         self.ui.cursor.setShapePad(self.ui.dockWidget_Buttons)

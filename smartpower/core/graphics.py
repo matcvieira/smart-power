@@ -378,7 +378,6 @@ class Node(QtGui.QGraphicsRectItem):
     '''
     # tipos de itens possiveis
     Subestacao, Religador, Barra, Agent, NoDeCarga, NoConectivo = range(6)
-    # lista que armazena a visibilidade dos textos de cada tipo elemento CW
     textVisibility = [True, True, True, True, True, True]
     allNodes = []
 
@@ -417,6 +416,7 @@ class Node(QtGui.QGraphicsRectItem):
             self.substation = Substation(
                 self.text.toPlainText(), 0.0, 0.0, 0.0, complex(0, 0))
             self.text.setPos(self.mapFromItem(self.text, 0, rect.height()))
+
         # Se o item a ser inserido for do tipo religador/disjuntor/chave:
         elif self.myItemType == self.Religador:
             # Cria o objeto chave que contém os dados elétricos do elemento
@@ -523,7 +523,8 @@ class Node(QtGui.QGraphicsRectItem):
             elif self.chave.tipo == 4:
                 # Religador associado com TP/TC Tipo(4):
                 #rect = QtCore.QRectF(0, 0, 40, 60)
-                rect = QtCore.QRectF(0, 0, 200, 200)
+                sc = 0.4
+                rect = QtCore.QRectF(0, 0, sc*500, sc*385)
                 self.termE = QtCore.QPoint(0,rect.height()/2)
                 self.termS = QtCore.QPoint(rect.width(),rect.height()/2)
             else:
@@ -658,7 +659,7 @@ class Node(QtGui.QGraphicsRectItem):
             suas formas baseadas em seus retângulos.
             Ver método paint em PySide.
         '''
-        # Seta a visibilidade do texto antes de desenhá-lo. CW
+        # Seta a visibilidade do texto antes de desenhá-lo.
         self.text.setVisible(self.textVisibility[self.myItemType])
         # Caso o item a ser inserido seja do tipo subestacão:
         if self.myItemType == self.Subestacao:
@@ -674,52 +675,18 @@ class Node(QtGui.QGraphicsRectItem):
 
         elif self.myItemType == self.Religador:
             # Religador associado com TP/TC Tipo(4):
+            # cw88
             if self.chave.tipo == 4:
-                '''
-                image = QtGui.QImage(500,500,"png")
-                if image.load(U"rele.png","PNG"):
-                    print "carregou"
-                else:
-                    print "não carregou"
-                '''
-                filename = "icons/rele.png"
-                image = QtGui.QImage(500, 500, QtGui.QImage.Format_Mono)
-
-                '''
-                value = QtGui.qRgb(189, 149, 39)  # 0xffbd9527
-                image.setPixel(1, 1, value)
-
-                value = QtGui.qRgb(122, 163, 39)  # 0xff7aa327
-                image.setPixel(0, 1, value)
-                image.setPixel(1, 0, value)
-
-                value = QtGui.qRgb(237, 187, 51)  # 0xffedba31
-                image.setPixel(2, 1, value)
-                '''
-
-                if image.load(filename,"PNG"):
-                    print "carregou"
-                else:
-                    print "não carregou"
-
-                if image.isNull():
-                    print "nula"
-                else:
-                    print "não"
-
-
-
+                filename = "icones/rele.jpg"
+                rect = self.rect()
+                image = QtGui.QImage(rect.width(),rect.height(), QtGui.QImage.Format_Mono)
                 painter.drawImage(QtCore.QRectF(0,0,200,200),image)
-
-
             # Chave Tipo(0):
             elif self.chave.tipo == 0:
                 circ1 = QtCore.QPointF(0, self.rect().height()/2) 
                 circ2 = QtCore.QPointF(self.rect().width(), self.rect().height()/2)
                 scFac = self.rect().width()*(2.0**(1.0/2)/2)
                 circ3 = QtCore.QPointF(scFac, scFac+self.rect().height()/2)
-                #painter.setPen(QtGui.QPen(QtCore.Qt.black, 3))
-                #painter.drawEllipse(circ1, self.rect().width(),self.rect().width())
                 if self.chave.normalOpen == 0:
                     painter.setPen(QtGui.QPen(QtCore.Qt.black, 3))
                     painter.drawLine(circ1, circ2)
@@ -738,12 +705,12 @@ class Node(QtGui.QGraphicsRectItem):
                 circT3 = QtCore.QPointF(0, self.rect().height()+4) 
                 circT4 = QtCore.QPointF(6.5, self.rect().height())
                 
-                circ1 = QtCore.QPointF(0, self.rect().height()/2) #bola1
-                circ2 = QtCore.QPointF(self.rect().width(), self.rect().height()/2) #bola2
-                circ3 = QtCore.QPointF(self.rect().width()/2, self.rect().height()/2) #meiofechado
+                circ1 = QtCore.QPointF(0, self.rect().height()/2)
+                circ2 = QtCore.QPointF(self.rect().width(), self.rect().height()/2)
+                circ3 = QtCore.QPointF(self.rect().width()/2, self.rect().height()/2) 
                 scFac = self.rect().width()*(2.0**(1.0/2)/2)
-                circ4 = QtCore.QPointF(scFac, scFac+self.rect().height()/2) #fimaberto
-                circ5 = QtCore.QPointF(scFac/2, (scFac/2)+(self.rect().height()/2)) #meioaberto
+                circ4 = QtCore.QPointF(scFac, scFac+self.rect().height()/2) 
+                circ5 = QtCore.QPointF(scFac/2, (scFac/2)+(self.rect().height()/2)) 
 
                 if self.chave.normalOpen == 0:
                     circ5 = circ3
@@ -800,10 +767,7 @@ class Node(QtGui.QGraphicsRectItem):
                 painter.setPen(QtGui.QPen(QtCore.Qt.black, 2.5))
                 painter.setBrush(QtCore.Qt.black)
                 painter.drawPolygon(self.triCarga)
-            ## cwpaint 
-            #for item in self.scene_node.items():
-                #if self.id == item.id():
-                    #print " ok!"
+
 
         # Se o item estiver selecionado, desenha uma caixa pontilhada de
         # seleção em seu redor.
@@ -1179,72 +1143,8 @@ class SceneWidget(QtGui.QGraphicsScene):
 
         # Caso o botão pressionado do mouse for o esquerdo:
         # Entra no modo passado à cena.
-        '''
-        # Se o modo for de inserção de itens:
-        if self.myMode == self.InsertItem:
-            print "ok!!" #cw
-            # Insere o item com determinado tipo (ver Node).
-            if self.myItemType == Node.Religador:
-                item = Node(self.myItemType, self.myRecloserMenu)
-            elif self.myItemType == Node.Barra:
-                item = Node(self.myItemType, self.myBusMenu)
-            elif self.myItemType == Node.Subestacao:
-                item = Node(self.myItemType, self.mySubstationMenu)
-            elif self.myItemType == Node.NoDeCarga:
-                item = Node(self.myItemType, self.mySubstationMenu)
-            # Ajusta a posição do item para a posição do press do mouse.
-            item.setPos(item.adjust_in_grid(mouse_event.scenePos()))
-            self.addItem(item)
-
-            # Quando um item é adicionado, o dialog de configuração se abre
-            # para que o usuário prontamente insira seus dados (ver
-            # launch_dialog). Caso o usuário cancele a janela, o item é
-            # removido da cena.
-            if self.myItemType == Node.Religador:
-                item.setSelected(True)
-                result = self.launch_dialog()
-                item.setSelected(False)
-                if result == 0:
-                    self.removeItem(item)
-
-            elif self.myItemType == Node.Barra:
-                item.setSelected(True)
-                result = self.launch_dialog()
-                item.setSelected(False)
-                if result == 0:
-                    self.removeItem(item)
-            elif self.myItemType == Node.Subestacao:
-                item.setSelected(True)
-                result = self.launch_dialog()
-                item.setSelected(False)
-                if result == 0:
-                    self.removeItem(item)
-
-            elif self.myItemType == Node.NoDeCarga:
-                item.setSelected(True)
-                result = self.launch_dialog()
-                item.setSelected(False)
-                if result == 0:
-                    self.removeItem(item)
-            # Cria um comando para que seja possibilitada a ação de desfazer/
-            # refazer. PENDÊNCIA
-            comando = AddRemoveCommand("Add", self, item)
-            self.undoStack.push(comando)
-            # Emite um sinal contendo o tipo do item.
-            self.itemInserted.emit(self.myItemType)
-
-        # Caso o modo passado à cena seja de inserção de linha:
-        elif self.myMode == self.InsertLine:
-        '''
-        ### Cww alteração para inserir items ao liberar
-        ###
-        ###
         # Caso o modo passado à cena seja de inserção de linha:
         if self.myMode == self.InsertLine:
-        ###
-        ###
-        ###
-
             # Cria o elipse para o mesmo fim explicado anteriormente: dar
             # margem de ação para os "presses" do mouse
             ell = QtGui.QGraphicsEllipseItem()
@@ -1613,11 +1513,6 @@ class SceneWidget(QtGui.QGraphicsScene):
             self.itemInserted.emit(3)
 
 
-        ###cw777 release desenhando itens
-        ### 
-        ###
-
-
         # Armazena em um atributo a posição em que o mouse foi apertado.
         self.pressPos = mouse_event.pos()
         print mouse_event.pos()
@@ -1643,8 +1538,6 @@ class SceneWidget(QtGui.QGraphicsScene):
             item.setPos(item.adjust_in_grid(self.pressPos))
             #item.setPos(item.adjust_in_grid(mouse_event.scenePos()))
             self.addItem(item)
-
-            ###cw777
 
             # Quando um item é adicionado, o dialog de configuração se abre
             # para que o usuário prontamente insira seus dados (ver
@@ -1783,7 +1676,7 @@ class SceneWidget(QtGui.QGraphicsScene):
             self.keyControlIsPressed = False
 
 
-    ### Funções que modificam a visibilidade do texto de cada elemento e redesenham a SceneWidget CW 
+    ### Funções que modificam a visibilidade do texto de cada elemento e redesenham a SceneWidget
     ### Subestação
     def setTextSubstation(self):
         '''
@@ -2062,10 +1955,6 @@ class SceneWidget(QtGui.QGraphicsScene):
 
                         item.chave.tipo = dialog.tipoElementoCheck.checkedId()
                         item.setNodeShape()
-                        if item.chave.tipo == 4:
-                            #dialog = TCTPDialog(item)
-                            pass
-
 
                         if dialog.identificaOLineEdit.text() == "":
                             pass
