@@ -359,6 +359,8 @@ class CimXML(object):
                     tag_phases.append(str(item.barra.phases))
                     tag_barra.append(tag_phases)
 
+                    print len(item.terminals)
+                    raw_input("stop")
                     for Terminal in (item.terminals):
                         tag_terminal = self.cim_xml.new_tag("terminal")
                         tag_mRID = self.cim_xml.new_tag('mRID')
@@ -512,6 +514,16 @@ class CimXML(object):
         f.write(self.cim_xml.prettify())
         f.close()
 
+    def check_errors(self):
+        noc_to_remove = []
+        for noc in self.lista_no_conectivo:
+            if noc.terminal_list[0]==noc.terminal_list[1]:
+                noc_to_remove.append(noc)
+                print "Erro encontrado! Solucionando..."
+        for no in noc_to_remove:
+            noc.remove(no)
+
+
 
     def montar_rede(self, scene):
         '''
@@ -519,36 +531,38 @@ class CimXML(object):
             de acordo com a função deles na rede, para então montar a rede seguindo o padrão CIM.
         '''
 
+        # Definir número de terminais de acordo com o tipo de elemento
+
         for item in self.scene.items():
             if isinstance(item, Node):
+                # 1º Caso: elemento é um religador ou uma SE
                 if item.myItemType != Node.NoConectivo and item.myItemType != Node.Barra and item.myItemType != Node.NoDeCarga:
                     item.terminal1 = Terminal(item)
                     item.terminal2 = Terminal(item)
                     self.lista_terminais.append(item.terminal1)
                     self.lista_terminais.append(item.terminal2)
-
+                # 2º Caso: elemento é uma barra ou um nó de carga
                 if item.myItemType == Node.Barra or item.myItemType == Node.NoDeCarga:
                     for i in range(len(item.edges)):
                         terminal = Terminal(item)
                         item.terminals.append(terminal)
                         self.lista_terminais.append(terminal)
+
+            # 3º Caso: elemento é um condutor
             if isinstance(item, Edge):
                 item.terminal1 = Terminal(item)
                 item.terminal2 = Terminal(item)
                 self.lista_terminais.append(item.terminal1)
                 self.lista_terminais.append(item.terminal1)
 
-
+        # Definição dos nós conectivos
         for edge in self.scene.items():
             if isinstance(edge, Edge):
                 no_conectivo_1 = NoConect([])
                 no_conectivo_2 = NoConect([])
-                print "start"
 
                 # Ligação do Nó Conectivo relativo à ligação do terminal de w1 com o terminal 1 da linha - CONVENÇÃO!
                 if edge.w1.myItemType != Node.NoConectivo and edge.w1.myItemType != Node.Barra and edge.w2.myItemType != Node.Barra and edge.w1.myItemType != Node.NoDeCarga:
-
-                    print "w1 is not NoC"
                     if edge.w1.terminal1.connected:
                         if edge.w1.terminal2.connected:
                             pass
@@ -713,6 +727,7 @@ class CimXML(object):
                             self.lista_no_conectivo.append(no_conectivo)
                             break
 
+                self.check_errors()
                 print "end"
 
 

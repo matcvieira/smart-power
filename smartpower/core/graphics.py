@@ -995,8 +995,8 @@ class Node(QtGui.QGraphicsRectItem):
                 new_pos_y = centena_y + 80
         # Ajuste de posição devido à diferença de geometria.
         if self.myItemType == Node.NoDeCarga:
-            new_pos_x += 6
-            new_pos_y += 6
+            new_pos_x += 3
+            new_pos_y -= 3.5
         return QtCore.QPointF(new_pos_x, new_pos_y)
 
     def contextMenuEvent(self, event):
