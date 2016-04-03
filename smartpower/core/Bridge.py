@@ -3,6 +3,13 @@ from bs4 import BeautifulSoup
 from xml.etree import ElementTree
 from xml.dom import minidom
 
+
+class Sector(object):
+    def __init__(self, name=None):
+        self.nodes = []
+        self.neighbours = []
+        self.name = name
+
 class ReadCIM(object):
 
     def __init__(self,file="/home/mateusvieira/Dropbox/GREI - Workspace/Test 001/rede_adaptada_CIM"):
@@ -36,6 +43,7 @@ class ReadCIM(object):
             # Definir vizinhos e chaves dos nós de carga
             for consumer in self.consumer_list:
                 consumer.sector = None
+                consumer.im_neighbours =[]
                 self.define_node_neighbours(consumer)
                 print ("Vizinhos de " + self.get_mrid(consumer) + ": " +
                 str(self.get_mrid_list(consumer.neighbours)) + "    [" +
@@ -49,6 +57,9 @@ class ReadCIM(object):
 
             self.sectors = self.define_sectors()
             print self.sectors
+            for consumer in self.consumer_list:
+                print "Consumer: " + str(consumer.find("mrid").text).strip()
+                print consumer.sector
 
 
 
@@ -107,6 +118,7 @@ class ReadCIM(object):
                 neighbour_info = self.find_connected(im_neighbour,im_neighbour_terminal)
                 neighbour = neighbour_info[0]
                 neighbour_terminal = neighbour_info[1]
+                consumer.im_neighbours.append(neighbour)
                 if neighbour.name == "breaker":
                     # Define breaker como chave do nó de carga
                     consumer.switches.append(neighbour)
@@ -139,10 +151,15 @@ class ReadCIM(object):
                 pass
             else:
                 sector = str(consumer.find('mrid').text).strip()[0]
-                for neighbour in consumer.neighbours:
-                    neighbour.sector = consumer.sector
+                consumer.sector = sector
+                for neighbour in consumer.im_neighbours:
+                    if neighbour.name == "energyconsumer":
+                        neighbour.sector = consumer.sector
                 sectors.append(sector)
         return sorted(list(set(sectors)))
+
+    def define_sectors_nodes(self):
+        return
 
 
     def has_sector(self, consumer=None):
