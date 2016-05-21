@@ -30,8 +30,9 @@ class Substation(object):
     '''
         Classe que define objetos abstratos do tipo Substation (Subestação).
     '''
-    def __init__(self, nome, tensao_primario, tensao_secundario, potencia, impedancia):
+    def __init__(self, nome, tensao_primario, tensao_secundario, potencia, impedancia, n_transformadores = None):
         self.nome = nome
+        self.n_transformadores = n_transformadores
         self.tensao_primario = tensao_primario
         self.tensao_secundario = tensao_secundario
         self.potencia = potencia
