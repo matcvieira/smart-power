@@ -360,7 +360,7 @@ class CimXML(object):
                     tag_barra.append(tag_phases)
 
                     print len(item.terminals)
-                    raw_input("stop")
+
                     for Terminal in (item.terminals):
                         tag_terminal = self.cim_xml.new_tag("terminal")
                         tag_mRID = self.cim_xml.new_tag('mRID')
@@ -743,8 +743,10 @@ class CimXML(object):
                 else:
                     print "terminal: " + str(id(no2)) + "\n" + "objeto: " + str(no2.parent.text.toPlainText()) + "\n" + "Posição: " + str(no2.parent.scenePos()) + "\n"
             print "=====================================================================\n\n"
+            raw_input("wait")
 
         print "--------------------------------------------------------------------------"
+
 
 
 
