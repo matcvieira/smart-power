@@ -24,6 +24,7 @@ class Feeder(object):
 		self.conductors = []
 		self.breaker0 = breaker0
 		self.breakers = []
+		self.opened_breakers = []
 		for sector in self.breaker0.sectors:
 			self.sectors.append(sector)
 
@@ -97,7 +98,6 @@ class ReadCIM(object):
 				print "    Vizinhos:"
 				for neighbour in consumer.neighbours:
 					print "        " + str(neighbour.find("mrid").text).strip()
-			raw_input("next step press enter")  
 
 			print "Double checking breakers nodes..."
 			for breaker in self.breaker_list:
@@ -168,7 +168,7 @@ class ReadCIM(object):
 				print "    Conductors:"
 				for conductor in sector.conductors:
 					if isinstance(conductor,SpecialConductor):
-						print conductor.mrid
+						print "        " + conductor.mrid
 					else:
 						print "        " + self.get_mrid(conductor)
 
@@ -180,6 +180,9 @@ class ReadCIM(object):
 
 			print "Organizing Conductors..."
 			self.organize_conductors()
+
+			print "Associating Substations with feeders..."
+			self.associate_sub()
 
 			print "Writing xml..."
 			self.write_xml()
@@ -293,10 +296,13 @@ class ReadCIM(object):
 				i += 1
 
 		closed_breakers = []
+		opened_breakers = []
 		for breaker in self.breaker_list:
 			if self.get_value(breaker,"normalopen") == "0":
 				closed_breakers.append(breaker)
-				print self.get_mrid(breaker)
+			else:
+				opened_breakers.append(breaker)
+
 
 		breakers0 =[]
 		for breaker in self.breaker_list:
@@ -315,10 +321,14 @@ class ReadCIM(object):
 				print "start"
 
 				add_sector = False
+
+				for opened_breaker in opened_breakers:
+					for sector in opened_breaker.sectors:
+						if sector in feeder.sectors:
+							feeder.opened_breakers.append(opened_breaker)
+				feeder.opened_breakers = sorted(list(set(feeder.opened_breakers)))
 				for closed_breaker in closed_breakers:
-					print "Closed Breaker: " + self.get_mrid(closed_breaker)
 					if closed_breaker in breakers0:
-						print "Breaker 0: do not add"
 						continue
 					for sector in closed_breaker.sectors:
 						if sector in feeder.sectors:
@@ -351,17 +361,22 @@ class ReadCIM(object):
 				print "    Sector: " + sector.name
 			for conductor in feeder.conductors:
 				if isinstance(conductor,SpecialConductor):
-					print conductor.mrid
+					print "    Conductor: " + conductor.mrid
 				else:
 					print "    Conductor: " + self.get_mrid(conductor)
+			print "    Breaker: " + self.get_mrid(feeder.breaker0)
 			for breaker in feeder.breakers:
 				print "    Breaker: " + self.get_mrid(breaker)
+			for breaker in feeder.opened_breakers:
+				print "    Breaker: " + self.get_mrid(breaker)
+			print "Root: " + feeder.root.name
 
 	def organize_breakers(self):
 		for feeder in self.feeders:
 			sector0 = feeder.root
 			breaker0 = feeder.breaker0
 			breaker0.n1 = sector0
+
 			if breaker0.sectors[0] == sector0:
 				breaker0.n2 = breaker0.sectors[1]
 			else:
@@ -391,12 +406,7 @@ class ReadCIM(object):
 
 	def organize_conductors(self):
 		for feeder in self.feeders:
-			print feeder.name
 			feeder.find_conductor0()
-			if isinstance(feeder.conductor0,SpecialConductor):
-				print feeder.conductor0.mrid
-			else:
-				print self.get_mrid(feeder.conductor0)
 			conductor0 = feeder.conductor0
 			conductor0.n1 = conductor0.nodes[0]
 			conductor0.n2 = conductor0.nodes[1]
@@ -404,14 +414,10 @@ class ReadCIM(object):
 			pending_conductors = []
 			done = True
 			while done is True:
-				if isinstance(conductor0,SpecialConductor):
-					print "Conductor 0: " + conductor0.mrid
-				else:
-					print "Conductor0: " + self.get_mrid(conductor0)
 				for conductor in feeder.conductors:
 					if isinstance(conductor,SpecialConductor) or conductor==conductor0:
 						continue
-					print "     compare to: "+ self.get_mrid(conductor)
+					# print "     compare to: "+ self.get_mrid(conductor)
 					if conductor.nodes[0] in conductor0.nodes:
 						if conductor.n1 is None:
 							conductor.n1 = conductor.nodes[0]
@@ -420,7 +426,7 @@ class ReadCIM(object):
 						if conductor not in found_conductors:
 							pending_conductors.append(conductor)
 						found_conductors.append(conductor)
-						print "Found next conductor: " + self.get_mrid(conductor)
+						# print "Found next conductor: " + self.get_mrid(conductor)
 					elif conductor.nodes[1] in conductor0.nodes:
 						if conductor.n1 is None:
 							conductor.n1 = conductor.nodes[1]
@@ -429,7 +435,7 @@ class ReadCIM(object):
 						if conductor not in found_conductors:
 							pending_conductors.append(conductor)
 						found_conductors.append(conductor)
-						print "Found next conductor: " + self.get_mrid(conductor)
+						# print "Found next conductor: " + self.get_mrid(conductor)
 				conductor0 = pending_conductors.pop()
 				for conductor in feeder.conductors:
 					if isinstance(conductor,SpecialConductor):
@@ -452,13 +458,20 @@ class ReadCIM(object):
 				print "        n2: " + self.get_mrid(conductor.n2)
 
 
+	def associate_sub(self):
+		self.substations = []
+		for feeder in self.feeders:
+			feeder.root.feeders = []
+			self.substations.append(feeder.root)
+		for feeder in self.feeders:
+			feeder.root.feeders.append(feeder)
 
+		self.substations = sorted(list(set(self.substations)))
 
-
-				
-
-
-
+		for sub in self.substations:
+			print "Substation: " + sub.name
+			for feeder in sub.feeders:
+				print "    Feeder: " + feeder.name
 
 	def check_connection(self,n1=None,n2=None,lista=None):
 		for connection in lista:
@@ -467,10 +480,6 @@ class ReadCIM(object):
 		else:
 			return True
 		return False
-
-
-
-
 	
 	def define_special_conductors(self):
 		self.special_conductors = []
@@ -866,13 +875,147 @@ class ReadCIM(object):
 				tag_neighbours.append(tag_neighbour)
 
 			for node in setor.nodes:
-				tag_node = rnp.new_tag("node")
+				tag_node = rnp.new_tag("no")
 				tag_node["nome"] = self.get_mrid(node)
 				tag_nodes.append(tag_node)
 
 			tag_elemento.append(tag_neighbours)
 			tag_elemento.append(tag_nodes)
 			tag_topologia.append(tag_elemento)
+
+		# Topologia das chaves
+
+		for breaker in self.breaker_list:
+			tag_elemento = rnp.new_tag("elemento")
+			tag_elemento["tipo"] = "chave"
+			tag_elemento["nome"] = self.get_mrid(breaker)
+
+			if self.get_value(breaker,"normalopen") == "1":
+				n1 = self.get_mrid(breaker.nodes[0])
+				n2 = self.get_mrid(breaker.nodes[1])
+			else:
+				n1 = breaker.n1.name
+				n2 = breaker.n2.name
+			tag_n1 = rnp.new_tag("n1")
+			tag_setor = rnp.new_tag("setor")
+			tag_setor["nome"] = n1
+			tag_n1.append(tag_setor)
+
+			tag_n2 = rnp.new_tag("n2")
+			tag_setor = rnp.new_tag("setor")
+			tag_setor["nome"] = n2
+			tag_n2.append(tag_setor)
+
+			tag_elemento.append(tag_n1)
+			tag_elemento.append(tag_n2)
+			tag_topologia.append(tag_elemento)
+
+		for conductor in self.conductor_list:
+			tag_elemento = rnp.new_tag("elemento")
+			tag_elemento["tipo"] = "trecho"
+			if isinstance(conductor,SpecialConductor):
+				name = conductor.mrid
+			else:
+				name = self.get_mrid(conductor)
+			tag_elemento["nome"] = name
+
+			tag_n1 = rnp.new_tag("n1")
+			if conductor.n1.name == "energyconsumer":
+				name = "no"
+			elif conductor.n1.name == "breaker":
+				name = "chave"
+			tag_node = rnp.new_tag(name)
+			tag_node["nome"] = self.get_mrid(conductor.n1)
+			tag_n1.append(tag_node)
+
+			tag_n2 = rnp.new_tag("n2")
+			if conductor.n1.name == "energyconsumer":
+				name = "no"
+			elif conductor.n1.name == "breaker":
+				name = "chave"
+			tag_node = rnp.new_tag(name)
+			tag_node["nome"] = self.get_mrid(conductor.n2)
+			tag_n2.append(tag_node)
+
+			tag_conductor = rnp.new_tag("conductor")
+			tag_conductor["nome"] = "CAA 266R"
+
+			tag_elemento.append(tag_n1)
+			tag_elemento.append(tag_n2)
+			tag_elemento.append(tag_conductor)
+			tag_topologia.append(tag_elemento)
+
+		for feeder in self.feeders:
+			tag_elemento = rnp.new_tag("elemento")
+			tag_elemento["tipo"] = "alimentador"
+			tag_elemento["nome"] = feeder.name
+
+			tag_sectors = rnp.new_tag("setores")
+			for sector in feeder.sectors:
+				tag_sector = rnp.new_tag("setor")
+				tag_sector["nome"] = sector.name
+				tag_sectors.append(tag_sector)
+			
+			tag_conductors = rnp.new_tag("trechos")
+			for conductor in feeder.conductors:
+				tag_conductor = rnp.new_tag("trecho")
+				if isinstance(conductor,SpecialConductor):
+					name = conductor.mrid
+				else:
+					name = self.get_mrid(conductor)
+				tag_conductor["nome"] = name
+				tag_conductors.append(tag_conductor)
+
+			tag_breakers = rnp.new_tag("chaves")
+			
+			tag_breaker0 = rnp.new_tag("chave")
+			tag_breaker0["nome"] = self.get_mrid(feeder.breaker0)
+			tag_breakers.append(tag_breaker0)
+
+			for breaker in feeder.breakers:
+				tag_breaker = rnp.new_tag("chave")
+				tag_breaker["nome"] = self.get_mrid(breaker)
+				tag_breakers.append(tag_breaker)
+
+			for breaker in feeder.opened_breakers:
+				tag_breaker = rnp.new_tag("chave")
+				tag_breaker["nome"] = self.get_mrid(breaker)
+				tag_breakers.append(tag_breaker)
+
+			tag_root = rnp.new_tag("raiz")
+			tag_sector = rnp.new_tag("setor")
+			tag_sector["nome"] = feeder.root.name
+
+			tag_elemento.append(tag_sectors)
+			tag_elemento.append(tag_conductors)
+			tag_elemento.append(tag_breakers)
+			tag_topologia.append(tag_elemento)
+
+		for substation in self.substations:
+			tag_elemento = rnp.new_tag("elemento")
+			tag_elemento["tipo"] = "subestacao"
+			tag_elemento["nome"] = substation.name
+
+			tag_feeders = rnp.new_tag("alimentadores")
+			for feeder in substation.feeders:
+				tag_feeder = rnp.new_tag("alimentador")
+				tag_feeder["nome"] = feeder.name
+				tag_feeders.append(tag_feeder)
+
+			tag_transformers = rnp.new_tag("transformadores")
+			for count in range(0,3):
+				tag_transformer = rnp.new_tag("transformador")
+				tag_transformer["nome"] = substation.name + "_T" + str(count+1)
+				tag_transformers.append(tag_transformer)
+
+			tag_elemento.append(tag_feeders)
+			tag_elemento.append(tag_transformers)
+			tag_topologia.append(tag_elemento)
+
+
+
+
+
 
 
 		# for breaker in self.breaker_list:
