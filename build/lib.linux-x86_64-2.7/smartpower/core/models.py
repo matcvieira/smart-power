@@ -49,7 +49,7 @@ class DiagramToXML(ElementTree.Element):
                 CE.append(height)
 
                 # Salva as informações referente ao item gráfico religador
-                # e os parâmetros da sua chave associada 
+                # e os parâmetros da sua chave associada
 
                 if item.myItemType == Node.Religador:
 
@@ -73,7 +73,7 @@ class DiagramToXML(ElementTree.Element):
 
                     estado = ElementTree.Element('estado')
                     estado.text = str(item.chave.normalOpen)
-                    
+
                     CE.append(estado)
                     CE.append(corrente)
                     CE.append(in_tt)
@@ -103,7 +103,7 @@ class DiagramToXML(ElementTree.Element):
                 if item.myItemType == Node.Subestacao:
                     identificador = ElementTree.Element('identificador')
                     identificador.text = str(item.text.toPlainText())
-                    
+
                     tensao_p = ElementTree.Element('tensaop')
                     tensao_p.text = str(item.substation.tensao_primario)
 
@@ -113,14 +113,26 @@ class DiagramToXML(ElementTree.Element):
                     potencia = ElementTree.Element('potencia')
                     potencia.text = str(item.substation.potencia)
 
-                    impedancia = ElementTree.Element('impedancia')
-                    impedancia.text = str(item.substation.impedancia)
+                    resistencia_positiva = ElementTree.Element('resistencia_positiva')
+                    resistencia_positiva.text = str(item.substation.r_pos)
+
+                    reatancia_positiva = ElementTree.Element('reatancia_positiva')
+                    reatancia_positiva.text = str(item.substation.i_pos)
+
+                    resistencia_zero = ElementTree.Element('resistencia_zero')
+                    resistencia_zero.text = str(item.substation.r_zero)
+
+                    reatancia_zero = ElementTree.Element('reatancia_zero')
+                    reatancia_zero.text = str(item.substation.i_zero)
 
                     CE.append(identificador)
                     CE.append(tensao_p)
                     CE.append(tensao_s)
                     CE.append(potencia)
-                    CE.append(impedancia)
+                    CE.append(resistencia_positiva)
+                    CE.append(reatancia_positiva)
+                    CE.append(resistencia_zero)
+                    CE.append(reatancia_zero)
 
                 # Salva as informações referente ao item gráfico barra
                 # e seus parâmetros associados
@@ -131,8 +143,24 @@ class DiagramToXML(ElementTree.Element):
                     fases = ElementTree.Element('fases')
                     fases.text = str(item.barra.phases)
 
+                    resistencia_positiva = ElementTree.Element('resistencia_positiva')
+                    resistencia_positiva.text = str(item.barra.r_pos)
+
+                    reatancia_positiva = ElementTree.Element('reatancia_positiva')
+                    reatancia_positiva.text = str(item.barra.i_pos)
+
+                    resistencia_zero = ElementTree.Element('resistencia_zero')
+                    resistencia_zero.text = str(item.barra.r_zero)
+
+                    reatancia_zero = ElementTree.Element('reatancia_zero')
+                    reatancia_zero.text = str(item.barra.i_zero)
+
                     CE.append(identificador)
                     CE.append(fases)
+                    CE.append(resistencia_positiva)
+                    CE.append(reatancia_positiva)
+                    CE.append(resistencia_zero)
+                    CE.append(reatancia_zero)
 
                 self.append(CE)
         for item in lista:
@@ -252,7 +280,7 @@ class XMLToDiagram(object):
                             child.find('y').text))
                     item.id = int(child.find('id').text)
                     self.scene.addItem(item)
-                    
+
                     item.text.setPlainText(identificador)
 
                 elif child.attrib['type'] == '5':
@@ -341,7 +369,7 @@ class CimXML(object):
                     tag_mRID.append(str(item.terminal2.mRID))
                     tag_terminal2.append(tag_mRID)
                     tag_breaker.append(tag_terminal2)
-                    
+
         # Percorre toda a lista buscando elementos do tipo Barra
         for item in scene.items():
             if isinstance(item, Node):
@@ -362,11 +390,11 @@ class CimXML(object):
                     for Terminal in (item.terminals):
                         tag_terminal = self.cim_xml.new_tag("terminal")
                         tag_mRID = self.cim_xml.new_tag('mRID')
-                        tag_mRID.append(str(Terminal.mRID)) 
+                        tag_mRID.append(str(Terminal.mRID))
                         tag_terminal.append(tag_mRID)
                         tag_barra.append(tag_terminal)
-                    
-        # Percorre toda a lista buscando elementos do tipo Subestação        
+
+        # Percorre toda a lista buscando elementos do tipo Subestação
         for item in scene.items():
             if isinstance(item, Node):
 
@@ -405,7 +433,7 @@ class CimXML(object):
 
                     tag_energyConsumer = self.cim_xml.new_tag("EnergyConsumer")
                     self.cim_xml.append(tag_energyConsumer)
-                    
+
                     tag_id = self.cim_xml.new_tag("mRID")
                     tag_id.append(item.text.toPlainText())
                     tag_energyConsumer.append(tag_id)
@@ -417,13 +445,13 @@ class CimXML(object):
 
                     tag_qFixed = self.cim_xml.new_tag("qFixed")
                     tag_qFixed.append(str(item.no_de_carga.potencia_reativa))
-                    tag_energyConsumer.append(tag_qFixed)               
+                    tag_energyConsumer.append(tag_qFixed)
 
 
                     for Terminal in (item.terminals):
                         tag_terminal = self.cim_xml.new_tag("terminal")
                         tag_mRID = self.cim_xml.new_tag('mRID')
-                        tag_mRID.append(str(Terminal.mRID)) 
+                        tag_mRID.append(str(Terminal.mRID))
                         tag_terminal.append(tag_mRID)
                         tag_energyConsumer.append(tag_terminal)
 
@@ -436,7 +464,7 @@ class CimXML(object):
 
                 tag_conductor = self.cim_xml.new_tag("Conductor")
                 self.cim_xml.append(tag_conductor)
-                
+
                 tag_id = self.cim_xml.new_tag("mRID")
                 tag_id.append(item.w1.text.toPlainText() + item.w2.text.toPlainText())
                 tag_conductor.append(tag_id)
@@ -455,7 +483,7 @@ class CimXML(object):
 
                 tag_x = self.cim_xml.new_tag("x")
                 tag_x.append(str(item.linha.reatancia))
-                tag_conductor.append(tag_x) 
+                tag_conductor.append(tag_x)
 
                 tag_x0 = self.cim_xml.new_tag("x0")
                 tag_x0.append(str(item.linha.reatancia_zero))
@@ -463,7 +491,7 @@ class CimXML(object):
 
                 tag_currentLimit = self.cim_xml.new_tag("currentLimit")
                 tag_currentLimit.append(str(item.linha.ampacidade))
-                tag_conductor.append(tag_currentLimit)                   
+                tag_conductor.append(tag_currentLimit)
 
                 tag_terminal1= self.cim_xml.new_tag("terminal")
                 tag_seqNumber = self.cim_xml.new_tag("SequenceNumber")
@@ -493,16 +521,16 @@ class CimXML(object):
 
             self.cim_xml.append(tag_no_conectivo)
 
-            
+
             for terminal in no.terminal_list:
                 tag_terminal = self.cim_xml.new_tag("terminal")
                 tag_mRID_terminal = self.cim_xml.new_tag("mRID")
                 tag_mRID_terminal.append(str(terminal.mRID))
                 tag_terminal.append(tag_mRID_terminal)
-                tag_no_conectivo.append(tag_terminal)  
+                tag_no_conectivo.append(tag_terminal)
 
 
-                
+
     def write_xml(self, path):
         '''
             Função que cria o arquivo XML na localização indicada pelo
@@ -515,7 +543,11 @@ class CimXML(object):
 
     def montar_rede(self, scene):
         '''
+<<<<<<< HEAD
             Função que lê os elementos contidos na scene, os classifica e os divide em listas 
+=======
+            Função que lê os elementos contidos na scene, os classifica e os divide em listas
+>>>>>>> 642d0a8078a27c074ba9fdfe039ebdfd41c643f6
             de acordo com a função deles na rede, para então montar a rede seguindo o padrão CIM.
         '''
 
@@ -568,12 +600,12 @@ class CimXML(object):
                     print "w1 is noC"
                     edge.w1.con_lock = True
 
-                    
+
                     print len(edge.w1.edges)
-                    no_conectivo = NoConect([])  
-                    print id(no_conectivo.terminal_list)                 
+                    no_conectivo = NoConect([])
+                    print id(no_conectivo.terminal_list)
                     for derivation in edge.w1.edges:
-                        
+
                         if derivation.terminal1.connected:
                             print "cp1"
                             if derivation.terminal2.connected:
@@ -655,10 +687,10 @@ class CimXML(object):
                     print "w2 is noC"
                     edge.w2.con_lock = True
                     no_conectivo = NoConect([])
-                    print id(no_conectivo.terminal_list)  
-                    
+                    print id(no_conectivo.terminal_list)
+
                     for derivation in edge.w2.edges:
-                        
+
                         if derivation.terminal1.connected:
                             if derivation.terminal2.connected:
                                 pass
@@ -668,7 +700,7 @@ class CimXML(object):
                         else:
                             no_conectivo.terminal_list.append(derivation.terminal1)
                             derivation.terminal1.connect()
-                            
+
                     self.lista_no_conectivo.append(no_conectivo)
 
                 elif edge.w2.myItemType == Node.Barra:
@@ -730,7 +762,3 @@ class CimXML(object):
             print "=====================================================================\n\n"
 
         print "--------------------------------------------------------------------------"
-
-
-
-

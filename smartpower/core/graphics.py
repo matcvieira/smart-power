@@ -48,7 +48,7 @@ class DashedLine(QtGui.QGraphicsLineItem):
                                                     QtCore.Qt.RoundJoin)
                        # QPen join style
                        )
-        painter.drawLine(self.line())  
+        painter.drawLine(self.line())
 
 class Edge(QtGui.QGraphicsLineItem):
     '''
@@ -212,7 +212,7 @@ class Edge(QtGui.QGraphicsLineItem):
         '''
         # Se os itens colidirem graficamente, a linha não é desenhada.
         if (self.w1.collidesWithItem(self.w2)):
-            return        
+            return
 
         # Temos abaixo a lógica de distribuição de linhas quando elas são
         # conectadas a um elemento interruptor ou a uma barra.
@@ -326,7 +326,7 @@ class Edge(QtGui.QGraphicsLineItem):
     def contextMenuEvent(self, event):
         '''
             Callback chamada quando a linha é selecionada, executando
-            o myLineMenu (QtGui.QMenu), o menu de configuração de condutor. 
+            o myLineMenu (QtGui.QMenu), o menu de configuração de condutor.
         '''
         self.scene().clearSelection()
         self.setSelected(True)
@@ -414,7 +414,7 @@ class Node(QtGui.QGraphicsRectItem):
             # um texto vazio.
             self.text = Text('', self, self.scene())
             self.substation = Substation(
-                self.text.toPlainText(), 0.0, 0.0, 0.0, complex(0, 0))
+                self.text.toPlainText(), 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
             self.text.setPos(self.mapFromItem(self.text, 0, rect.height()))
 
         # Se o item a ser inserido for do tipo religador/disjuntor/chave:
@@ -429,7 +429,7 @@ class Node(QtGui.QGraphicsRectItem):
             self.text.setPos(self.mapFromItem(self.text, 10, rect.height()))
             self.chave.nome = self.text.toPlainText()
 
-            
+
 
         # Se o item a ser inserido for do tipo barra:
         elif self.myItemType == self.Barra:
@@ -440,7 +440,7 @@ class Node(QtGui.QGraphicsRectItem):
             self.text.setPos(self.mapFromItem(self.text, 0, rect.height()))
             # Cria o objeto barra que contém os dados elétricos do elemento
             # barra.
-            self.barra = BusBarSection("Identificador")
+            self.barra = BusBarSection("Identificador", 0, 0.0, 0.0, 0.0, 0.0)
             # Define uma lista vazia com os terminais que possivelmente a barra
             # terá
             self.terminals = []
@@ -457,7 +457,7 @@ class Node(QtGui.QGraphicsRectItem):
         # Se o item a ser inserido for do tipo nó conectivo:
         elif self.myItemType == self.NoConectivo:
             rect = QtCore.QRectF(0, 0, 7, 7)
-            self.text = Text('', self, self.scene())    
+            self.text = Text('', self, self.scene())
 
         # Se o item a ser inserido for do tipo nó de carga:
         elif self.myItemType == self.NoDeCarga:
@@ -466,7 +466,7 @@ class Node(QtGui.QGraphicsRectItem):
             self.triCarga = QtGui.QPolygon()
             self.triCarga.append(QtCore.QPoint(7,9))
             self.triCarga.append(QtCore.QPoint(0,0))
-            self.triCarga.append(QtCore.QPoint(14,0))     
+            self.triCarga.append(QtCore.QPoint(14,0))
             # Define e ajusta a posição do label do item gráfico. Começa com
             # um texto vazio.
             self.text = Text('', self, self.scene())
@@ -477,7 +477,7 @@ class Node(QtGui.QGraphicsRectItem):
             # Cria o objeto barra que contém os dados elétricos do elemento
             # barra.
             self.no_de_carga = EnergyConsumer('', 0, 0)
-        
+
         # Estabelece o retângulo do item gráfico como o rect obtido, dependendo
         # do item.
         self.setRect(rect)
@@ -496,7 +496,7 @@ class Node(QtGui.QGraphicsRectItem):
     def setNodeShape(self):
         '''
             Altera a forma do elemento interruptor de acordo com o seu tipo
-            e posiciona o seu texto. 
+            e posiciona o seu texto.
         '''
         if self.myItemType == self.Religador:
             rect = self.setNodeRect()
@@ -683,7 +683,7 @@ class Node(QtGui.QGraphicsRectItem):
                 painter.drawImage(QtCore.QRectF(0,0,200,200),image)
             # Chave Tipo(0):
             elif self.chave.tipo == 0:
-                circ1 = QtCore.QPointF(0, self.rect().height()/2) 
+                circ1 = QtCore.QPointF(0, self.rect().height()/2)
                 circ2 = QtCore.QPointF(self.rect().width(), self.rect().height()/2)
                 scFac = self.rect().width()*(2.0**(1.0/2)/2)
                 circ3 = QtCore.QPointF(scFac, scFac+self.rect().height()/2)
@@ -696,28 +696,28 @@ class Node(QtGui.QGraphicsRectItem):
                 painter.setPen(QtGui.QPen(QtCore.Qt.black, 2))
                 painter.setBrush(QtCore.Qt.white)
                 painter.drawEllipse(circ1,4,4)
-                painter.drawEllipse(circ2,4,4)   
+                painter.drawEllipse(circ2,4,4)
             # Chave motorizada Tipo(1):
             elif self.chave.tipo == 1:
-                
-                circT1 = QtCore.QPointF((self.rect().width()/2)-6.5, (3.0*self.rect().height()/4)+4) 
+
+                circT1 = QtCore.QPointF((self.rect().width()/2)-6.5, (3.0*self.rect().height()/4)+4)
                 circT2 = QtCore.QPointF(self.rect().width()/2, 3.0*self.rect().height()/4)
-                circT3 = QtCore.QPointF(0, self.rect().height()+4) 
+                circT3 = QtCore.QPointF(0, self.rect().height()+4)
                 circT4 = QtCore.QPointF(6.5, self.rect().height())
-                
+
                 circ1 = QtCore.QPointF(0, self.rect().height()/2)
                 circ2 = QtCore.QPointF(self.rect().width(), self.rect().height()/2)
-                circ3 = QtCore.QPointF(self.rect().width()/2, self.rect().height()/2) 
+                circ3 = QtCore.QPointF(self.rect().width()/2, self.rect().height()/2)
                 scFac = self.rect().width()*(2.0**(1.0/2)/2)
-                circ4 = QtCore.QPointF(scFac, scFac+self.rect().height()/2) 
-                circ5 = QtCore.QPointF(scFac/2, (scFac/2)+(self.rect().height()/2)) 
+                circ4 = QtCore.QPointF(scFac, scFac+self.rect().height()/2)
+                circ5 = QtCore.QPointF(scFac/2, (scFac/2)+(self.rect().height()/2))
 
                 if self.chave.normalOpen == 0:
                     circ5 = circ3
                     circ4 = circ2
                     circT3 = circT1
                     circT4 = circT2
-                
+
                 painter.setPen(QtGui.QPen(QtCore.Qt.black, 3))
                 painter.drawLine(circ1,circ4)
                 painter.setPen(QtGui.QPen(QtCore.Qt.black, 1))
@@ -1632,7 +1632,7 @@ class SceneWidget(QtGui.QGraphicsScene):
     def keyPressEvent(self, event):
         '''
             Define a função de pressionar múltiplas teclas e executar comandos ou atalhos.
-            ctrl+Z, por exemplo. 
+            ctrl+Z, por exemplo.
         '''
         key = event.key()
         if self.keyControlIsPressed is True:
@@ -1669,7 +1669,7 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def keyReleaseEvent(self, event):
         '''
-            Função que implementa a função chamada quando uma tecla é liberada. 
+            Função que implementa a função chamada quando uma tecla é liberada.
         '''
         key = event.key()
         if key == QtCore.Qt.Key_Control:
@@ -1990,10 +1990,31 @@ class SceneWidget(QtGui.QGraphicsScene):
                         else:
                             item.text.setPlainText(dialog.nomeLineEdit.text())
                             item.barra.nome = dialog.nomeLineEdit.text()
+
                         if dialog.fasesLineEdit.text() == "":
                             pass
                         else:
                             item.barra.phases = dialog.fasesLineEdit.text()
+
+                        if dialog.r_posLineEdit.text() == "":
+                            pass
+                        else:
+                            item.barra.r_pos = dialog.r_posLineEdit.text()
+
+                        if dialog.i_posLineEdit.text() == "":
+                            pass
+                        else:
+                            item.barra.i_pos = dialog.i_posLineEdit.text()
+
+                        if dialog.r_zeroLineEdit.text() == "":
+                            pass
+                        else:
+                            item.barra.r_zero = dialog.r_zeroLineEdit.text()
+
+                        if dialog.i_zeroLineEdit.text() == "":
+                            pass
+                        else:
+                            item.barra.i_zero = dialog.i_zeroLineEdit.text()
                     else:
                         return dialog.dialog.result()
 
@@ -2006,11 +2027,47 @@ class SceneWidget(QtGui.QGraphicsScene):
                         else:
                             item.text.setPlainText(dialog.nomeLineEdit.text())
                             item.substation.nome = dialog.nomeLineEdit.text()
+
+                        if dialog.numTransformadoresLineEdit.text() == "":
+                            pass
+                        else:
+                            item.substation.n_transformadores = dialog.numTransformadoresLineEdit.text()
+
                         if dialog.tpLineEdit.text() == "":
                             pass
                         else:
-                            item.substation.tensao_primario = \
-                                dialog.tpLineEdit.text()
+                            item.substation.tensao_primario = dialog.tpLineEdit.text()
+
+                        if dialog.tsLineEdit.text() == "":
+                            pass
+                        else:
+                            item.substation.tensao_secundario = dialog.tsLineEdit.text()
+
+                        if dialog.potLineEdit.text() == "":
+                            pass
+                        else:
+                            item.substation.potencia = dialog.potLineEdit.text()
+
+                        if dialog.r_posLineEdit.text() == "":
+                            pass
+                        else:
+                            item.substation.r_pos = dialog.r_posLineEdit.text()
+
+                        if dialog.i_posLineEdit.text() == "":
+                            pass
+                        else:
+                            item.substation.i_pos = dialog.i_posLineEdit.text()
+
+                        if dialog.r_zeroLineEdit == "":
+                            pass
+                        else:
+                            item.substation.r_zero = dialog.r_zeroLineEdit.text()
+
+                        if dialog.i_zeroLineEdit == "":
+                            pass
+                        else:
+                            item.substation.i_zero = dialog.i_zeroLineEdit.text()
+
                     else:
                         return dialog.dialog.result()
 
@@ -2105,7 +2162,7 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def align_line_h(self):
         '''
-            Este método implementa a ação de alinhar horizontalmente os objetos da 
+            Este método implementa a ação de alinhar horizontalmente os objetos da
             classe Line no diagrama gráfico.
         '''
         w1_is_locked = False
@@ -2142,7 +2199,7 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def align_line_v(self):
         '''
-            Este método implementa a ação de alinhar verticalmente os objetos da 
+            Este método implementa a ação de alinhar verticalmente os objetos da
             classe Line no diagrama gráfico.
         '''
         for item in self.selectedItems():
@@ -2160,7 +2217,7 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def h_align(self):
         '''
-            Este método implementa a ação de alinhar horizontalmente os objetos da 
+            Este método implementa a ação de alinhar horizontalmente os objetos da
             classe Node no diagrama gráfico.
         '''
         has_pos_priority = False
@@ -2232,7 +2289,7 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def v_align(self):
         '''
-            Este método implementa a ação de alinhar verticalmente os objetos da 
+            Este método implementa a ação de alinhar verticalmente os objetos da
             classe Node no diagrama gráfico.
         '''
         x_pos_list = []
@@ -2253,7 +2310,7 @@ class SceneWidget(QtGui.QGraphicsScene):
 
     def set_grid(self):
         '''
-            Cria uma grade no desenho, impondo posições pré-determinadas aos elementos 
+            Cria uma grade no desenho, impondo posições pré-determinadas aos elementos
         '''
         if self.my_background_style == self.GridStyle:
             self.setBackgroundBrush(QtGui.QBrush(
@@ -2271,7 +2328,7 @@ class SceneWidget(QtGui.QGraphicsScene):
         # Força o usuário a salvar o diagrama antes da simulação
         path = self.main_window.save()
         # Roda o algoritmo conversor CIM >> XML padrão RNP
-        bridge = Bridge.Convert(path)        
+        bridge = Bridge.Convert(path)
         #Monta a RNP, carregando o caminho do XML em padrão RNP
         load = xml2objects.Carregador(bridge.path)
         # Carrega a topologia
@@ -2285,7 +2342,7 @@ class SceneWidget(QtGui.QGraphicsScene):
         # sub1.calculacurto('monofasico_minimo')
         # sub1.calcular_fluxo_de_carga()
         # Abre a aba de simulação
-        self.main_window.sim_view = QtGui.QTabWidget()  
+        self.main_window.sim_view = QtGui.QTabWidget()
         self.main_window.centralwidget.addTab(self.main_window.sim_view,QtGui.QApplication.translate(
                     "main_window", "Simulação", None,
                     QtGui.QApplication.UnicodeUTF8))
@@ -2317,7 +2374,7 @@ class SceneWidget(QtGui.QGraphicsScene):
                     "main_window", "Fluxo de Carga", None))
         # Adiciona uma tabela à aba de simulação
         # for sub in top["subestacoes"].values():
-            
+
         #     self.main_window.sim_table.setRowCount()
         #     self.main_window.sim_table.setColumnCount(len(top["trechos"]))
         #     self.main_window.sim_table.adjustSize()
@@ -2380,7 +2437,7 @@ class AddRemoveCommand(QtGui.QUndoCommand):
     def undo(self):
         '''
             Desfaz a última ação de remoção ou inserção de item realizada.
-            ctrl+z 
+            ctrl+z
         '''
         if self.mode == "Add":
             self.scene.removeItem(self.item)

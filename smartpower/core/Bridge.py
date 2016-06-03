@@ -79,6 +79,8 @@ class ReadCIM(object):
 			for breaker in self.breaker_list:
 				breaker.nodes = []
 				breaker.sectors = []
+				breaker.n1 = None
+				breaker.n2 = None
 			# Definir vizinhos e chaves dos nós de carga
 			print "Defining consumers neighbours and breakers..."
 			for consumer in self.consumer_list:
@@ -382,18 +384,35 @@ class ReadCIM(object):
 			else:
 				breaker0.n2 = breaker0.sectors[0]
 			found_breakers = []
-			while len(found_breakers) < len(feeder.breakers):
+			pending_breakers = []
+			done = True
+			while done:
 				for breaker in feeder.breakers:
+					if breaker == breaker0:
+						continue
+					print "Breaker 0: " + self.get_mrid(breaker0)
+					print "Breaker: " + self.get_mrid(breaker)
 					if breaker.sectors[0] in breaker0.sectors:
-						breaker.n1 = breaker.sectors[0]
-						breaker.n2 = breaker.sectors[1]
-						breaker0 = breaker
-						found_breakers.append(breaker)
+						if breaker.n1 is None:
+							breaker.n1 = breaker.sectors[0]
+						if breaker.n2 is None:
+							breaker.n2 = breaker.sectors[1]
+						pending_breakers.append(breaker)
 					elif breaker.sectors[1] in breaker0.sectors:
-						breaker.n1 = breaker.sectors[1]
-						breaker.n2 = breaker.sectors[0]
-						breaker0 = breaker
-						found_breakers.append(breaker)
+						if breaker.n1 is None:
+							breaker.n1 = breaker.sectors[1]
+						if breaker.n2 is None:
+							breaker.n2 = breaker.sectors[0]
+						pending_breakers.append(breaker)
+				if len(pending_breakers) > 0:
+					breaker0 = pending_breakers.pop()
+				for breaker in feeder.breakers:
+					if breaker.n1 is None or breaker.n2 is None:
+						break
+				else:
+					done = False
+
+
 
 			print "Feeder: " + feeder.name
 			print "    Root Breaker: " + self.get_mrid(feeder.breaker0)
@@ -726,20 +745,82 @@ class ReadCIM(object):
 		#     tag_elementos.append(tag_feeder)
 
 		for subestacao in self.substation_list:
-			tag_subestacao = rnp.new_tag("subestacao")
-			tag_subestacao["nome"] = self.get_mrid(subestacao)
-			paparente = "1"
-			rpostrafo = "1"
-			qpostrafo = "1"
-			rzerotrafo = "1"
-			qzerotrafo = "1"
-			rpos = "1"
-			qpos = "1"
-			rzero = "1"
-			qzero ="1"
-			tensaop = "69"
-			tensaos = "13.8"
+			paparente = self.get_value(subestacao,"power")
+			rpostrafo = self.get_value(subestacao,"r")
+			qpostrafo = self.get_value(subestacao,"x")
+			rzerotrafo = self.get_value(subestacao,"r0")
+			qzerotrafo = self.get_value(subestacao,"x0")
+			tensaop = self.get_value(subestacao,"tensaop")
+			tensaos = self.get_value(subestacao,"tensaos")
 
+
+			for count in range(0,int(self.get_value(subestacao,"n_trafo"))):
+					tag_transformer = rnp.new_tag("transformador")
+					tag_transformer["nome"] = self.get_mrid(subestacao) + "_T" + str(count+1)
+					tag_power = rnp.new_tag("potencia")
+					tag_power["tipo"] = "aparente"
+					tag_power["multip"] = "M"
+					tag_power["unid"] = "VA"
+					tag_power.append(paparente)
+
+					tag_zpos = rnp.new_tag("impedancia")
+					tag_zpos["tipo"] = "seq_pos"
+					tag_r = rnp.new_tag("resistencia")
+					tag_r["multip"] = ""
+					tag_r["unid"] = "ohms"
+					tag_r.append(rpostrafo)
+					tag_q = rnp.new_tag("reatancia")
+					tag_q["multip"] = ""
+					tag_q["unid"] = "ohms"
+					tag_q.append(qpostrafo)
+					tag_zpos.append(tag_r)
+					tag_zpos.append(tag_q)
+
+					tag_zzero = rnp.new_tag("impedancia")
+					tag_zzero["tipo"] = "seq_zero"
+					tag_r = rnp.new_tag("resistencia")
+					tag_r["multip"] = ""
+					tag_r["unid"] = "ohms"
+					tag_r.append(rzerotrafo)
+					tag_q = rnp.new_tag("reatancia")
+					tag_q["multip"] = ""
+					tag_q["unid"] = "ohms"
+					tag_q.append(qzerotrafo)
+					tag_zzero.append(tag_r)
+					tag_zzero.append(tag_q)
+
+					tag_enrolamentop = rnp.new_tag("enrolamento")
+					tag_enrolamentop["tipo"] = "primario"
+					tag_tensao = rnp.new_tag("tensao")
+					tag_tensao["multip"] = "k"
+					tag_tensao["unid"] = "V"
+					tag_tensao.append(tensaop)
+					tag_enrolamentop.append(tag_tensao)
+
+					tag_enrolamentos = rnp.new_tag("enrolamento")
+					tag_enrolamentos["tipo"] = "secundario"
+					tag_tensao = rnp.new_tag("tensao")
+					tag_tensao["multip"] = "k"
+					tag_tensao["unid"] = "V"
+					tag_tensao.append(tensaos)
+					tag_enrolamentos.append(tag_tensao)
+
+					tag_transformer.append(tag_power)
+					tag_transformer.append(tag_zpos)
+					tag_transformer.append(tag_zzero)
+					tag_transformer.append(tag_enrolamentop)
+					tag_transformer.append(tag_enrolamentos)
+
+					tag_elementos.append(tag_transformer)
+
+		for busbar in self.busbar_list:
+			tag_busbar = rnp.new_tag("subestacao")
+			tag_busbar["nome"] = self.get_mrid(busbar)
+			
+			rpos = self.get_value(busbar,"r")
+			qpos = self.get_value(busbar,"x")
+			rzero = self.get_value(busbar,"r0")
+			qzero = self.get_value(busbar,"x0")
 
 			tag_zpos = rnp.new_tag("impedancia")
 			tag_zpos["tipo"] = "seq_pos"
@@ -767,69 +848,12 @@ class ReadCIM(object):
 			tag_zzero.append(tag_r)
 			tag_zzero.append(tag_q)
 
-			tag_subestacao.append(tag_zpos)
-			tag_subestacao.append(tag_zzero)
+			tag_busbar.append(tag_zpos)
+			tag_busbar.append(tag_zzero)
 
-			tag_elementos.append(tag_subestacao)
+			tag_elementos.append(tag_busbar)
 
-			for count in range(1,3):
-				tag_transformer = rnp.new_tag("transformador")
-				tag_transformer["nome"] = self.get_mrid(subestacao).replace("E ","") + "_T" + str(count)
-				tag_power = rnp.new_tag("potencia")
-				tag_power["tipo"] = "aparente"
-				tag_power["multip"] = "M"
-				tag_power["unid"] = "VA"
-				tag_power.append(paparente)
-
-				tag_zpos = rnp.new_tag("impedancia")
-				tag_zpos["tipo"] = "seq_pos"
-				tag_r = rnp.new_tag("resistencia")
-				tag_r["multip"] = ""
-				tag_r["unid"] = "ohms"
-				tag_r.append(rpostrafo)
-				tag_q = rnp.new_tag("reatancia")
-				tag_q["multip"] = ""
-				tag_q["unid"] = "ohms"
-				tag_q.append(qpostrafo)
-				tag_zpos.append(tag_r)
-				tag_zpos.append(tag_q)
-
-				tag_zzero = rnp.new_tag("impedancia")
-				tag_zzero["tipo"] = "seq_zero"
-				tag_r = rnp.new_tag("resistencia")
-				tag_r["multip"] = ""
-				tag_r["unid"] = "ohms"
-				tag_r.append(rzerotrafo)
-				tag_q = rnp.new_tag("reatancia")
-				tag_q["multip"] = ""
-				tag_q["unid"] = "ohms"
-				tag_q.append(qzerotrafo)
-				tag_zzero.append(tag_r)
-				tag_zzero.append(tag_q)
-
-				tag_enrolamentop = rnp.new_tag("enrolamento")
-				tag_enrolamentop["tipo"] = "primario"
-				tag_tensao = rnp.new_tag("tensao")
-				tag_tensao["multip"] = "k"
-				tag_tensao["unid"] = "V"
-				tag_tensao.append(tensaop)
-				tag_enrolamentop.append(tag_tensao)
-
-				tag_enrolamentos = rnp.new_tag("enrolamento")
-				tag_enrolamentos["tipo"] = "secundario"
-				tag_tensao = rnp.new_tag("tensao")
-				tag_tensao["multip"] = "k"
-				tag_tensao["unid"] = "V"
-				tag_tensao.append(tensaos)
-				tag_enrolamentos.append(tag_tensao)
-
-				tag_transformer.append(tag_power)
-				tag_transformer.append(tag_zpos)
-				tag_transformer.append(tag_zzero)
-				tag_transformer.append(tag_enrolamentop)
-				tag_transformer.append(tag_enrolamentos)
-
-				tag_elementos.append(tag_transformer)
+			
 
 
 
@@ -995,6 +1019,10 @@ class ReadCIM(object):
 			tag_elemento = rnp.new_tag("elemento")
 			tag_elemento["tipo"] = "subestacao"
 			tag_elemento["nome"] = substation.name
+			for substation2 in self.substation_list:
+				if self.get_mrid(substation2).replace(" ","").replace("E","") == substation.name:
+						n_trafo = self.get_value(substation2,"n_trafo")
+						break
 
 			tag_feeders = rnp.new_tag("alimentadores")
 			for feeder in substation.feeders:
@@ -1003,7 +1031,7 @@ class ReadCIM(object):
 				tag_feeders.append(tag_feeder)
 
 			tag_transformers = rnp.new_tag("transformadores")
-			for count in range(0,3):
+			for count in range(0,int(n_trafo)):
 				tag_transformer = rnp.new_tag("transformador")
 				tag_transformer["nome"] = substation.name + "_T" + str(count+1)
 				tag_transformers.append(tag_transformer)

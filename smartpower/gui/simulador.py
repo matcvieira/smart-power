@@ -71,7 +71,7 @@ class JanelaPrincipal(object):
         self.helpMenu = self.menubar.addMenu('Ajuda')
         #Cria o submenu Alinhar e o coloca no menu Organizar
         self.alignSubmenu = self.orgMenu.addMenu('Alinhar')
-        #Cria o submenu Texto e o coloca no menu Organizar 
+        #Cria o submenu Texto e o coloca no menu Organizar
         self.textSubmenu = self.showMenu.addMenu('Texto')
 
         # define a barra de status
@@ -81,7 +81,7 @@ class JanelaPrincipal(object):
 
 
         # define o widget dockWidget dockWidget_Buttons e configura seu
-        # conteudo dockWidget_Buttons_Contents 
+        # conteudo dockWidget_Buttons_Contents
         self.dockWidget_Buttons = QtGui.QDockWidget(main_window)
         self.dockWidget_Buttons.setCursor(self.cursor)
         self.dockWidget_Buttons.setObjectName("dockWidget_Buttons")
@@ -209,7 +209,7 @@ class JanelaPrincipal(object):
         self.gridlayout_page_1.addWidget(self.busLabel, 3, 0)
         self.gridlayout_page_1.addWidget(self.lineLabel, 3, 1)
         self.gridlayout_page_1.addWidget(self.noButton, 4, 0)
-        self.gridlayout_page_1.addWidget(self.noLabel, 5, 0) 
+        self.gridlayout_page_1.addWidget(self.noLabel, 5, 0)
 
         # adiciona o gridLayout_3 a pagina_1 do dockWidget
         self.page_1.setLayout(self.gridlayout_page_1)
@@ -370,7 +370,7 @@ class JanelaPrincipal(object):
 
     def save(self):
         '''
-            Função que salva o diagrama gráfico em um arquivo .XML 
+            Função que salva o diagrama gráfico em um arquivo .XML
         '''
         filename = QtGui.QFileDialog.getSaveFileName(
             None, 'Salvar Diagrama', os.getenv('HOME'))
@@ -403,7 +403,7 @@ class JanelaPrincipal(object):
             self.sceneWidget.set_mode(self.sceneWidget.SelectItems)
 
         for id in range(6):
-            self.buttonGroup.button(id).setChecked(False)       
+            self.buttonGroup.button(id).setChecked(False)
 
     def buttonGroupClicked(self, id):
         '''
@@ -411,19 +411,19 @@ class JanelaPrincipal(object):
             de itens é clicado.
         '''
         if id==3:
-           self.buttonGroup.button(id).setChecked(True) 
+           self.buttonGroup.button(id).setChecked(True)
         pass
 
     def buttonGroupPressed(self, id):
         '''
             Callback chamada no momento em que um botão de inserção
-            de itens é pressionado. 
+            de itens é pressionado.
         '''
         self.buttonGroup.button(id).setChecked(True)
 
         # Altera o icone de acordo com o button pressionado:
 
-        buttons = self.buttonGroup.buttons() 
+        buttons = self.buttonGroup.buttons()
         for button in buttons:
             if self.buttonGroup.button(id) != button:
                 button.setChecked(False)
@@ -529,11 +529,11 @@ class JanelaPrincipal(object):
             QtGui.QApplication.translate(
                 "main_window", "4, Backspace", None,
                 QtGui.QApplication.UnicodeUTF8))
-        '''    
+        '''
         self.actionSave.setText(
             QtGui.QApplication.translate(
                 "main_window", "Salvar", None, QtGui.QApplication.UnicodeUTF8))
-    
+
         self.actionSave.setToolTip(
             QtGui.QApplication.translate(
                 "main_window", "Salvar", None, QtGui.QApplication.UnicodeUTF8))
@@ -623,7 +623,7 @@ class JanelaPrincipal(object):
             QtGui.QApplication.translate(
                 "main_window", "Simular", None,
                 QtGui.QApplication.UnicodeUTF8))
-        
+
         ## Configuração das QActions para exibir textos dos elementos, sem atalhos.
         self.actionTextVisibleSubstation.setText(
             QtGui.QApplication.translate(
@@ -670,28 +670,28 @@ class ControlMainWindow(QtGui.QMainWindow):
     def mouseReleaseEvent(self, mouse_event):
         '''
             Função da chamada no momento que o evento mouse release é enviado. Quando um
-            item arrastado para a área de desenho é liberado, este item é desenhado e o 
+            item arrastado para a área de desenho é liberado, este item é desenhado e o
             programa volta para o modo de seleção de itens.
-        ''' 
+        '''
         self.setCursorPad(1)
         super(ControlMainWindow, self).mouseReleaseEvent(mouse_event)
         sinal = QtGui.QGraphicsSceneMouseEvent(QtCore.QEvent.GraphicsSceneMouseRelease)
         sinal.setPos(self.ui.graphicsView.mapToScene(
-            self.ui.graphicsView.mapFromGlobal(self.cursor.pos()))) 
+            self.ui.graphicsView.mapFromGlobal(self.cursor.pos())))
         self.ui.sceneWidget.mouseReleaseEvent(sinal)
         self.ui.buttonGroupUncheck()
 
     def setCursorIcon(self, id):
         '''
-            Callback que altera o formato do cursor dando a impressão visual de 
-            'arrastar' o elemento para dentro do diagrama gráfico. 
+            Callback que altera o formato do cursor dando a impressão visual de
+            'arrastar' o elemento para dentro do diagrama gráfico.
         '''
         self.cursor.setShape(self, id)
         self.ui.cursor.setShape(self.ui.dockWidget_Buttons, id)
 
     def setCursorPad(self, id):
         '''
-            Função que altera o formato do cursor para a seta padrão. 
+            Função que altera o formato do cursor para a seta padrão.
         '''
         self.cursor.setShapePad(self)
         self.ui.cursor.setShapePad(self.ui.dockWidget_Buttons)

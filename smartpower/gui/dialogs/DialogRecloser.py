@@ -111,7 +111,7 @@ class RecloserDialog(QtGui.QWidget):
         self.formLayout.setWidget(4, QtGui.QFormLayout.LabelRole, self.tipoElementoLabel)
 
         self.tipoElementoCheck = QtGui.QButtonGroup()
-        self.tipoElementoCheck.addButton(QtGui.QCheckBox(u"Chave",self.formLayoutWidget), 0)        
+        self.tipoElementoCheck.addButton(QtGui.QCheckBox(u"Chave",self.formLayoutWidget), 0)
         self.tipoElementoCheck.addButton(QtGui.QCheckBox(u"Chave autom.",self.formLayoutWidget), 1)
         self.tipoElementoCheck.addButton(QtGui.QCheckBox(u"Disjuntor",self.formLayoutWidget), 2)
         self.tipoElementoCheck.addButton(QtGui.QCheckBox(u"Religador",self.formLayoutWidget), 3)
