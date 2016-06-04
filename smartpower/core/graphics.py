@@ -16,8 +16,6 @@ from smartpower.gui.dialogs.avisoReligador import AvisoReligador
 
 from smartpower.core import Bridge
 
-from smartpower.calc import xml2objects
-
 lista_no_conectivo = []
 
 class DashedLine(QtGui.QGraphicsLineItem):
