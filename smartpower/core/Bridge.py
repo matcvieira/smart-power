@@ -11,6 +11,11 @@ class Sector(object):
 		self.name = name
 		self.conductors = []
 
+class RootNode(object):
+	def __init__(self, name=None):
+		self.neighbours = []
+		self.name = name
+
 class ConnectionEvent(object):
 	def __init__(self,n1=None,n2=None):
 		self.occured = False
@@ -186,10 +191,33 @@ class ReadCIM(object):
 			print "Associating Substations with feeders..."
 			self.associate_sub()
 
+			print "Defining Root Nodes..."
+			self.define_root_nodes()
+
 			print "Writing xml..."
 			self.write_xml()
 
 
+	def define_root_nodes(self):
+		self.root_nodes = []
+		for feeder in self.feeders:
+			root = feeder.root
+			root.node_neighbours = []
+			root.breaker_neighbours = []
+			for consumer in self.consumer_list:
+				for neighbour in consumer.neighbours:
+					if self.get_mrid(neighbour) == root.name:
+						root.node_neighbours.append(consumer)
+						break
+			for breaker in self.breaker_list:
+				for sector in breaker.sectors:
+					if sector == root:
+						root.breaker_neighbours.append(breaker)
+			self.root_nodes.append(root)
+		self.root_nodes = sorted(list(set(self.root_nodes)))
+
+
+	
 	def define_edges_sectors(self):
 		for conductor in self.conductor_list:
 			if isinstance(conductor,SpecialConductor) == False:
@@ -739,10 +767,11 @@ class ReadCIM(object):
 			tag_setor["nome"] = setor.name
 			tag_elementos.append(tag_setor)
 
-		# for alimentador in self.feeder_list:
-		#     tag_feeder = rnp.new_tag("alimentador")
-		#     tag_feeder["nome"] = alimentador
-		#     tag_elementos.append(tag_feeder)
+		for alimentador in self.feeders:
+		    tag_feeder = rnp.new_tag("alimentador")
+		    tag_feeder["nome"] = alimentador.name
+		    tag_elementos.append(tag_feeder)
+
 
 		for subestacao in self.substation_list:
 			paparente = self.get_value(subestacao,"power")
@@ -885,6 +914,30 @@ class ReadCIM(object):
 			tag_elemento.append(tag_chaves)
 			tag_topologia.append(tag_elemento)
 
+		for node in self.root_nodes:
+			tag_elemento = rnp.new_tag("elemento")
+			tag_elemento["tipo"] = "no"
+			tag_elemento["nome"] = node.name
+
+			tag_vizinhos = rnp.new_tag("vizinhos")
+			tag_chaves = rnp.new_tag("chaves")
+
+			for neighbour in node.node_neighbours:
+				tag_consumer = rnp.new_tag("no")
+				tag_consumer["nome"] = self.get_mrid(neighbour)
+				tag_vizinhos.append(tag_consumer)
+
+			for breaker in node.breaker_neighbours:
+				tag_breaker = rnp.new_tag("chave")
+				tag_breaker["nome"] = self.get_mrid(breaker)
+				tag_chaves.append(tag_breaker)
+
+			tag_elemento.append(tag_vizinhos)
+			tag_elemento.append(tag_chaves)
+			tag_topologia.append(tag_elemento)
+
+
+
 		# Topologia dos setores
 		for setor in self.sectors:
 			tag_elemento = rnp.new_tag("elemento")
@@ -915,8 +968,8 @@ class ReadCIM(object):
 			tag_elemento["nome"] = self.get_mrid(breaker)
 
 			if self.get_value(breaker,"normalopen") == "1":
-				n1 = self.get_mrid(breaker.nodes[0])
-				n2 = self.get_mrid(breaker.nodes[1])
+				n1 = breaker.nodes[0].sector.name
+				n2 = breaker.nodes[1].sector.name
 			else:
 				n1 = breaker.n1.name
 				n2 = breaker.n2.name
@@ -953,20 +1006,22 @@ class ReadCIM(object):
 			tag_n1.append(tag_node)
 
 			tag_n2 = rnp.new_tag("n2")
-			if conductor.n1.name == "energyconsumer":
+			if conductor.n2.name == "energyconsumer":
 				name = "no"
-			elif conductor.n1.name == "breaker":
+			elif conductor.n2.name == "breaker":
 				name = "chave"
 			tag_node = rnp.new_tag(name)
 			tag_node["nome"] = self.get_mrid(conductor.n2)
 			tag_n2.append(tag_node)
 
-			tag_conductor = rnp.new_tag("conductor")
+			tag_conductors = rnp.new_tag("condutores")
+			tag_conductor = rnp.new_tag("condutor")
 			tag_conductor["nome"] = "CAA 266R"
+			tag_conductors.append(tag_conductor)
 
 			tag_elemento.append(tag_n1)
 			tag_elemento.append(tag_n2)
-			tag_elemento.append(tag_conductor)
+			tag_elemento.append(tag_conductors)
 			tag_topologia.append(tag_elemento)
 
 		for feeder in self.feeders:
@@ -1009,10 +1064,12 @@ class ReadCIM(object):
 			tag_root = rnp.new_tag("raiz")
 			tag_sector = rnp.new_tag("setor")
 			tag_sector["nome"] = feeder.root.name
+			tag_root.append(tag_sector)
 
 			tag_elemento.append(tag_sectors)
 			tag_elemento.append(tag_conductors)
 			tag_elemento.append(tag_breakers)
+			tag_elemento.append(tag_root)
 			tag_topologia.append(tag_elemento)
 
 		for substation in self.substations:
@@ -1033,7 +1090,7 @@ class ReadCIM(object):
 			tag_transformers = rnp.new_tag("transformadores")
 			for count in range(0,int(n_trafo)):
 				tag_transformer = rnp.new_tag("transformador")
-				tag_transformer["nome"] = substation.name + "_T" + str(count+1)
+				tag_transformer["nome"] = substation.name.replace("E","") + "_T" + str(count+1)
 				tag_transformers.append(tag_transformer)
 
 			tag_elemento.append(tag_feeders)
