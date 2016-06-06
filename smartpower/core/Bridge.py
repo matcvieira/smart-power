@@ -48,7 +48,7 @@ class SpecialConductor(object):
 
 class ReadCIM(object):
 
-    def __init__(self,file="/home/mateusvieira/Dropbox/GREI - Workspace/16barras/rede_16barras v.4_CIM"):
+    def __init__(self,file="/home/mateusvieira/Dropbox/GREI - Workspace/Test 001/rede_adaptada_CIM"):
         if file is None:
             return "No CIM File entered"
         else:
@@ -381,8 +381,24 @@ class ReadCIM(object):
                     go = False
 
         for feeder in self.feeders:
+            breakers = feeder.breakers
+            opened = feeder.opened_breakers
+            breaker0 = feeder.breaker0
             for sector in feeder.sectors:
                 for conductor in sector.conductors:
+                    n1 = conductor.nodes[0]
+                    n2 = conductor.nodes[1]
+                    if n1.name == "breaker":
+                        if n1 in breakers or n1 in opened or n1 == breaker0:
+                            pass
+                        else:
+                            continue
+                    if n2.name == "breaker":
+                        if n2 in breakers or n2 in opened or n2 == breaker0:
+                            pass
+                        else:
+                            continue
+                    
                     feeder.conductors.append(conductor)
 
 
@@ -399,7 +415,7 @@ class ReadCIM(object):
             for breaker in feeder.breakers:
                 print "    Breaker: " + self.get_mrid(breaker)
             for breaker in feeder.opened_breakers:
-                print "    Breaker: " + self.get_mrid(breaker)
+                print "    Opened Breaker: " + self.get_mrid(breaker)
             print "Root: " + feeder.root.name
 
     def organize_breakers(self):
@@ -435,10 +451,14 @@ class ReadCIM(object):
                         pending_breakers.append(breaker)
                 if len(pending_breakers) > 0:
                     breaker0 = pending_breakers.pop()
+                else:
+                    pass
                 for breaker in feeder.breakers:
+                    print self.get_mrid(breaker)
                     if breaker.n1 is None or breaker.n2 is None:
                         break
                 else:
+                    print "wtf?"
                     done = False
 
 
@@ -495,6 +515,7 @@ class ReadCIM(object):
 
 
             print "Feeder: " + feeder.name
+            print feeder.conductor0.mrid
             print "    Root Conductor:  " + feeder.conductor0.mrid
             print "        n1: " + self.get_mrid(feeder.conductor0.n1)
             print "        n2: " + self.get_mrid(feeder.conductor0.n2)
@@ -580,9 +601,12 @@ class ReadCIM(object):
                     neighbour.sector = consumer.sector
                     neighbour.sector.nodes.append(neighbour)
                 elif neighbour.name == "breaker":
-                    sector = Sector(str(consumer.find('mrid').text).strip()[0])
-                    consumer.sector = sector
-                    sector.nodes.append(consumer)
+                    if self.has_sector(consumer):
+                        pass
+                    else:
+                        sector = Sector(str(consumer.find('mrid').text).strip()[0])
+                        consumer.sector = sector
+                        sector.nodes.append(consumer)
 
 
             sectors.append(sector)
@@ -1060,6 +1084,7 @@ class ReadCIM(object):
                 n1 = breaker.nodes[0].sector.name
                 n2 = breaker.nodes[1].sector.name
             else:
+                print self.get_mrid(breaker)
                 n1 = breaker.n1.name
                 n2 = breaker.n2.name
             tag_n1 = rnp.new_tag("n1")
@@ -1086,7 +1111,7 @@ class ReadCIM(object):
             tag_elemento["nome"] = name
 
             tag_n1 = rnp.new_tag("n1")
-            if conductor.n1.name == "energyconsumer":
+            if conductor.n1.name == "energyconsumer" or conductor.n1.name == "busbarsection":
                 name = "no"
             elif conductor.n1.name == "breaker":
                 name = "chave"
@@ -1095,7 +1120,7 @@ class ReadCIM(object):
             tag_n1.append(tag_node)
 
             tag_n2 = rnp.new_tag("n2")
-            if conductor.n2.name == "energyconsumer":
+            if conductor.n2.name == "energyconsumer" or conductor.n2.name == "busbarsection":
                 name = "no"
             elif conductor.n2.name == "breaker":
                 name = "chave"
