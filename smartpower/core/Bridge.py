@@ -2,6 +2,7 @@
 from bs4 import BeautifulSoup
 from xml.etree import ElementTree
 from xml.dom import minidom
+from random import randrange
 
 
 class Sector(object):
@@ -48,7 +49,7 @@ class SpecialConductor(object):
 
 class ReadCIM(object):
 
-    def __init__(self,file="/home/mateusvieira/Dropbox/GREI - Workspace/Test 001/rede_adaptada_CIM"):
+    def __init__(self,file="/home/mateusvieira/Dropbox/GREI - Workspace/16barras/rede_16barras v.5_CIM"):
         if file is None:
             return "No CIM File entered"
         else:
@@ -422,6 +423,7 @@ class ReadCIM(object):
         for feeder in self.feeders:
             sector0 = feeder.root
             breaker0 = feeder.breaker0
+            last_breaker = breaker0
             breaker0.n1 = sector0
 
             if breaker0.sectors[0] == sector0:
@@ -431,7 +433,10 @@ class ReadCIM(object):
             found_breakers = []
             pending_breakers = []
             done = True
+            change = True
             while done:
+                change = not change
+                # raw_input("take a look")
                 for breaker in feeder.breakers:
                     if breaker == breaker0:
                         continue
@@ -450,7 +455,7 @@ class ReadCIM(object):
                             breaker.n2 = breaker.sectors[0]
                         pending_breakers.append(breaker)
                 if len(pending_breakers) > 0:
-                    breaker0 = pending_breakers.pop()
+                    breaker0 = feeder.breakers[randrange(0,len(feeder.breakers)-1,1)]
                 else:
                     pass
                 for breaker in feeder.breakers:
