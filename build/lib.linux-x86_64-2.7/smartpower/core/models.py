@@ -104,6 +104,9 @@ class DiagramToXML(ElementTree.Element):
                     identificador = ElementTree.Element('identificador')
                     identificador.text = str(item.text.toPlainText())
 
+                    n_transformadores = ElementTree.Element('n_transformadores')
+                    n_transformadores.text = str(item.substation.n_transformadores)
+
                     tensao_p = ElementTree.Element('tensaop')
                     tensao_p.text = str(item.substation.tensao_primario)
 
@@ -113,19 +116,20 @@ class DiagramToXML(ElementTree.Element):
                     potencia = ElementTree.Element('potencia')
                     potencia.text = str(item.substation.potencia)
 
-                    resistencia_positiva = ElementTree.Element('resistencia_positiva')
+                    resistencia_positiva = ElementTree.Element('r_pos')
                     resistencia_positiva.text = str(item.substation.r_pos)
 
-                    reatancia_positiva = ElementTree.Element('reatancia_positiva')
+                    reatancia_positiva = ElementTree.Element('i_pos')
                     reatancia_positiva.text = str(item.substation.i_pos)
 
-                    resistencia_zero = ElementTree.Element('resistencia_zero')
+                    resistencia_zero = ElementTree.Element('r_zero')
                     resistencia_zero.text = str(item.substation.r_zero)
 
-                    reatancia_zero = ElementTree.Element('reatancia_zero')
+                    reatancia_zero = ElementTree.Element('i_zero')
                     reatancia_zero.text = str(item.substation.i_zero)
 
                     CE.append(identificador)
+                    CE.append(n_transformadores)
                     CE.append(tensao_p)
                     CE.append(tensao_s)
                     CE.append(potencia)
@@ -143,16 +147,16 @@ class DiagramToXML(ElementTree.Element):
                     fases = ElementTree.Element('fases')
                     fases.text = str(item.barra.phases)
 
-                    resistencia_positiva = ElementTree.Element('resistencia_positiva')
+                    resistencia_positiva = ElementTree.Element('r_pos')
                     resistencia_positiva.text = str(item.barra.r_pos)
 
-                    reatancia_positiva = ElementTree.Element('reatancia_positiva')
+                    reatancia_positiva = ElementTree.Element('i_pos')
                     reatancia_positiva.text = str(item.barra.i_pos)
 
-                    resistencia_zero = ElementTree.Element('resistencia_zero')
+                    resistencia_zero = ElementTree.Element('r_zero')
                     resistencia_zero.text = str(item.barra.r_zero)
 
-                    reatancia_zero = ElementTree.Element('reatancia_zero')
+                    reatancia_zero = ElementTree.Element('i_zero')
                     reatancia_zero.text = str(item.barra.i_zero)
 
                     CE.append(identificador)
@@ -217,8 +221,12 @@ class XMLToDiagram(object):
                     tensaop = child.find('tensaop').text
                     tensaos = child.find('tensaos').text
                     potencia = child.find('potencia').text
-                    impedancia = child.find('impedancia').text
-                    item.substation = Substation(identificador, float(tensaop), float(tensaos), float(potencia), impedancia)
+                    n_transformadores = child.find('n_transformadores').text
+                    r_pos = child.find('r_pos').text
+                    i_pos = child.find('i_pos').text
+                    r_zero = child.find('r_zero').text
+                    i_zero = child.find('i_zero').text
+                    item.substation = Substation(identificador, n_transformadores, float(tensaop), float(tensaos), float(potencia), float(r_pos), float(i_pos),float(r_zero),float(i_zero))
                     self.scene.addItem(item)
                     item.setPos(
                         float(child.find('x').text), float(
@@ -251,6 +259,12 @@ class XMLToDiagram(object):
                         child.attrib['type']), self.scene.myBusMenu)
                     identificador = child.find('identificador').text
                     fases = child.find('fases').text
+                    r_pos = child.find('r_pos').text
+                    i_pos = child.find('i_pos').text
+                    r_zero = child.find('r_zero').text
+                    i_zero = child.find('i_zero').text
+                    item.barra = BusBarSection(identificador,float(fases),float(r_pos),float(i_pos),float(r_zero),float(i_zero))
+
                     item.setPos(float(child.find('x').text), float(
                         child.find('y').text))
                     item.id = int(child.find('id').text)
@@ -299,7 +313,7 @@ class XMLToDiagram(object):
                     elif isinstance(item, Node) and item.id == int(child.find('w2').text):
                         w2 = item
                 edge = Edge(w1, w2, self.scene.myLineMenu)
-                comprimento = str(child.find('comprimento').text)
+                comprimento = "1"
                 edge.linha.comprimento = comprimento
                 self.scene.addItem(edge)
                 edge.update_position()
@@ -387,12 +401,29 @@ class CimXML(object):
                     tag_phases.append(str(item.barra.phases))
                     tag_barra.append(tag_phases)
 
+                    tag_rpos = self.cim_xml.new_tag("r")
+                    tag_rpos.append(str(item.barra.r_pos))
+                    tag_barra.append(tag_rpos)
+
+                    tag_ipos = self.cim_xml.new_tag("x")
+                    tag_ipos.append(str(item.barra.i_pos))
+                    tag_barra.append(tag_ipos)
+
+                    tag_rzero = self.cim_xml.new_tag("r0")
+                    tag_rzero.append(str(item.barra.r_zero))
+                    tag_barra.append(tag_rzero)
+
+                    tag_izero = self.cim_xml.new_tag("x0")
+                    tag_izero.append(str(item.barra.i_zero))
+                    tag_barra.append(tag_izero)
+
                     for Terminal in (item.terminals):
                         tag_terminal = self.cim_xml.new_tag("terminal")
                         tag_mRID = self.cim_xml.new_tag('mRID')
                         tag_mRID.append(str(Terminal.mRID))
                         tag_terminal.append(tag_mRID)
                         tag_barra.append(tag_terminal)
+
 
         # Percorre toda a lista buscando elementos do tipo Subestação
         for item in scene.items():
@@ -406,6 +437,38 @@ class CimXML(object):
                     tag_id = self.cim_xml.new_tag("mRID")
                     tag_id.append(str(item.text.toPlainText()).strip())
                     tag_substation.append(tag_id)
+
+                    tag_ntrafo = self.cim_xml.new_tag("n_trafo")
+                    tag_ntrafo.append(str(item.substation.n_transformadores))
+                    tag_substation.append(tag_ntrafo)
+
+                    tag_tensaop = self.cim_xml.new_tag("tensaop")
+                    tag_tensaop.append(str(item.substation.tensao_primario))
+                    tag_substation.append(tag_tensaop)
+
+                    tag_tensaos = self.cim_xml.new_tag("tensaos")
+                    tag_tensaos.append(str(item.substation.tensao_secundario))
+                    tag_substation.append(tag_tensaos)
+
+                    tag_potencia = self.cim_xml.new_tag("power")
+                    tag_potencia.append(str(item.substation.potencia))
+                    tag_substation.append(tag_potencia)
+
+                    tag_rpos = self.cim_xml.new_tag("r")
+                    tag_rpos.append(str(item.substation.r_pos))
+                    tag_substation.append(tag_rpos)
+
+                    tag_ipos = self.cim_xml.new_tag("x")
+                    tag_ipos.append(str(item.substation.i_pos))
+                    tag_substation.append(tag_ipos)
+
+                    tag_rzero = self.cim_xml.new_tag("r0")
+                    tag_rzero.append(str(item.substation.r_zero))
+                    tag_substation.append(tag_rzero)
+
+                    tag_izero = self.cim_xml.new_tag("x0")
+                    tag_izero.append(str(item.substation.i_zero))
+                    tag_substation.append(tag_izero)
 
                     tag_terminal1= self.cim_xml.new_tag("terminal")
                     tag_seqNumber = self.cim_xml.new_tag("SequenceNumber")
@@ -540,47 +603,55 @@ class CimXML(object):
         f.write(self.cim_xml.prettify())
         f.close()
 
+    def check_errors(self):
+        noc_to_remove = []
+        for noc in self.lista_no_conectivo:
+            if noc.terminal_list[0]==noc.terminal_list[1]:
+                noc_to_remove.append(noc)
+                print "Erro encontrado! Solucionando..."
+        for no in noc_to_remove:
+            noc.remove(no)
+
+
 
     def montar_rede(self, scene):
         '''
-<<<<<<< HEAD
-            Função que lê os elementos contidos na scene, os classifica e os divide em listas 
-=======
             Função que lê os elementos contidos na scene, os classifica e os divide em listas
->>>>>>> 642d0a8078a27c074ba9fdfe039ebdfd41c643f6
             de acordo com a função deles na rede, para então montar a rede seguindo o padrão CIM.
         '''
 
+        # Definir número de terminais de acordo com o tipo de elemento
+
         for item in self.scene.items():
             if isinstance(item, Node):
+                # 1º Caso: elemento é um religador ou uma SE
                 if item.myItemType != Node.NoConectivo and item.myItemType != Node.Barra and item.myItemType != Node.NoDeCarga:
                     item.terminal1 = Terminal(item)
                     item.terminal2 = Terminal(item)
                     self.lista_terminais.append(item.terminal1)
                     self.lista_terminais.append(item.terminal2)
-
+                # 2º Caso: elemento é uma barra ou um nó de carga
                 if item.myItemType == Node.Barra or item.myItemType == Node.NoDeCarga:
                     for i in range(len(item.edges)):
                         terminal = Terminal(item)
                         item.terminals.append(terminal)
                         self.lista_terminais.append(terminal)
+
+            # 3º Caso: elemento é um condutor
             if isinstance(item, Edge):
                 item.terminal1 = Terminal(item)
                 item.terminal2 = Terminal(item)
                 self.lista_terminais.append(item.terminal1)
                 self.lista_terminais.append(item.terminal1)
 
-
+        # Definição dos nós conectivos
         for edge in self.scene.items():
             if isinstance(edge, Edge):
                 no_conectivo_1 = NoConect([])
                 no_conectivo_2 = NoConect([])
-                print "start"
 
                 # Ligação do Nó Conectivo relativo à ligação do terminal de w1 com o terminal 1 da linha - CONVENÇÃO!
                 if edge.w1.myItemType != Node.NoConectivo and edge.w1.myItemType != Node.Barra and edge.w2.myItemType != Node.Barra and edge.w1.myItemType != Node.NoDeCarga:
-
-                    print "w1 is not NoC"
                     if edge.w1.terminal1.connected:
                         if edge.w1.terminal2.connected:
                             pass
@@ -745,6 +816,7 @@ class CimXML(object):
                             self.lista_no_conectivo.append(no_conectivo)
                             break
 
+                self.check_errors()
                 print "end"
 
 
@@ -760,5 +832,7 @@ class CimXML(object):
                 else:
                     print "terminal: " + str(id(no2)) + "\n" + "objeto: " + str(no2.parent.text.toPlainText()) + "\n" + "Posição: " + str(no2.parent.scenePos()) + "\n"
             print "=====================================================================\n\n"
+
+        raw_input("Press enter to complete conversion.")
 
         print "--------------------------------------------------------------------------"

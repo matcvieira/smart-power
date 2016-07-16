@@ -5,11 +5,6 @@ smartpower.egg-info/PKG-INFO
 smartpower.egg-info/SOURCES.txt
 smartpower.egg-info/dependency_links.txt
 smartpower.egg-info/top_level.txt
-smartpower/calc/__init__.py
-smartpower/calc/rede.py
-smartpower/calc/rnp.py
-smartpower/calc/util.py
-smartpower/calc/xml2objects.py
 smartpower/core/Bridge.py
 smartpower/core/__init__.py
 smartpower/core/cursor.py

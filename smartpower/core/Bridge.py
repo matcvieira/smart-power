@@ -49,7 +49,7 @@ class SpecialConductor(object):
 
 class ReadCIM(object):
 
-    def __init__(self,file="/home/mateusvieira/Dropbox/GREI - Workspace/16barras/rede_16barras v.5_CIM"):
+    def __init__(self,file="/home/mateusvieira/Dropbox/GREI - Workspace/rede_pici_neto/rede_pici v.18_CIM"):
         if file is None:
             return "No CIM File entered"
         else:
@@ -589,32 +589,58 @@ class ReadCIM(object):
         '''
         sectors = []
         for consumer in self.consumer_list:
-            print self.get_mrid(consumer)
+            print "Consumer: " +  self.get_mrid(consumer)
+            #raw_input()
             for neighbour in consumer.im_neighbours:
+                print "Neighbour: " + self.get_mrid(neighbour)
+                #raw_input()
                 if neighbour.name == "energyconsumer":
                     if self.has_sector(neighbour):
                         if self.has_sector(consumer):
+                            print "Both did have sectors"
                             pass
                         else:
+                            print "Consumer got from neighbour"
                             consumer.sector = neighbour.sector
-                            consumer.sector.nodes.append(neighbour)
+                            consumer.sector.nodes.append(consumer)
                     elif self.has_sector(consumer):
-                        pass
+                        print "Neighbour got from consumer"
+                        neighbour.sector = consumer.sector
+                        neighbour.sector.nodes.append(neighbour)
                     else:
-                        sector = Sector(str(consumer.find('mrid').text).strip()[0])
-                        consumer.sector = sector
-                    neighbour.sector = consumer.sector
-                    neighbour.sector.nodes.append(neighbour)
+                        print "both didn't have sectors"
+                        for sector in sectors:
+                            if str(consumer.find('mrid').text).strip()[0] == sector.name:
+                                consumer.sector = sector
+                                sector.nodes.append(consumer)
+                                neighbour.sector = sector
+                                sector.nodes.append(neighbour)
+                                print "created from existing"
+                                break
+                        else:
+                            print "Created first"
+                            sector = Sector(str(consumer.find('mrid').text).strip()[0])
+                            consumer.sector = sector
+                            sector.nodes.append(consumer)
+                            neighbour.sector = sector
+                            sector.nodes.append(neighbour)
+                            sectors.append(sector)
+                            print "Appended Sector " + sector.name + " successfully!"
                 elif neighbour.name == "breaker":
                     if self.has_sector(consumer):
                         pass
                     else:
-                        sector = Sector(str(consumer.find('mrid').text).strip()[0])
-                        consumer.sector = sector
-                        sector.nodes.append(consumer)
-
-
-            sectors.append(sector)
+                        for sector in sectors:
+                            if str(consumer.find('mrid').text).strip()[0] == sector.name:
+                                consumer.sector = sector
+                                sector.nodes.append(consumer)
+                                break
+                        else:
+                            sector = Sector(str(consumer.find('mrid').text).strip()[0])
+                            consumer.sector = sector
+                            sector.nodes.append(consumer)
+                            sectors.append(sector)
+                            print "Appended Sector " + sector.name + " successfully!"
         sectors = sorted(list(set(sectors)))
 
         for busbar in self.busbar_list:

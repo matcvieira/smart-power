@@ -759,7 +759,7 @@ class Node(QtGui.QGraphicsRectItem):
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 2.5))
             painter.setBrush(QtCore.Qt.black)
             painter.drawRect(self.rect())
-            if int(self.no_de_carga.potencia_ativa) == 0 & int(self.no_de_carga.potencia_reativa) == 0:
+            if self.no_de_carga.potencia_ativa == 0 and self.no_de_carga.potencia_reativa == 0:
                 pass
             else:
                 painter.setPen(QtGui.QPen(QtCore.Qt.black, 2.5))

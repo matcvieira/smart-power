@@ -313,7 +313,7 @@ class XMLToDiagram(object):
                     elif isinstance(item, Node) and item.id == int(child.find('w2').text):
                         w2 = item
                 edge = Edge(w1, w2, self.scene.myLineMenu)
-                comprimento = "0.5"
+                comprimento = "1"
                 edge.linha.comprimento = comprimento
                 self.scene.addItem(edge)
                 edge.update_position()
